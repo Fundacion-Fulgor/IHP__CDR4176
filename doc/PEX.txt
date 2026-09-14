@@ -1,0 +1,39 @@
+source ./SOURCEME
+
+Advertencia: Restored historical PEX files from 6c71ae2 are not proof current-layout signoff.
+
+En el terminal abrir magic:
+magic CDR4176-main/layout/klayout/inv/inv.gds &
+
+
+Luego, en el terminal de magic cargar una por una linea
+gds read CDR4176-main/layout/klayout/inv/inv.gds
+load inv
+cellname rename inv inv_h
+flatten inv
+load inv
+select top cell
+extract do local
+extract all
+ext2sim labels on
+ext2sim
+extresist tolerance 10
+extresist
+ext2spice lvs
+ext2spice cthresh 0
+ext2spice extresist on
+ext2spice
+
+
+
+____________________________
+extract all
+ext2sim labels on
+ext2sim
+extresist tolerance 10
+extresist simplify on
+extresist
+ext2spice lvs
+ext2spice cthresh 0
+ext2spice extresist on
+ext2spice

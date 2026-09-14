@@ -1,0 +1,43 @@
+v {xschem version=3.4.8RC file_version=1.2}
+G {}
+K {type=subcircuit
+format="@name @pinlist @symname"
+template="name=x1"
+}
+V {}
+S {}
+F {}
+E {}
+L 4 -150 -30 -130 -30 {}
+L 4 130 -30 150 -30 {}
+L 4 130 -10 150 -10 {}
+L 4 -150 -10 -130 -10 {}
+L 4 -150 10 -130 10 {}
+L 4 130 10 150 10 {}
+L 4 -150 30 -130 30 {}
+L 4 130 30 150 30 {}
+L 7 0 -80 0 -60 {}
+L 7 0 60 0 80 {}
+B 5 -2.5 -82.5 2.5 -77.5 {name=VDD dir=inout}
+B 5 -152.5 -32.5 -147.5 -27.5 {name=VINI dir=in}
+B 5 147.5 -32.5 152.5 -27.5 {name=VOUTI dir=out}
+B 5 147.5 -12.5 152.5 -7.5 {name=VOUTQ dir=out}
+B 5 -152.5 -12.5 -147.5 -7.5 {name=VINQ dir=in}
+B 5 -152.5 7.5 -147.5 12.5 {name=VINIB dir=in}
+B 5 147.5 7.5 152.5 12.5 {name=VOUTIB dir=out}
+B 5 -152.5 27.5 -147.5 32.5 {name=VINQB dir=in}
+B 5 147.5 27.5 152.5 32.5 {name=VOUTQB dir=out}
+B 5 -2.5 77.5 2.5 82.5 {name=VSS dir=inout}
+P 4 5 130 -60 -130 -60 -130 60 130 60 130 -60 {}
+T {@symname} -36 -6 0 0 0.3 0.3 {}
+T {@name} -85 -52 0 0 0.2 0.2 {}
+T {VDD} 35 -84 0 1 0.2 0.2 {}
+T {VINI} -125 -34 0 0 0.2 0.2 {}
+T {VOUTI} 125 -34 0 1 0.2 0.2 {}
+T {VOUTQ} 125 -14 0 1 0.2 0.2 {}
+T {VINQ} -125 -14 0 0 0.2 0.2 {}
+T {VINIB} -125 6 0 0 0.2 0.2 {}
+T {VOUTIB} 125 6 0 1 0.2 0.2 {}
+T {VINQB} -125 26 0 0 0.2 0.2 {}
+T {VOUTQB} 125 26 0 1 0.2 0.2 {}
+T {VSS} 25 66 0 1 0.2 0.2 {}

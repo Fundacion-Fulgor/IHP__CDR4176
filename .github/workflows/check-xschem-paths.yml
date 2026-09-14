@@ -1,0 +1,27 @@
+name: Check Xschem Paths
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-xschem-paths:
+    name: Xschem path portability
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Run Xschem path portability check
+        run: python3 scripts/check_xschem_paths.py
+
+      - name: Run unit and regression tests
+        run: python3 -m unittest discover -s tests -v

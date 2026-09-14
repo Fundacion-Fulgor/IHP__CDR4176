@@ -1,0 +1,28 @@
+** sch_path: CDR4176-main/testbenches/tran/xschem/tb_inv.sch
+**.subckt tb_inv
+x1 VDD Vout Vin GND inv
+Vdd VDD GND 1.2
+C1 Vout GND 5f m=1
+Vin2 Vin GND dc 0 ac 0 pulse(0, 1.2, 0, 25p, 25p, 225p, 500p )
+**** begin user architecture code
+
+.lib cornerMOSlv.lib mos_tt
+
+
+.include ../../../schematic/xschem/inv/inv.spice
+
+
+
+.param temp=27
+.control
+save all
+tran 0.5p 3n
+
+write tran_logic_not.raw
+.endc
+
+
+**** end user architecture code
+**.ends
+.GLOBAL GND
+.end

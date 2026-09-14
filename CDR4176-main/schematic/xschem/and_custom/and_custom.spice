@@ -1,0 +1,40 @@
+** sch_path: CDR4176-main/schematic/xschem/and_custom/and_custom.sch
+**.subckt and_custom VDD OUT A B VSS
+*.ipin A
+*.iopin VDD
+*.opin OUT
+*.iopin VSS
+*.ipin B
+x1 VDD OUT net1 VSS inv
+x2 VDD net1 A B VSS nand_custom
+**.ends
+
+* expanding   symbol:  CDR4176-main/schematic/xschem/inv/inv.sym # of pins=4
+** sym_path: CDR4176-main/schematic/xschem/inv/inv.sym
+** sch_path: CDR4176-main/schematic/xschem/inv/inv.sch
+.subckt inv VDD VOUT VIN VSS
+*.iopin VDD
+*.iopin VSS
+*.opin VOUT
+*.ipin VIN
+XM2 VOUT VIN VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=2
+XM1 VOUT VIN VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  CDR4176-main/schematic/xschem/nand_custom/nand_custom.sym # of pins=5
+** sym_path: CDR4176-main/schematic/xschem/nand_custom/nand_custom.sym
+** sch_path: CDR4176-main/schematic/xschem/nand_custom/nand_custom.sch
+.subckt nand_custom VDD OUT A B VSS
+*.iopin VDD
+*.iopin VSS
+*.ipin A
+*.ipin B
+*.opin OUT
+XM1 OUT A net1 VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+XM2 OUT A VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+XM3 net1 B VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+XM4 OUT B VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+.end

@@ -1,0 +1,914 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import shutil
+import subprocess
+import sys
+
+DEFAULT_SCHEMATIC = "CDR4176-main/schematic/xschem/CDR4176/CDR4176.sch"
+DEFAULT_CONTAINER = "iic-osic-tools2"
+PDK_NAME = "ihp-sg13g2"
+
+SUBMODULE_GUIDE = (
+    "Para actualizar una dependencia registre el nuevo puntero con 'git add <submódulo>', "
+    "o restaure los submódulos ejecutando './eda setup'."
+)
+
+
+def get_repo_root() -> Path:
+    return Path(__file__).resolve().parent
+
+
+def is_inside_container_or_native(args_native: bool) -> bool:
+    if args_native:
+        return True
+    if os.environ.get("EDA_NATIVE") == "1":
+        return True
+    if os.environ.get("EDA_CONTAINER_ACTIVE") == "1":
+        return True
+    if os.path.exists("/run/.containerenv"):
+        return True
+    return False
+
+
+def get_designs_host_root() -> Path:
+    env_designs = os.environ.get("DESIGNS")
+    if env_designs:
+        return Path(env_designs).resolve()
+    conf_file = Path(
+        os.environ.get(
+            "IIC_OSIC_TOOLS_CONF",
+            str(Path.home() / ".config" / "iic-osic-tools" / "env"),
+        )
+    )
+    if conf_file.is_file():
+        try:
+            for line in conf_file.read_text().splitlines():
+                line = line.strip()
+                if line.startswith("DESIGNS="):
+                    val = line.split("=", 1)[1].strip().strip('"').strip("'")
+                    if val:
+                        return Path(val).resolve()
+        except OSError:
+            pass
+    return (Path.home() / "eda" / "designs").resolve()
+
+
+def to_container_path(repo_root: Path) -> str | None:
+    designs_host = get_designs_host_root()
+    try:
+        rel = repo_root.relative_to(designs_host)
+    except ValueError:
+        return None
+    rel_str = str(rel)
+    return "/foss/designs" if rel_str == "." else f"/foss/designs/{rel_str}"
+
+
+def find_distrobox_container(container: str) -> bool:
+    if shutil.which("distrobox") is None:
+        return False
+    try:
+        proc = subprocess.run(
+            ["distrobox", "list"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except FileNotFoundError:
+        return False
+    return proc.returncode == 0 and container in proc.stdout
+
+
+def find_start_x_container() -> tuple[str, str] | None:
+    name = f"iic-osic-tools_xserver_uid_{os.getuid()}"
+    for engine in ("docker", "podman"):
+        if shutil.which(engine) is None:
+            continue
+        try:
+            proc = subprocess.run(
+                [engine, "ps", "--format", "{{.Names}}"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+        except FileNotFoundError:
+            continue
+        if proc.returncode == 0 and name in proc.stdout.split():
+            return engine, name
+    return None
+
+
+def reexec_in_container(argv_forward: list[str]) -> int:
+    repo_root = get_repo_root()
+    forced_backend = os.environ.get("EDA_BACKEND", "").strip().lower()
+    abs_script = str(Path(__file__).resolve())
+
+    container = os.environ.get("EDA_CONTAINER", DEFAULT_CONTAINER)
+    try_distrobox = forced_backend in ("", "distrobox")
+    try_start_x = forced_backend in ("", "docker", "podman", "start_x")
+
+    if try_distrobox and find_distrobox_container(container):
+        cmd = ["distrobox", "enter", container, "--", "python3", abs_script, "--native"] + argv_forward
+        env = os.environ.copy()
+        env["EDA_CONTAINER_ACTIVE"] = "1"
+        res = subprocess.run(cmd, cwd=str(repo_root), env=env)
+        return res.returncode
+
+    if try_start_x:
+        found = find_start_x_container()
+        if found:
+            engine, container_name = found
+            container_repo = to_container_path(repo_root)
+            if container_repo is None:
+                sys.stderr.write(
+                    f"Error: El repositorio ({repo_root}) no está dentro del directorio que "
+                    f"start_x.sh montó como /foss/designs (host: {get_designs_host_root()}).\n"
+                    "Mueva/clone el repo ahí adentro, o vuelva a correr start_x.sh con "
+                    f"'export DESIGNS={repo_root.parent}' (borrando antes el contenedor viejo "
+                    "con '<motor> rm " + container_name + "').\n"
+                )
+                return 1
+            container_script = f"{container_repo}/eda"
+            cmd = [
+                engine, "exec", "-it", "-w", container_repo, container_name,
+                "python3", container_script, "--native",
+            ] + argv_forward
+            res = subprocess.run(cmd)
+            return res.returncode
+
+    sys.stderr.write(
+        "Error: No se encontró un entorno EDA disponible.\n"
+        f"Opción A: cree el contenedor de distrobox con 'distrobox create --name {container} "
+        "--image hpretl/iic-osic-tools:latest'.\n"
+        "Opción B: clone iic-jku/IIC-OSIC-TOOLS y corra su start_x.sh (verifique que DESIGNS "
+        f"incluya {repo_root}).\n"
+    )
+    return 1
+
+
+def check_submodules_clean_and_aligned(repo_root: Path) -> tuple[bool, str]:
+    try:
+        proc = subprocess.run(
+            ["git", "submodule", "status", "--recursive"],
+            cwd=str(repo_root),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        return False, f"Error al ejecutar git submodule status: {e.stderr.strip()}"
+    except FileNotFoundError:
+        return False, "Error: No se encontró el comando 'git'."
+
+    lines = [line for line in proc.stdout.splitlines() if line.strip()]
+    if not lines:
+        return True, ""
+
+    for line in lines:
+        status_char = line[0]
+        rest = line[1:].strip().split()
+        if not rest:
+            continue
+        sub_path_rel = rest[1]
+        if status_char == "-":
+            return False, f"El submódulo '{sub_path_rel}' no está inicializado."
+        if status_char == "+":
+            return False, f"El commit actual del submódulo '{sub_path_rel}' no coincide con el puntero registrado (gitlink)."
+        if status_char == "U":
+            return False, f"El submódulo '{sub_path_rel}' presenta conflictos de fusión no resueltos."
+
+        sub_full_path = repo_root / sub_path_rel
+        if not sub_full_path.is_dir():
+            return False, f"El directorio del submódulo '{sub_path_rel}' no existe."
+
+        try:
+            status_proc = subprocess.run(
+                ["git", "-C", str(sub_full_path), "status", "--porcelain"],
+                cwd=str(repo_root),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+            )
+            if status_proc.stdout.strip():
+                return False, f"El submódulo '{sub_path_rel}' contiene cambios locales no confirmados (árbol de trabajo sucio)."
+        except subprocess.CalledProcessError as e:
+            return False, f"Error al comprobar el estado del submódulo '{sub_path_rel}': {e.stderr.strip()}"
+
+    return True, ""
+
+
+def resolve_schematic(schematic_arg: str, repo_root: Path) -> tuple[Path | None, str]:
+    arg_path = Path(schematic_arg)
+    if arg_path.is_absolute():
+        resolved = arg_path.resolve()
+    else:
+        resolved = (repo_root / arg_path).resolve()
+
+    if resolved.suffix != ".sch":
+        return None, f"El archivo debe tener extensión .sch: {schematic_arg}"
+
+    if not resolved.is_file():
+        return None, f"El archivo esquemático no existe: {schematic_arg}"
+
+    design_dir = (repo_root / "CDR4176-main" / "schematic").resolve()
+    verif_dir = (repo_root / "CDR4176-main" / "testbenches").resolve()
+
+    def is_subpath(p: Path, base: Path) -> bool:
+        try:
+            p.relative_to(base)
+            return True
+        except ValueError:
+            return False
+
+    allowed = (
+        is_subpath(resolved, design_dir)
+        or is_subpath(resolved, verif_dir)
+    )
+
+    if not allowed:
+        return None, f"Solo se permiten esquemáticos dentro de 'CDR4176-main/schematic/' o 'CDR4176-main/testbenches/': {schematic_arg}"
+
+    return resolved, ""
+
+
+def get_pdk_root(repo_root: Path) -> Path:
+    env_pdk = os.environ.get("PDK_ROOT")
+    if env_pdk:
+        p = Path(env_pdk).resolve()
+        if (p / PDK_NAME / "libs.tech" / "xschem" / "xschemrc").is_file():
+            return p
+    return (repo_root / "IHP-Open-PDK").resolve()
+
+
+def get_eda_env(repo_root: Path) -> dict[str, str]:
+    env = os.environ.copy()
+    pdk_root = get_pdk_root(repo_root)
+    env["PDK_ROOT"] = str(pdk_root)
+    env["PDK"] = PDK_NAME
+    return env
+
+
+def is_osdi_compatible(path: Path) -> bool:
+    try:
+        with open(path, "rb") as f:
+            magic = f.read(4)
+            if magic != b"\x7fELF":
+                return True
+            f.seek(18)
+            machine_bytes = f.read(2)
+            if len(machine_bytes) < 2:
+                return False
+            machine = int.from_bytes(machine_bytes, byteorder="little")
+            cur_arch = platform.machine().lower()
+            if cur_arch in ("x86_64", "amd64"):
+                return machine == 0x3E
+            elif cur_arch in ("aarch64", "arm64"):
+                return machine == 0xB7
+            return True
+    except OSError:
+        return False
+
+
+def init_simulation_directory(sim_dir: Path, repo_root: Path) -> Path:
+    sim_dir.mkdir(parents=True, exist_ok=True)
+    spiceinit = sim_dir / ".spiceinit"
+    marker = sim_dir / ".spiceinit.managed"
+
+    if spiceinit.is_symlink() or marker.is_symlink():
+        raise FileExistsError(f"Refusing to replace simulation configuration symlinks in {sim_dir}")
+    if spiceinit.exists() and not marker.exists():
+        return spiceinit
+
+    previous = {}
+    if marker.exists():
+        try:
+            previous = json.loads(marker.read_text(encoding="utf-8"))
+            if previous.get("version") != 1 or not isinstance(previous.get("links"), dict):
+                raise ValueError("unknown ownership metadata")
+        except (ValueError, AttributeError) as error:
+            raise ValueError(f"Unrecognized simulation ownership metadata: {marker}") from error
+        if spiceinit.exists() and hashlib.sha256(spiceinit.read_bytes()).hexdigest() != previous.get("sha256"):
+            raise FileExistsError(f"Preserving manually edited simulation configuration: {spiceinit}")
+
+    pdk_root = get_pdk_root(repo_root)
+    pdk_dir = pdk_root / PDK_NAME
+    targets = {
+        ".pdk-models": pdk_dir / "libs.tech/ngspice/models",
+        ".pdk-stdcell": pdk_dir / "libs.ref/sg13g2_stdcell/spice",
+        ".pdk-io": pdk_dir / "libs.ref/sg13g2_io/spice",
+    }
+    desired = {name: str(target.resolve()) for name, target in targets.items() if target.is_dir()}
+    osdi_dir = pdk_dir / "libs.tech/ngspice/osdi"
+    for path in sorted(osdi_dir.glob("*.osdi")):
+        if path.is_file() and is_osdi_compatible(path):
+            desired[f".osdi/{path.name}"] = str(path.resolve())
+
+    user_init = Path(os.environ.get("SPICE_USERINIT_DIR", str(Path.home()))) / ".spiceinit"
+    if not user_init.is_file():
+        user_init = Path.home() / ".spiceinit"
+    if user_init.is_file() and user_init.resolve() != spiceinit.resolve():
+        desired[".user-spiceinit"] = str(user_init.resolve())
+
+    owned = previous.get("links", {})
+    for name in set(owned) | set(desired):
+        if name not in {*targets, ".user-spiceinit"} and not (
+            Path(name).parent == Path(".osdi") and Path(name).suffix == ".osdi"
+        ):
+            raise ValueError(f"Invalid managed simulation path: {name}")
+        path = sim_dir / name
+        if path.parent != sim_dir and path.parent.is_symlink():
+            raise FileExistsError(f"Refusing to traverse custom simulation symlink: {path.parent}")
+        if path.is_symlink() or path.exists():
+            if not path.is_symlink() or name not in owned or os.readlink(path) != owned[name]:
+                raise FileExistsError(f"Preserving custom simulation file: {path}")
+
+    for name in set(owned) | set(desired):
+        path = sim_dir / name
+        if path.is_symlink():
+            path.unlink()
+        if name in desired:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.symlink_to(desired[name])
+
+    lines = ["source .user-spiceinit"] if ".user-spiceinit" in desired else []
+    sp_paths = ["$sourcepath", *(name for name in targets if name in desired)]
+    lines.append(f"setcs sourcepath = ( {' '.join(sp_paths)} )")
+    lines.extend(f"osdi {name}" for name in sorted(desired) if name.startswith(".osdi/"))
+    content = "\n".join(lines) + "\n"
+    spiceinit.write_text(content, encoding="utf-8")
+    marker.write_text(json.dumps({
+        "version": 1,
+        "links": desired,
+        "sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+    }) + "\n", encoding="utf-8")
+    return spiceinit
+
+
+def cmd_setup(repo_root: Path) -> int:
+    try:
+        proc = subprocess.run(
+            ["git", "submodule", "status", "--recursive"],
+            cwd=str(repo_root),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        sys.stderr.write(f"Error al verificar estado de submódulos: {e.stderr.strip()}\n")
+        return 1
+    except FileNotFoundError:
+        sys.stderr.write("Error: No se encontró el comando 'git'.\n")
+        return 1
+
+    for line in proc.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        status_char = line[0]
+        if status_char == "-":
+            continue
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        sub_rel_path = parts[1]
+        sub_full_path = repo_root / sub_rel_path
+        if sub_full_path.is_dir():
+            status_proc = subprocess.run(
+                ["git", "-C", str(sub_full_path), "status", "--porcelain"],
+                cwd=str(repo_root),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            if status_proc.returncode == 0 and status_proc.stdout.strip():
+                sys.stderr.write(
+                    f"Error: El submódulo '{sub_rel_path}' tiene cambios no confirmados en su árbol de trabajo.\n"
+                    "Operación cancelada para preservar los cambios locales del equipo.\n"
+                )
+                return 1
+
+    try:
+        subprocess.run(
+            ["git", "submodule", "update", "--init", "--recursive"],
+            cwd=str(repo_root),
+            check=True,
+        )
+        print("Submódulos inicializados y actualizados correctamente según los gitlinks registrados.")
+    except subprocess.CalledProcessError as e:
+        sys.stderr.write(f"Error al actualizar los submódulos: {e}\n")
+        return 1
+
+    return cmd_install_hooks(repo_root)
+
+
+def cmd_check_paths(repo_root: Path, staged: bool = False) -> int:
+    checker = repo_root / "scripts" / "check_xschem_paths.py"
+    if not checker.is_file():
+        sys.stderr.write(f"Error: Script verificador no encontrado: {checker}\n")
+        return 1
+    cmd = [sys.executable, str(checker)]
+    if staged:
+        cmd.append("--staged")
+    proc = subprocess.run(cmd, cwd=str(repo_root))
+    return proc.returncode
+
+
+def cmd_install_hooks(repo_root: Path) -> int:
+    src_hook = repo_root / ".githooks" / "pre-commit"
+    if not src_hook.is_file():
+        sys.stderr.write(f"Error: Archivo de hook no encontrado: {src_hook}\n")
+        return 1
+
+    if not os.access(src_hook, os.X_OK):
+        sys.stderr.write(f"Error: {src_hook} no es ejecutable.\n")
+        return 1
+
+    try:
+        proc_hp = subprocess.run(
+            ["git", "config", "core.hooksPath"],
+            cwd=str(repo_root),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        sys.stderr.write(f"Error al verificar git config: {e}\n")
+        return 1
+
+    if proc_hp.returncode not in (0, 1):
+        sys.stderr.write(f"Error al consultar git config (código {proc_hp.returncode}): {proc_hp.stderr.strip()}\n")
+        return 1
+
+    if proc_hp.returncode == 0 and proc_hp.stdout.strip():
+        hooks_path_val = proc_hp.stdout.strip()
+        configured_hp = Path(hooks_path_val).expanduser()
+        if not configured_hp.is_absolute():
+            configured_hp = (repo_root / configured_hp).resolve()
+        else:
+            configured_hp = configured_hp.resolve()
+        project_githooks = (repo_root / ".githooks").resolve()
+        if configured_hp == project_githooks:
+            if not os.access(src_hook, os.X_OK):
+                sys.stderr.write(f"Error: core.hooksPath apunta a {project_githooks} pero {src_hook} no es ejecutable.\n")
+                return 1
+            print(f"core.hooksPath ya configurado hacia {project_githooks}.")
+            return 0
+        chaining = 'python3 "$(git rev-parse --show-toplevel)/scripts/check_xschem_paths.py" --staged'
+        sys.stderr.write(
+            f"Aviso: core.hooksPath personalizado activo ({hooks_path_val}). No se modificará el directorio compartido/global.\n"
+            f"Integración manual requerida: agregue la siguiente invocación a su hook pre-commit:\n"
+            f"  {chaining}\n"
+        )
+        return 1
+
+    hooks_dir = None
+    try:
+        proc_gp = subprocess.run(
+            ["git", "rev-parse", "--git-path", "hooks"],
+            cwd=str(repo_root),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
+        )
+        hooks_path_out = proc_gp.stdout.strip()
+        if hooks_path_out:
+            p = Path(hooks_path_out)
+            hooks_dir = p.resolve() if p.is_absolute() else (repo_root / p).resolve()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+
+    if hooks_dir is None:
+        try:
+            proc_common = subprocess.run(
+                ["git", "rev-parse", "--git-common-dir"],
+                cwd=str(repo_root),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+            )
+            common_out = proc_common.stdout.strip()
+            if common_out:
+                p = Path(common_out)
+                common_dir = p.resolve() if p.is_absolute() else (repo_root / p).resolve()
+                hooks_dir = (common_dir / "hooks").resolve()
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            sys.stderr.write(f"Error al descubrir directorio de hooks: {e}\n")
+            return 1
+
+    if hooks_dir is None:
+        sys.stderr.write("Error: No se pudo determinar el directorio de hooks de git.\n")
+        return 1
+
+    try:
+        hooks_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        sys.stderr.write(f"Error al crear directorio de hooks {hooks_dir}: {e}\n")
+        return 1
+
+    target_hook = hooks_dir / "pre-commit"
+    if target_hook.is_symlink():
+        chaining = 'python3 "$(git rev-parse --show-toplevel)/scripts/check_xschem_paths.py" --staged'
+        sys.stderr.write(
+            f"Aviso: Se detectó un enlace simbólico en {target_hook}. No se modificará.\n"
+            f"Para integrar la verificación de rutas, agregue el siguiente comando a su hook:\n"
+            f"  {chaining}\n"
+        )
+        return 1
+
+    if target_hook.exists():
+        if not target_hook.is_file():
+            sys.stderr.write(f"Error: {target_hook} no es un archivo regular.\n")
+            return 1
+        try:
+            src_bytes = src_hook.read_bytes()
+            target_bytes = target_hook.read_bytes()
+        except OSError as e:
+            sys.stderr.write(f"Error al leer archivos de hook: {e}\n")
+            return 1
+
+        if src_bytes == target_bytes:
+            if not os.access(target_hook, os.X_OK):
+                try:
+                    target_hook.chmod(target_hook.stat().st_mode | 0o755)
+                except OSError as e:
+                    sys.stderr.write(f"Error al otorgar permisos de ejecución a {target_hook}: {e}\n")
+                    return 1
+                if not os.access(target_hook, os.X_OK):
+                    sys.stderr.write(f"Error: {target_hook} no es ejecutable.\n")
+                    return 1
+            print(f"Hook pre-commit ya se encuentra instalado y actualizado en {target_hook}.")
+            return 0
+
+        chaining = 'python3 "$(git rev-parse --show-toplevel)/scripts/check_xschem_paths.py" --staged'
+        sys.stderr.write(
+            f"Aviso: Se encontró un hook pre-commit existente y diferente en {target_hook}.\n"
+            "No se sobreescribirá el hook existente.\n"
+            f"Para integrar la verificación de rutas, agregue el siguiente comando a su hook:\n"
+            f"  {chaining}\n"
+        )
+        return 1
+
+    try:
+        src_bytes = src_hook.read_bytes()
+        with open(target_hook, "xb") as f:
+            f.write(src_bytes)
+        target_hook.chmod(target_hook.stat().st_mode | 0o755)
+    except (FileExistsError, OSError) as e:
+        sys.stderr.write(f"Error al escribir hook en {target_hook}: {e}\n")
+        return 1
+
+    print(f"Hook pre-commit instalado exitosamente en {target_hook}.")
+    return 0
+
+
+def cmd_doctor(repo_root: Path) -> int:
+    success = True
+    print("Verificando entorno EDA en CDR4176...")
+
+    if os.environ.get("EDA_CONTAINER_ACTIVE") == "1":
+        print("[OK] Backend: distrobox (dentro del contenedor iic-osic-tools2)")
+    elif get_designs_host_root() in repo_root.parents or get_designs_host_root() == repo_root:
+        print(f"[OK] Backend: start_x.sh / IIC-OSIC-TOOLS (montado desde {get_designs_host_root()})")
+    else:
+        print("[INFO] Backend: ejecución nativa (--native / EDA_NATIVE=1) o fuera de un contenedor conocido")
+
+    ok, msg = check_submodules_clean_and_aligned(repo_root)
+    if ok:
+        print("[OK] Submódulos: Inicializados, limpios y alineados con los gitlinks registrados.")
+    else:
+        print(f"[FALLO] Submódulos: {msg}")
+        sys.stderr.write(f"{SUBMODULE_GUIDE}\n")
+        success = False
+
+    env = get_eda_env(repo_root)
+    try:
+        xschem_proc = subprocess.run(
+            ["xschem", "--version"],
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        combined = (xschem_proc.stdout or "") + (xschem_proc.stderr or "")
+        ver_lines = [line.strip() for line in combined.splitlines() if "xschem" in line.lower() or "version" in line.lower()]
+        ver_text = ver_lines[0] if ver_lines else combined.strip().splitlines()[-1] if combined.strip() else "Detectado"
+        if xschem_proc.returncode == 0:
+            print(f"[OK] Xschem: {ver_text}")
+        else:
+            print(f"[FALLO] Xschem retornó error (código {xschem_proc.returncode}): {combined.strip()}")
+            success = False
+    except FileNotFoundError:
+        print("[FALLO] Xschem: No se encontró el ejecutable 'xschem'.")
+        success = False
+
+    rcfile = repo_root / "xschemrc"
+    if rcfile.is_file():
+        print(f"[OK] xschemrc: Configuración presente en {rcfile}")
+    else:
+        print(f"[AVISO] xschemrc: No presente en {rcfile}")
+
+    pdk_dir = get_pdk_root(repo_root)
+    if pdk_dir.is_dir():
+        print(f"[OK] PDK_ROOT: {pdk_dir}")
+    else:
+        print(f"[FALLO] PDK_ROOT: Directorio {pdk_dir} inexistente.")
+        success = False
+
+    io_dir = repo_root / "openpdk-libraries" / PDK_NAME / "sg13g2_io" / "xschem"
+    if io_dir.is_dir():
+        print(f"[OK] IO_LIBRARY_PATH: {io_dir}")
+    else:
+        print(f"[FALLO] IO_LIBRARY_PATH: Directorio {io_dir} inexistente.")
+        success = False
+
+    klib = repo_root / "klayout" / "libraries" / "sg13g2_stdcell.gds"
+    if klib.exists():
+        print(f"[OK] KLayout stdcell symlink: {klib}")
+    else:
+        print(f"[FALLO] KLayout stdcell symlink inexistente o roto: {klib}")
+        success = False
+
+    if success:
+        print("Doctor: Todas las verificaciones pasaron exitosamente.")
+        return 0
+    else:
+        sys.stderr.write("Doctor: Se detectaron problemas en el entorno.\n")
+        return 1
+
+
+def cmd_open(schematic_arg: str, repo_root: Path) -> int:
+    ok, msg = check_submodules_clean_and_aligned(repo_root)
+    if not ok:
+        sys.stderr.write(f"Error en verificación de submódulos: {msg}\n{SUBMODULE_GUIDE}\n")
+        return 1
+
+    target_path, err = resolve_schematic(schematic_arg, repo_root)
+    if not target_path:
+        sys.stderr.write(f"Error: {err}\n")
+        return 1
+
+    rcfile = (repo_root / "xschemrc").resolve()
+    if not rcfile.is_file():
+        sys.stderr.write(f"Error: Archivo de configuración xschemrc no encontrado en {rcfile}\n")
+        return 1
+
+    sim_dir = (repo_root / "CDR4176-main" / "simulation").resolve()
+    init_simulation_directory(sim_dir, repo_root)
+
+    env = get_eda_env(repo_root)
+    cmd = [
+        "xschem",
+        "--rcfile",
+        str(rcfile),
+        str(target_path),
+    ]
+    try:
+        proc = subprocess.run(cmd, cwd=str(repo_root), env=env)
+        return proc.returncode
+    except FileNotFoundError:
+        sys.stderr.write("Error: No se encontró el ejecutable 'xschem'.\n")
+        return 1
+
+
+def cmd_netlist(schematic_arg: str, lvs: bool, repo_root: Path) -> int:
+    ok, msg = check_submodules_clean_and_aligned(repo_root)
+    if not ok:
+        sys.stderr.write(f"Error en verificación de submódulos: {msg}\n{SUBMODULE_GUIDE}\n")
+        return 1
+
+    target_path, err = resolve_schematic(schematic_arg, repo_root)
+    if not target_path:
+        sys.stderr.write(f"Error: {err}\n")
+        return 1
+
+    rcfile = (repo_root / "xschemrc").resolve()
+    if not rcfile.is_file():
+        sys.stderr.write(f"Error: Archivo de configuración xschemrc no encontrado en {rcfile}\n")
+        return 1
+
+    stem = target_path.stem
+    out_dir = (repo_root / "CDR4176-main" / "simulation" / stem).resolve()
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_file = out_dir / f"{stem}.spice"
+
+    if out_file.exists():
+        out_file.unlink()
+
+    if lvs:
+        preinit_parts = [
+            "set no_sim_init 1",
+            f"set netlist_dir {{{str(out_dir)}}}",
+            "set local_netlist_dir 0",
+            "set lvs_netlist 1",
+            "set spiceprefix 0",
+        ]
+    else:
+        init_simulation_directory(out_dir, repo_root)
+        preinit_parts = [
+            f"set netlist_dir {{{str(out_dir)}}}",
+            "set local_netlist_dir 0",
+            "set lvs_netlist 0",
+        ]
+
+    preinit = "; ".join(preinit_parts)
+
+    cmd = [
+        "xschem",
+        "-n",
+        "-s",
+        "-x",
+        "-q",
+        "--rcfile",
+        str(rcfile),
+        "--preinit",
+        preinit,
+        "-o",
+        str(out_dir),
+        str(target_path),
+    ]
+
+    env = get_eda_env(repo_root)
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(repo_root),
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except FileNotFoundError:
+        sys.stderr.write("Error: No se encontró el ejecutable 'xschem'.\n")
+        return 1
+
+    combined_output = (proc.stdout or "") + "\n" + (proc.stderr or "")
+
+    error_indicators = [
+        "symbol not found",
+        "is missing !!!!",
+        "unable to open file",
+        "error:",
+        "evaluation of script",
+    ]
+    has_error_in_logs = any(ind in combined_output.lower() for ind in error_indicators)
+
+    if proc.returncode != 0 or has_error_in_logs:
+        sys.stderr.write("Error durante la generación de netlist con Xschem:\n")
+        if combined_output.strip():
+            sys.stderr.write(f"{combined_output.strip()}\n")
+        if out_file.exists():
+            out_file.unlink()
+        return 1
+
+    if not out_file.is_file() or out_file.stat().st_size == 0:
+        sys.stderr.write(f"Error: No se generó el archivo de netlist esperado o está vacío: {out_file}\n")
+        return 1
+
+    try:
+        content = out_file.read_text(encoding="utf-8", errors="replace")
+    except Exception as e:
+        sys.stderr.write(f"Error al leer el archivo generado {out_file}: {e}\n")
+        return 1
+
+    netlist_error_indicators = [
+        "is missing",
+        "missing !!!!",
+    ]
+    if any(ind in content.lower() for ind in netlist_error_indicators):
+        sys.stderr.write(f"Error: La netlist generada en {out_file} contiene símbolos no resueltos o componentes faltantes.\n")
+        out_file.unlink()
+        return 1
+
+    print(f"Netlist generada exitosamente en: {out_file}")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
+
+    parser = argparse.ArgumentParser(
+        prog="eda",
+        description="Herramienta CLI para automatización del flujo EDA en PhaseInterpolator (CDR4176).",
+    )
+    parser.add_argument(
+        "--native",
+        action="store_true",
+        default=False,
+        help="Ejecuta los comandos EDA directamente en el host sin usar un contenedor.",
+    )
+    subparsers = parser.add_subparsers(dest="command", metavar="COMANDO")
+
+    p_setup = subparsers.add_parser(
+        "setup",
+        help="Inicializa o restaura submódulos de git según los punteros registrados.",
+    )
+    p_setup.add_argument("--native", action="store_true", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
+
+    p_doctor = subparsers.add_parser(
+        "doctor",
+        help="Verifica el estado del entorno EDA, submódulos y herramientas.",
+    )
+    p_doctor.add_argument("--native", action="store_true", default=argparse.SUPPRESS, help="Ejecuta directamente en el host.")
+
+    p_open = subparsers.add_parser(
+        "open",
+        help="Abre un esquemático en la interfaz gráfica de Xschem.",
+    )
+    p_open.add_argument(
+        "schematic",
+        nargs="?",
+        default=DEFAULT_SCHEMATIC,
+        help=f"Ruta al archivo esquemático (.sch). Por defecto: {DEFAULT_SCHEMATIC}.",
+    )
+    p_open.add_argument("--native", action="store_true", default=argparse.SUPPRESS, help="Ejecuta directamente en el host.")
+
+    p_netlist = subparsers.add_parser(
+        "netlist",
+        help="Genera la netlist SPICE a partir de un esquemático.",
+    )
+    p_netlist.add_argument(
+        "schematic",
+        nargs="?",
+        default=DEFAULT_SCHEMATIC,
+        help=f"Ruta al archivo esquemático (.sch). Por defecto: {DEFAULT_SCHEMATIC}.",
+    )
+    p_netlist.add_argument(
+        "--lvs",
+        action="store_true",
+        help="Configurar netlist para LVS (lvs_netlist=1, spiceprefix=0).",
+    )
+    p_netlist.add_argument("--native", action="store_true", default=argparse.SUPPRESS, help="Ejecuta directamente en el host.")
+
+    p_check_paths = subparsers.add_parser(
+        "check-paths",
+        help="Verifica la portabilidad de rutas en esquemáticos y símbolos de Xschem.",
+    )
+    p_check_paths.add_argument(
+        "--staged",
+        action="store_true",
+        default=False,
+        help="Verifica únicamente los archivos en el área de preparación (staged).",
+    )
+    p_check_paths.add_argument("--native", action="store_true", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
+
+    p_install_hooks = subparsers.add_parser(
+        "install-hooks",
+        help="Instala el hook pre-commit de git para verificar rutas.",
+    )
+    p_install_hooks.add_argument("--native", action="store_true", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
+
+    p_initsim = subparsers.add_parser(
+        "init-sim",
+        help="Inicializa el entorno de simulación local en un directorio.",
+    )
+    p_initsim.add_argument("sim_dir", help="Directorio de simulación")
+    p_initsim.add_argument("--native", action="store_true", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
+
+    args = parser.parse_args(argv)
+
+    if not args.command:
+        parser.print_help()
+        return 1
+
+    repo_root = get_repo_root()
+
+    if args.command == "setup":
+        return cmd_setup(repo_root)
+    elif args.command == "check-paths":
+        return cmd_check_paths(repo_root, staged=args.staged)
+    elif args.command == "install-hooks":
+        return cmd_install_hooks(repo_root)
+    elif args.command == "init-sim":
+        target_dir = Path(args.sim_dir).resolve()
+        init_simulation_directory(target_dir, repo_root)
+        return 0
+
+    is_native = is_inside_container_or_native(getattr(args, "native", False))
+    if not is_native:
+        forwarded = [a for a in argv if a != "--native"]
+        return reexec_in_container(forwarded)
+
+    if args.command == "doctor":
+        return cmd_doctor(repo_root)
+    elif args.command == "open":
+        return cmd_open(args.schematic, repo_root)
+    elif args.command == "netlist":
+        return cmd_netlist(args.schematic, args.lvs, repo_root)
+
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

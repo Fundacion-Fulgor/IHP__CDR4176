@@ -1,0 +1,289 @@
+** sch_path: CDR4176-main/testbenches/tran/xschem/tb_linearity_8xPI_top.sch
+**.subckt tb_linearity_8xPI_top
+Vin3 vinI GND dc 0 ac 0 pulse(0, 1.2, 0, 25p, 25p, 225p, 500p)
+Vin4 vinQ GND dc 0 ac 0 pulse(0, 1.2, 125p, 25p, 25p, 225p, 500p )
+Vin5 vinIB GND dc 0 ac 0 pulse(0, 1.2, 250p, 25p, 25p, 225p, 500p )
+Vin6 vinQB GND dc 0 ac 0 pulse(0, 1.2, 375p, 25p, 25p, 225p, 500p )
+x4 VDD vinI VoutI1 VoutQ1 vinQ vinIB VoutIB1 vinQB VoutQB1 VSS 4to4
+Vdd4 VDD VSS 1.2
+Vdd1 v1 VSS dc 0 ac 0 pulse(0, 1.2, 40n, 25p, 25p, 40n, 80n)
+Vdd2 v0 VSS dc 0 ac 0 pulse(0, 1.2, 20n, 25p, 25p, 40n, 80n)
+Vdd3 VSS GND 0
+x1 VoutI1 VoutIB1 VoutQ1 VoutQB1 v1 v0 vXOR v6_st v5_st v4_st v3_st v2_st v1_st v0_st Vout VDD VSS 8xPI
+C1 Vout VSS 25f m=1
+x2 VoutI2 VoutIB2 VoutQ2 VoutQB2 VSS VSS VSS VSS VSS VSS VSS VSS VSS VSS Vout8I VDD VSS 8xPI
+C2 Vout8I VSS 25f m=1
+Vdd5 v1_st VSS dc 0 ac 0 pulse(0, 1.2, 15n, 25p, 25p, 5n, 20n)
+Vdd6 v0_st VSS dc 0 ac 0 pulse(0, 1.2, 17.5n, 25p, 25p, 2.5n, 20n)
+Vdd7 v3_st VSS dc 0 ac 0 pulse(0, 1.2, 10n, 25p, 25p, 10n, 20n)
+Vdd8 v2_st VSS dc 0 ac 0 pulse(0, 1.2, 12.5n, 25p, 25p, 7.5n, 20n)
+Vdd9 v5_st VSS dc 0 ac 0 pulse(0, 1.2, 5n, 25p, 25p, 15n, 20n)
+Vdd10 v4_st VSS dc 0 ac 0 pulse(0, 1.2, 7.5n, 25p, 25p, 12.5n, 20n)
+Vdd11 v6_st VSS dc 0 ac 0 pulse(0, 1.2, 2.5n, 25p, 25p, 17.5n, 20n)
+x3 VDD vinI VoutI2 VoutQ2 vinQ vinIB VoutIB2 vinQB VoutQB2 VSS 4to4
+Vdd12 vXOR VSS dc 0 ac 0 pulse(0, 1.2, 20n, 25p, 25p, 20n, 40n)
+**** begin user architecture code
+
+
+
+* Circuit Parameters
+.param vdd = 1.2
+.param vss = 0.0
+.param a=0
+.param b=0
+.param c=0
+.param d=1
+.param Tclk = 500P
+.options TEMP = 27.0
+
+* Include Models
+*.lib /opt/pdks/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib mos_tt
+*.lib /opt/pdks/ihp-sg13g2/libs.tech/ngspice/models/cornerMOShv.lib mos_tt
+*.lib /opt/pdks/ihp-sg13g2/libs.tech/ngspice/models/cornerHBT.lib hbt_typ
+*.lib /opt/pdks/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ
+.lib cornerMOSlv.lib mos_tt
+
+
+* OP Parameters & Singals to save
+.save all
+
+*Simulations
+.control
+set output_path = tb_linearity_8xpi/
+	tran 5PS 80NS
+	*setplot tran1
+	*plot v0 v1+1.5 v0_st+3 v6_st+4.5 Vout+6 Vout8I+7.5 ylabel vout xlabel vin
+	set filetype = ascii
+	write {$output_path}tran_linearity_termoless.raw V(Vout) V(Vout8I) V(vinI) V(VoutI1) V(VoutI2) V(VoutQ1) V(VoutIB1) V(VoutQB1)
+.endc
+.end
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  CDR4176-main/schematic/xschem/4to4/4to4.sym # of pins=10
+** sym_path: CDR4176-main/schematic/xschem/4to4/4to4.sym
+** sch_path: CDR4176-main/schematic/xschem/4to4/4to4.sch
+.subckt 4to4 VDD VINI VOUTI VOUTQ VINQ VINIB VOUTIB VINQB VOUTQB VSS
+*.iopin VDD
+*.iopin VSS
+*.ipin VINI
+*.ipin VINQ
+*.ipin VINIB
+*.ipin VINQB
+*.opin VOUTI
+*.opin VOUTQ
+*.opin VOUTIB
+*.opin VOUTQB
+x0[7] VDD net4[7] VINI VSS inv
+x0[6] VDD net4[6] VINI VSS inv
+x0[5] VDD net4[5] VINI VSS inv
+x0[4] VDD net4[4] VINI VSS inv
+x0[3] VDD net4[3] VINI VSS inv
+x0[2] VDD net4[2] VINI VSS inv
+x0[1] VDD net4[1] VINI VSS inv
+x0[0] VDD net4[0] VINI VSS inv
+x1[7] VDD net3[7] VINQ VSS inv
+x1[6] VDD net3[6] VINQ VSS inv
+x1[5] VDD net3[5] VINQ VSS inv
+x1[4] VDD net3[4] VINQ VSS inv
+x1[3] VDD net3[3] VINQ VSS inv
+x1[2] VDD net3[2] VINQ VSS inv
+x1[1] VDD net3[1] VINQ VSS inv
+x1[0] VDD net3[0] VINQ VSS inv
+x2[7] VDD net1[7] VINIB VSS inv
+x2[6] VDD net1[6] VINIB VSS inv
+x2[5] VDD net1[5] VINIB VSS inv
+x2[4] VDD net1[4] VINIB VSS inv
+x2[3] VDD net1[3] VINIB VSS inv
+x2[2] VDD net1[2] VINIB VSS inv
+x2[1] VDD net1[1] VINIB VSS inv
+x2[0] VDD net1[0] VINIB VSS inv
+x3[7] VDD net2[7] VINQB VSS inv
+x3[6] VDD net2[6] VINQB VSS inv
+x3[5] VDD net2[5] VINQB VSS inv
+x3[4] VDD net2[4] VINQB VSS inv
+x3[3] VDD net2[3] VINQB VSS inv
+x3[2] VDD net2[2] VINQB VSS inv
+x3[1] VDD net2[1] VINQB VSS inv
+x3[0] VDD net2[0] VINQB VSS inv
+x4[15] VDD VOUTI net4[7] VSS inv
+x4[14] VDD VOUTI net4[6] VSS inv
+x4[13] VDD VOUTI net4[5] VSS inv
+x4[12] VDD VOUTI net4[4] VSS inv
+x4[11] VDD VOUTI net4[3] VSS inv
+x4[10] VDD VOUTI net4[2] VSS inv
+x4[9] VDD VOUTI net4[1] VSS inv
+x4[8] VDD VOUTI net4[0] VSS inv
+x4[7] VDD VOUTI net4[7] VSS inv
+x4[6] VDD VOUTI net4[6] VSS inv
+x4[5] VDD VOUTI net4[5] VSS inv
+x4[4] VDD VOUTI net4[4] VSS inv
+x4[3] VDD VOUTI net4[3] VSS inv
+x4[2] VDD VOUTI net4[2] VSS inv
+x4[1] VDD VOUTI net4[1] VSS inv
+x4[0] VDD VOUTI net4[0] VSS inv
+x5[15] VDD VOUTQ net3[7] VSS inv
+x5[14] VDD VOUTQ net3[6] VSS inv
+x5[13] VDD VOUTQ net3[5] VSS inv
+x5[12] VDD VOUTQ net3[4] VSS inv
+x5[11] VDD VOUTQ net3[3] VSS inv
+x5[10] VDD VOUTQ net3[2] VSS inv
+x5[9] VDD VOUTQ net3[1] VSS inv
+x5[8] VDD VOUTQ net3[0] VSS inv
+x5[7] VDD VOUTQ net3[7] VSS inv
+x5[6] VDD VOUTQ net3[6] VSS inv
+x5[5] VDD VOUTQ net3[5] VSS inv
+x5[4] VDD VOUTQ net3[4] VSS inv
+x5[3] VDD VOUTQ net3[3] VSS inv
+x5[2] VDD VOUTQ net3[2] VSS inv
+x5[1] VDD VOUTQ net3[1] VSS inv
+x5[0] VDD VOUTQ net3[0] VSS inv
+x6[15] VDD VOUTIB net1[7] VSS inv
+x6[14] VDD VOUTIB net1[6] VSS inv
+x6[13] VDD VOUTIB net1[5] VSS inv
+x6[12] VDD VOUTIB net1[4] VSS inv
+x6[11] VDD VOUTIB net1[3] VSS inv
+x6[10] VDD VOUTIB net1[2] VSS inv
+x6[9] VDD VOUTIB net1[1] VSS inv
+x6[8] VDD VOUTIB net1[0] VSS inv
+x6[7] VDD VOUTIB net1[7] VSS inv
+x6[6] VDD VOUTIB net1[6] VSS inv
+x6[5] VDD VOUTIB net1[5] VSS inv
+x6[4] VDD VOUTIB net1[4] VSS inv
+x6[3] VDD VOUTIB net1[3] VSS inv
+x6[2] VDD VOUTIB net1[2] VSS inv
+x6[1] VDD VOUTIB net1[1] VSS inv
+x6[0] VDD VOUTIB net1[0] VSS inv
+x7[15] VDD VOUTQB net2[7] VSS inv
+x7[14] VDD VOUTQB net2[6] VSS inv
+x7[13] VDD VOUTQB net2[5] VSS inv
+x7[12] VDD VOUTQB net2[4] VSS inv
+x7[11] VDD VOUTQB net2[3] VSS inv
+x7[10] VDD VOUTQB net2[2] VSS inv
+x7[9] VDD VOUTQB net2[1] VSS inv
+x7[8] VDD VOUTQB net2[0] VSS inv
+x7[7] VDD VOUTQB net2[7] VSS inv
+x7[6] VDD VOUTQB net2[6] VSS inv
+x7[5] VDD VOUTQB net2[5] VSS inv
+x7[4] VDD VOUTQB net2[4] VSS inv
+x7[3] VDD VOUTQB net2[3] VSS inv
+x7[2] VDD VOUTQB net2[2] VSS inv
+x7[1] VDD VOUTQB net2[1] VSS inv
+x7[0] VDD VOUTQB net2[0] VSS inv
+.ends
+
+
+* expanding   symbol:  CDR4176-main/schematic/xschem/8xPI/8xPI.sym # of pins=9
+** sym_path: CDR4176-main/schematic/xschem/8xPI/8xPI.sym
+** sch_path: CDR4176-main/schematic/xschem/8xPI/8xPI.sch
+.subckt 8xPI VINI VINIB VINQ VINQB VS[1] VS[0] VST[7] VST[6] VST[5] VST[4] VST[3] VST[2] VST[1] VST[0] VOUT VDD VSS
+*.ipin VINI
+*.ipin VINQ
+*.ipin VINIB
+*.ipin VINQB
+*.iopin VDD
+*.iopin VSS
+*.opin VOUT
+*.ipin VS[1],VS[0]
+*.ipin VST[7],VST[6],VST[5],VST[4],VST[3],VST[2],VST[1],VST[0]
+x1[7] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[7] MUX_4_1
+x1[6] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[6] MUX_4_1
+x1[5] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[5] MUX_4_1
+x1[4] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[4] MUX_4_1
+x1[3] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[3] MUX_4_1
+x1[2] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[2] MUX_4_1
+x1[1] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[1] MUX_4_1
+x1[0] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[0] MUX_4_1
+x2 VDD net2 net1 VSS inv
+x3[1] VDD net3[1] net2 VSS inv
+x3[0] VDD net3[0] net2 VSS inv
+x4[3] VDD net4[3] net3[1] VSS inv
+x4[2] VDD net4[2] net3[0] VSS inv
+x4[1] VDD net4[1] net3[1] VSS inv
+x4[0] VDD net4[0] net3[0] VSS inv
+x5[7] VDD VOUT net4[3] VSS inv
+x5[6] VDD VOUT net4[2] VSS inv
+x5[5] VDD VOUT net4[1] VSS inv
+x5[4] VDD VOUT net4[0] VSS inv
+x5[3] VDD VOUT net4[3] VSS inv
+x5[2] VDD VOUT net4[2] VSS inv
+x5[1] VDD VOUT net4[1] VSS inv
+x5[0] VDD VOUT net4[0] VSS inv
+.ends
+
+
+* expanding   symbol:  CDR4176-main/schematic/xschem/inv/inv.sym # of pins=4
+** sym_path: CDR4176-main/schematic/xschem/inv/inv.sym
+** sch_path: CDR4176-main/schematic/xschem/inv/inv.sch
+.subckt inv VDD VOUT VIN VSS
+*.iopin VDD
+*.iopin VSS
+*.opin VOUT
+*.ipin VIN
+XM2 VOUT VIN VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=3
+XM1 VOUT VIN VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=2
+.ends
+
+
+* expanding   symbol:  CDR4176-main/schematic/xschem/MUX_4_1/MUX_4_1.sym # of pins=9
+** sym_path: CDR4176-main/schematic/xschem/MUX_4_1/MUX_4_1.sym
+** sch_path: CDR4176-main/schematic/xschem/MUX_4_1/MUX_4_1.sch
+.subckt MUX_4_1 VINA VINB VDD VOUT VS[1] VS[0] VINC VSS VIND VST
+*.opin VOUT
+*.iopin VDD
+*.iopin VSS
+*.ipin VINA
+*.ipin VINB
+*.ipin VINC
+*.ipin VIND
+*.ipin VS[1],VS[0]
+*.ipin VST
+x3 VDD VINC net2 VS[1] VIND VSS MUX_2_1
+x4 VDD VINA net1 VS[0] VINB VSS MUX_2_1
+x5 VDD net1 VOUT VST net2 VSS MUX_2_1
+.ends
+
+
+* expanding   symbol:  CDR4176-main/schematic/xschem/MUX_2_1/MUX_2_1.sym # of pins=6
+** sym_path: CDR4176-main/schematic/xschem/MUX_2_1/MUX_2_1.sym
+** sch_path: CDR4176-main/schematic/xschem/MUX_2_1/MUX_2_1.sch
+.subckt MUX_2_1 VDD VINA VOUT VS VINB VSS
+*.opin VOUT
+*.ipin VINA
+*.ipin VINB
+*.ipin VS
+*.iopin VDD
+*.iopin VSS
+x1 VOUT net1 VS net2 VDD VSS tg_custom
+x2 VOUT VS net1 net3 VDD VSS tg_custom
+x3 VDD net1 VS VSS inv
+x4 VDD net2 VINA VSS inv
+x5 VDD net3 VINB VSS inv
+x6[3] VOUT VSS VDD net2 VDD VSS tg_custom
+x6[2] VOUT VSS VDD net2 VDD VSS tg_custom
+x6[1] VOUT VSS VDD net2 VDD VSS tg_custom
+x6[0] VOUT VSS VDD net2 VDD VSS tg_custom
+x7[3] VOUT VSS VDD net3 VDD VSS tg_custom
+x7[2] VOUT VSS VDD net3 VDD VSS tg_custom
+x7[1] VOUT VSS VDD net3 VDD VSS tg_custom
+x7[0] VOUT VSS VDD net3 VDD VSS tg_custom
+.ends
+
+
+* expanding   symbol:  CDR4176-main/schematic/xschem/tg_custom/tg_custom.sym # of pins=6
+** sym_path: CDR4176-main/schematic/xschem/tg_custom/tg_custom.sym
+** sch_path: CDR4176-main/schematic/xschem/tg_custom/tg_custom.sch
+.subckt tg_custom VOUT VSN VSP VIN VBP VBN
+*.iopin VIN
+*.iopin VSN
+*.iopin VOUT
+*.iopin VSP
+*.iopin VBN
+*.iopin VBP
+XM1 VOUT VSN VIN VBN sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+XM2 VOUT VSP VIN VBP sg13_lv_pmos w=0.15u l=0.13u ng=1 m=2
+.ends
+
+.GLOBAL GND
+.end

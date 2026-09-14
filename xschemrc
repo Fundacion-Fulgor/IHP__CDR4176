@@ -1,25 +1,83 @@
-set SCRIPT_DIR [file dirname [file normalize [info script]]]
+set REPO_DIR [file dirname [file normalize [info script]]]
+set SCRIPT_DIR $REPO_DIR
 set env(PDK) ihp-sg13g2
-if {![info exists env(PDK_ROOT)] || ![file exists $env(PDK_ROOT)/$env(PDK)/libs.tech/xschem/xschemrc]} {
-    set env(PDK_ROOT) $SCRIPT_DIR/IHP-Open-PDK
+set PDK $env(PDK)
+
+if {![info exists env(PDK_ROOT)] || ![file exists [file join $env(PDK_ROOT) $PDK libs.tech xschem xschemrc]]} {
+    set env(PDK_ROOT) [file join $REPO_DIR IHP-Open-PDK]
 }
 set PDK_ROOT $env(PDK_ROOT)
-set PDK $env(PDK)
-if {![file exists $PDK_ROOT/$PDK/libs.tech/xschem/xschemrc]} {
-    puts "ERROR: IHP-Open-PDK is unavailable."
-    puts "Set PDK_ROOT or run: git submodule update --init --recursive"
+
+if {![file exists [file join $PDK_ROOT $PDK libs.tech xschem xschemrc]]} {
+    puts stderr "ERROR: IHP-Open-PDK is unavailable."
+    puts stderr "Set PDK_ROOT or run: git submodule update --init --recursive"
     exit 1
 }
-set IO_LIBRARY_PATH $SCRIPT_DIR/openpdk-libraries/ihp-sg13g2/sg13g2_io/xschem
+
+if {[info exists env(IO_LIBRARY_PATH)] && [file isdirectory $env(IO_LIBRARY_PATH)]} {
+    set IO_LIBRARY_PATH $env(IO_LIBRARY_PATH)
+} else {
+    set IO_LIBRARY_PATH [file join $REPO_DIR openpdk-libraries ihp-sg13g2 sg13g2_io xschem]
+}
 if {![file isdirectory $IO_LIBRARY_PATH]} {
-    puts "ERROR: openpdk-libraries is unavailable."
-    puts "Run: git submodule update --init --recursive"
+    puts stderr "ERROR: openpdk-libraries is unavailable."
+    puts stderr "Run: git submodule update --init --recursive"
     exit 1
 }
-source $PDK_ROOT/$PDK/libs.tech/xschem/xschemrc
-append XSCHEM_LIBRARY_PATH :$SCRIPT_DIR/design
-append XSCHEM_LIBRARY_PATH :$PDK_ROOT/$PDK/libs.ref/sg13g2_pr/xschem
-append XSCHEM_LIBRARY_PATH :$PDK_ROOT/$PDK/libs.ref/sg13g2_stdcell/sym/xschem
-append XSCHEM_LIBRARY_PATH :$IO_LIBRARY_PATH
-append XSCHEM_LIBRARY_PATH :$PDK_ROOT/$PDK/libs.tech/xschem/sg13g2_pr
-set local_netlist_dir 1
+
+proc init_simulation_dir {sim_dir repo_dir} {
+    set eda_script [file join $repo_dir eda]
+    if {![file exists $eda_script]} {
+        error "Missing project simulation helper: $eda_script"
+    }
+    if {[catch {exec python3 $eda_script init-sim $sim_dir} message]} {
+        error "Cannot initialize ngspice directory $sim_dir: $message"
+    }
+}
+
+if {![info exists XSCHEM_SHAREDIR]} {
+    set XSCHEM_SHAREDIR ""
+}
+if {![info exists USER_CONF_DIR]} {
+    set USER_CONF_DIR [file normalize ~/.xschem]
+}
+
+set _has_explicit_netlist_dir [info exists netlist_dir]
+if {$_has_explicit_netlist_dir} {
+    set _explicit_netlist_dir $netlist_dir
+}
+
+source [file join $PDK_ROOT $PDK libs.tech xschem xschemrc]
+
+if {$_has_explicit_netlist_dir} {
+    set netlist_dir $_explicit_netlist_dir
+} else {
+    set netlist_dir [file join $REPO_DIR CDR4176-main simulation]
+}
+set local_netlist_dir 0
+if {![info exists no_sim_init] || !$no_sim_init} {
+    init_simulation_dir $netlist_dir $REPO_DIR
+}
+
+set main_sch_dir [file join $REPO_DIR CDR4176-main schematic xschem]
+if {[file isdirectory $main_sch_dir]} {
+    append XSCHEM_LIBRARY_PATH :$main_sch_dir
+    foreach cell_dir [glob -nocomplain -type d [file join $main_sch_dir *]] {
+        set cell_name [file tail $cell_dir]
+        if {$cell_name ne "project_io"} {
+            append XSCHEM_LIBRARY_PATH :$cell_dir
+        }
+    }
+}
+
+set tb_sch_dir [file join $REPO_DIR CDR4176-main testbenches tran xschem]
+if {[file isdirectory $tb_sch_dir]} {
+    append XSCHEM_LIBRARY_PATH :$tb_sch_dir
+}
+
+append XSCHEM_LIBRARY_PATH :[file join $PDK_ROOT $PDK libs.ref sg13g2_pr xschem]
+append XSCHEM_LIBRARY_PATH :[file join $PDK_ROOT $PDK libs.ref sg13g2_stdcell sym xschem]
+if {[file isdirectory $IO_LIBRARY_PATH]} {
+    append XSCHEM_LIBRARY_PATH :$IO_LIBRARY_PATH
+}
+append XSCHEM_LIBRARY_PATH :[file join $PDK_ROOT $PDK libs.tech xschem sg13g2_pr]

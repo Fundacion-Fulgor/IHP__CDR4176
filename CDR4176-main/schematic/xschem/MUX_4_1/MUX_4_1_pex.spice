@@ -1,0 +1,794 @@
+* NGSPICE file created from MUX_4_1.ext - technology: ihp-sg13g2
+
+.subckt MUX_4_1_pex VINA VINB VDD VOUT VS[1] VS[0] VINC VSS VIND VST
+X0 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.tg_custom_6.VSN.t1 MUX_2_1_2.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X1 MUX_2_1_2.inv_PI_0.VOUT VINA.t0 VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X2 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.tg_custom_6.VSP.t1 MUX_2_1_0.tg_custom_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X3 MUX_2_1_0.VINB MUX_2_1_1.tg_custom_6.VSP.t1 MUX_2_1_1.tg_custom_2.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X4 a_10276_981# a_10276_981# VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X5 VDD VINA.t0 MUX_2_1_2.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=55.5f ps=0.74u w=0.15u l=0.13u
+X6 MUX_2_1_2.inv_PI_0.VOUT MUX_2_1_2.tg_custom_6.VSP.t1 MUX_2_1_2.tg_custom_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X7 MUX_2_1_2.tg_custom_2.VOUT MUX_2_1_2.tg_custom_4.VSP MUX_2_1_2.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X8 MUX_2_1_1.tg_custom_2.VOUT VS[1].t0 MUX_2_1_1.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X9 MUX_2_1_1.inv_PI_0.VOUT VINC.t0 VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X10 MUX_2_1_1.tg_custom_6.VOUT MUX_2_1_1.tg_custom_4.VSP MUX_2_1_1.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X11 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.tg_custom_4.VSP MUX_2_1_2.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X12 MUX_2_1_0.inv_PI_0.VOUT MUX_2_1_0.VINA VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X13 MUX_2_1_0.tg_custom_2.VOUT MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X14 VSS VINA.t0 MUX_2_1_2.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X15 MUX_2_1_0.tg_custom_4.VSP VST.t0 VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X16 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X17 VOUT.t3 MUX_2_1_0.tg_custom_6.VSN.t1 MUX_2_1_0.tg_custom_2.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X18 MUX_2_1_0.tg_custom_6.VSP.t0 a_13178_1682# VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X19 MUX_2_1_1.inv_PI_1.VOUT MUX_2_1_1.tg_custom_6.VSP.t2 MUX_2_1_1.tg_custom_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X20 VSS MUX_2_1_0.VINA MUX_2_1_0.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X21 VDD VIND.t0 MUX_2_1_1.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=55.5f ps=0.74u w=0.15u l=0.13u
+X22 MUX_2_1_1.tg_custom_6.VSN.t0 a_10276_280# VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X23 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.VINB VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X24 MUX_2_1_0.VINA MUX_2_1_2.tg_custom_6.VSP.t2 MUX_2_1_2.tg_custom_6.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X25 MUX_2_1_2.tg_custom_6.VSN.t0 a_10276_1682# VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X26 MUX_2_1_2.tg_custom_2.VOUT MUX_2_1_2.tg_custom_6.VSN.t2 MUX_2_1_2.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X27 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.tg_custom_6.VSN.t1 MUX_2_1_0.VINB VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X28 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.tg_custom_6.VSP.t3 MUX_2_1_1.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X29 MUX_2_1_2.tg_custom_4.VSP VS[0].t0 VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X30 MUX_2_1_1.inv_PI_1.VOUT MUX_2_1_1.tg_custom_4.VSP MUX_2_1_1.tg_custom_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X31 MUX_2_1_0.VINB MUX_2_1_1.tg_custom_6.VSN.t2 MUX_2_1_1.tg_custom_6.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X32 MUX_2_1_2.tg_custom_2.VOUT VS[0].t1 MUX_2_1_2.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X33 MUX_2_1_0.inv_PI_0.VOUT VST.t1 MUX_2_1_0.tg_custom_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X34 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_0.tg_custom_6.VSN.t2 MUX_2_1_0.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X35 MUX_2_1_1.inv_PI_0.VOUT VINC.t0 VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X36 MUX_2_1_1.inv_PI_0.VOUT VS[1].t1 MUX_2_1_1.tg_custom_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X37 MUX_2_1_2.inv_PI_1.VOUT VINB.t0 VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X38 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.tg_custom_6.VSP.t3 MUX_2_1_2.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X39 MUX_2_1_1.inv_PI_1.VOUT VIND.t0 VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X40 MUX_2_1_1.inv_PI_1.VOUT VIND.t0 VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X41 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_0.tg_custom_6.VSP.t1 MUX_2_1_0.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X42 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.VINB VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X43 MUX_2_1_1.tg_custom_6.VOUT MUX_2_1_1.tg_custom_6.VSP.t4 MUX_2_1_1.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X44 MUX_2_1_0.tg_custom_2.VOUT VST.t2 MUX_2_1_0.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X45 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.tg_custom_6.VSP.t2 MUX_2_1_0.tg_custom_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X46 MUX_2_1_1.tg_custom_6.VOUT MUX_2_1_1.tg_custom_6.VSN.t2 MUX_2_1_0.VINB VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X47 MUX_2_1_0.inv_PI_0.VOUT MUX_2_1_0.VINA VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X48 MUX_2_1_1.tg_custom_4.VSP VS[1].t2 VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X49 a_10276_2383# a_10276_2383# VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X50 MUX_2_1_0.VINA MUX_2_1_2.tg_custom_6.VSP.t4 MUX_2_1_2.tg_custom_2.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X51 MUX_2_1_0.VINB MUX_2_1_1.tg_custom_6.VSN.t1 MUX_2_1_1.tg_custom_2.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X52 MUX_2_1_1.tg_custom_6.VSP.t0 a_10276_981# VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X53 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.tg_custom_4.VSP MUX_2_1_1.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X54 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.tg_custom_6.VSN.t3 MUX_2_1_0.VINA VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X55 MUX_2_1_0.tg_custom_2.VOUT MUX_2_1_0.tg_custom_6.VSN.t3 MUX_2_1_0.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X56 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.tg_custom_6.VSP.t5 MUX_2_1_2.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X57 MUX_2_1_2.inv_PI_1.VOUT VINB.t0 VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X58 MUX_2_1_2.inv_PI_0.VOUT VINA.t0 VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X59 MUX_2_1_2.tg_custom_2.VOUT VS[0].t2 MUX_2_1_2.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X60 VOUT.t0 MUX_2_1_0.tg_custom_6.VSP.t3 MUX_2_1_0.tg_custom_6.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X61 MUX_2_1_0.tg_custom_6.VSN.t0 a_13178_981# VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X62 MUX_2_1_1.inv_PI_1.VOUT MUX_2_1_1.tg_custom_6.VSP.t4 MUX_2_1_1.tg_custom_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X63 MUX_2_1_1.inv_PI_0.VOUT VS[1].t0 MUX_2_1_1.tg_custom_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X64 MUX_2_1_2.inv_PI_1.VOUT MUX_2_1_2.tg_custom_4.VSP MUX_2_1_2.tg_custom_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X65 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.tg_custom_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X66 MUX_2_1_1.tg_custom_6.VOUT MUX_2_1_1.tg_custom_6.VSN.t3 MUX_2_1_1.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X67 VDD MUX_2_1_0.VINB MUX_2_1_0.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=55.5f ps=0.74u w=0.15u l=0.13u
+X68 MUX_2_1_0.tg_custom_2.VOUT VST.t1 MUX_2_1_0.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X69 MUX_2_1_0.inv_PI_0.VOUT MUX_2_1_0.VINA VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X70 MUX_2_1_0.tg_custom_4.VSP VST.t0 VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X71 a_10276_280# a_10276_280# VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X72 MUX_2_1_1.inv_PI_0.VOUT VINC.t0 VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X73 MUX_2_1_0.inv_PI_0.VOUT MUX_2_1_0.tg_custom_6.VSP.t4 MUX_2_1_0.tg_custom_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X74 MUX_2_1_2.tg_custom_2.VOUT MUX_2_1_2.tg_custom_6.VSN.t4 MUX_2_1_0.VINA VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X75 MUX_2_1_2.tg_custom_6.VOUT VS[0].t3 MUX_2_1_2.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X76 MUX_2_1_2.tg_custom_2.VOUT MUX_2_1_2.tg_custom_6.VSP.t1 MUX_2_1_2.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X77 VDD VINC.t0 MUX_2_1_1.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=55.5f ps=0.74u w=0.15u l=0.13u
+X78 MUX_2_1_1.inv_PI_0.VOUT MUX_2_1_1.tg_custom_6.VSP.t3 MUX_2_1_1.tg_custom_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X79 MUX_2_1_1.tg_custom_6.VOUT VS[1].t3 MUX_2_1_1.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X80 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.tg_custom_4.VSP MUX_2_1_1.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X81 VOUT.t1 MUX_2_1_0.tg_custom_6.VSP.t5 MUX_2_1_0.tg_custom_2.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X82 a_13178_1682# a_13178_1682# VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X83 MUX_2_1_0.VINA MUX_2_1_2.tg_custom_6.VSN.t3 MUX_2_1_2.tg_custom_6.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X84 a_10276_1682# a_10276_1682# VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X85 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_0.tg_custom_6.VSN.t4 VOUT.t2 VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X86 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_0.tg_custom_6.VSP.t2 MUX_2_1_0.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X87 MUX_2_1_2.inv_PI_0.VOUT VINA.t0 VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X88 MUX_2_1_2.inv_PI_0.VOUT VS[0].t1 MUX_2_1_2.tg_custom_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X89 MUX_2_1_0.tg_custom_6.VOUT VST.t3 MUX_2_1_0.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X90 VSS VINC.t0 MUX_2_1_1.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X91 MUX_2_1_2.inv_PI_1.VOUT MUX_2_1_2.tg_custom_6.VSP.t3 MUX_2_1_2.tg_custom_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X92 MUX_2_1_0.inv_PI_0.VOUT VST.t2 MUX_2_1_0.tg_custom_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X93 VDD MUX_2_1_0.VINA MUX_2_1_0.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=55.5f ps=0.74u w=0.15u l=0.13u
+X94 MUX_2_1_1.inv_PI_1.VOUT VIND.t0 VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X95 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.tg_custom_6.VSN.t4 MUX_2_1_1.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X96 MUX_2_1_2.tg_custom_4.VSP VS[0].t0 VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X97 MUX_2_1_1.tg_custom_4.VSP VS[1].t2 VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X98 MUX_2_1_2.inv_PI_1.VOUT VINB.t0 VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X99 MUX_2_1_2.tg_custom_6.VSP.t0 a_10276_2383# VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X100 MUX_2_1_0.VINA MUX_2_1_2.tg_custom_6.VSN.t4 MUX_2_1_2.tg_custom_2.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X101 MUX_2_1_0.VINB MUX_2_1_1.tg_custom_6.VSP.t5 MUX_2_1_1.tg_custom_6.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X102 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.tg_custom_6.VSN.t5 MUX_2_1_2.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X103 MUX_2_1_2.tg_custom_2.VOUT MUX_2_1_2.tg_custom_4.VSP MUX_2_1_2.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X104 MUX_2_1_1.tg_custom_2.VOUT VS[1].t1 MUX_2_1_1.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X105 VDD VINB.t0 MUX_2_1_2.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=55.5f ps=0.74u w=0.15u l=0.13u
+X106 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.VINB VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X107 MUX_2_1_2.inv_PI_1.VOUT MUX_2_1_2.tg_custom_6.VSP.t5 MUX_2_1_2.tg_custom_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X108 MUX_2_1_0.tg_custom_2.VOUT MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.inv_PI_0.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X109 VSS VINB.t0 MUX_2_1_2.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X110 VOUT.t2 MUX_2_1_0.tg_custom_6.VSN.t4 MUX_2_1_0.tg_custom_6.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X111 a_13178_981# a_13178_981# VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X112 MUX_2_1_0.tg_custom_2.VOUT MUX_2_1_0.tg_custom_6.VSN.t1 VOUT.t3 VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X113 MUX_2_1_0.tg_custom_2.VOUT MUX_2_1_0.tg_custom_6.VSP.t4 MUX_2_1_0.inv_PI_0.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X114 MUX_2_1_2.inv_PI_0.VOUT VS[0].t2 MUX_2_1_2.tg_custom_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X115 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_0.tg_custom_6.VSN.t5 MUX_2_1_0.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X116 MUX_2_1_1.tg_custom_6.VOUT MUX_2_1_1.tg_custom_6.VSN.t5 MUX_2_1_1.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X117 VSS VIND.t0 MUX_2_1_1.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X118 MUX_2_1_1.tg_custom_6.VOUT MUX_2_1_1.tg_custom_6.VSP.t2 MUX_2_1_1.inv_PI_1.VOUT VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X119 VSS MUX_2_1_0.VINB MUX_2_1_0.inv_PI_1.VOUT VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+R0 MUX_2_1_2.tg_custom_6.VSN.n1 MUX_2_1_2.tg_custom_6.VSN 36.9663
+R1 MUX_2_1_2.tg_custom_6.VSN.n0 MUX_2_1_2.tg_custom_6.VSN 27.9685
+R2 MUX_2_1_2.tg_custom_6.VSN.n2 MUX_2_1_2.tg_custom_6.VSN 27.0005
+R3 MUX_2_1_2.tg_custom_6.VSN.n0 MUX_2_1_2.tg_custom_6.VSN 27.0005
+R4 MUX_2_1_2.tg_custom_6.VSN.n3 MUX_2_1_2.tg_custom_6.VSN 18.6611
+R5 MUX_2_1_2.tg_custom_6.VSN.n4 MUX_2_1_2.tg_custom_6.VSN.n3 18.3649
+R6 MUX_2_1_2.tg_custom_6.VSN.n4 MUX_2_1_2.tg_custom_6.VSN.t0 17.0005
+R7 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_6.VSN.t1 15.0005
+R8 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_6.VSN.t3 15.0005
+R9 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_6.VSN.t2 15.0005
+R10 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_6.VSN.t4 15.0005
+R11 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_6.VSN.t5 15.0005
+R12 MUX_2_1_2.tg_custom_6.VSN.n1 MUX_2_1_2.tg_custom_6.VSN.n0 10.0641
+R13 MUX_2_1_2.tg_custom_6.VSN.n3 MUX_2_1_2.tg_custom_6.VSN.n2 9.8101
+R14 MUX_2_1_2.tg_custom_6.VSN.n2 MUX_2_1_2.tg_custom_6.VSN.n1 9.0005
+R15 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_6.VSN.n4 0.0108125
+R16 VINA.n0 VINA.t0 15.0005
+R17 VINA.n0 VINA 9.52166
+R18 VINA VINA.n0 0.0225
+R19 MUX_2_1_0.tg_custom_6.VSP.n0 MUX_2_1_0.tg_custom_6.VSP 64.0301
+R20 MUX_2_1_0.tg_custom_6.VSP.n1 MUX_2_1_0.tg_custom_6.VSP 46.0301
+R21 MUX_2_1_0.tg_custom_6.VSP.n3 MUX_2_1_0.tg_custom_6.VSP.n2 37.0641
+R22 MUX_2_1_0.tg_custom_6.VSP MUX_2_1_0.tg_custom_6.VSP.t0 17.0177
+R23 MUX_2_1_0.tg_custom_6.VSP MUX_2_1_0.tg_custom_6.VSP.t1 15.0005
+R24 MUX_2_1_0.tg_custom_6.VSP MUX_2_1_0.tg_custom_6.VSP.t2 15.0005
+R25 MUX_2_1_0.tg_custom_6.VSP MUX_2_1_0.tg_custom_6.VSP.t3 15.0005
+R26 MUX_2_1_0.tg_custom_6.VSP MUX_2_1_0.tg_custom_6.VSP.t4 15.0005
+R27 MUX_2_1_0.tg_custom_6.VSP MUX_2_1_0.tg_custom_6.VSP.t5 15.0005
+R28 MUX_2_1_0.tg_custom_6.VSP.n2 MUX_2_1_0.tg_custom_6.VSP 9.66547
+R29 MUX_2_1_0.tg_custom_6.VSP.n4 MUX_2_1_0.tg_custom_6.VSP.n3 9.53876
+R30 MUX_2_1_0.tg_custom_6.VSP.n1 MUX_2_1_0.tg_custom_6.VSP 9.0005
+R31 MUX_2_1_0.tg_custom_6.VSP.n0 MUX_2_1_0.tg_custom_6.VSP 9.0005
+R32 MUX_2_1_0.tg_custom_6.VSP.n2 MUX_2_1_0.tg_custom_6.VSP.n1 0.7749
+R33 MUX_2_1_0.tg_custom_6.VSP.n3 MUX_2_1_0.tg_custom_6.VSP.n0 0.7749
+R34 MUX_2_1_0.tg_custom_6.VSP MUX_2_1_0.tg_custom_6.VSP.n4 0.1105
+R35 MUX_2_1_0.tg_custom_6.VSP.n4 MUX_2_1_0.tg_custom_6.VSP 0.0726875
+R36 MUX_2_1_0.tg_custom_6.VSP.n4 MUX_2_1_0.tg_custom_6.VSP 0.0555
+R37 MUX_2_1_1.tg_custom_6.VSP.n0 MUX_2_1_1.tg_custom_6.VSP 64.0301
+R38 MUX_2_1_1.tg_custom_6.VSP.n1 MUX_2_1_1.tg_custom_6.VSP 46.0301
+R39 MUX_2_1_1.tg_custom_6.VSP.n3 MUX_2_1_1.tg_custom_6.VSP.n2 37.0641
+R40 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_6.VSP.t0 17.0177
+R41 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_6.VSP.t2 15.0005
+R42 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_6.VSP.t4 15.0005
+R43 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_6.VSP.t5 15.0005
+R44 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_6.VSP.t3 15.0005
+R45 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_6.VSP.t1 15.0005
+R46 MUX_2_1_1.tg_custom_6.VSP.n2 MUX_2_1_1.tg_custom_6.VSP 9.66547
+R47 MUX_2_1_1.tg_custom_6.VSP.n4 MUX_2_1_1.tg_custom_6.VSP.n3 9.53876
+R48 MUX_2_1_1.tg_custom_6.VSP.n1 MUX_2_1_1.tg_custom_6.VSP 9.0005
+R49 MUX_2_1_1.tg_custom_6.VSP.n0 MUX_2_1_1.tg_custom_6.VSP 9.0005
+R50 MUX_2_1_1.tg_custom_6.VSP.n2 MUX_2_1_1.tg_custom_6.VSP.n1 0.7749
+R51 MUX_2_1_1.tg_custom_6.VSP.n3 MUX_2_1_1.tg_custom_6.VSP.n0 0.7749
+R52 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_6.VSP.n4 0.1105
+R53 MUX_2_1_1.tg_custom_6.VSP.n4 MUX_2_1_1.tg_custom_6.VSP 0.0726875
+R54 MUX_2_1_1.tg_custom_6.VSP.n4 MUX_2_1_1.tg_custom_6.VSP 0.0555
+R55 MUX_2_1_2.tg_custom_6.VSP.n0 MUX_2_1_2.tg_custom_6.VSP 64.0301
+R56 MUX_2_1_2.tg_custom_6.VSP.n1 MUX_2_1_2.tg_custom_6.VSP 46.0301
+R57 MUX_2_1_2.tg_custom_6.VSP.n3 MUX_2_1_2.tg_custom_6.VSP.n2 37.0641
+R58 MUX_2_1_2.tg_custom_6.VSP MUX_2_1_2.tg_custom_6.VSP.t0 17.0177
+R59 MUX_2_1_2.tg_custom_6.VSP MUX_2_1_2.tg_custom_6.VSP.t3 15.0005
+R60 MUX_2_1_2.tg_custom_6.VSP MUX_2_1_2.tg_custom_6.VSP.t5 15.0005
+R61 MUX_2_1_2.tg_custom_6.VSP MUX_2_1_2.tg_custom_6.VSP.t2 15.0005
+R62 MUX_2_1_2.tg_custom_6.VSP MUX_2_1_2.tg_custom_6.VSP.t1 15.0005
+R63 MUX_2_1_2.tg_custom_6.VSP MUX_2_1_2.tg_custom_6.VSP.t4 15.0005
+R64 MUX_2_1_2.tg_custom_6.VSP.n2 MUX_2_1_2.tg_custom_6.VSP 9.66547
+R65 MUX_2_1_2.tg_custom_6.VSP.n4 MUX_2_1_2.tg_custom_6.VSP.n3 9.53876
+R66 MUX_2_1_2.tg_custom_6.VSP.n1 MUX_2_1_2.tg_custom_6.VSP 9.0005
+R67 MUX_2_1_2.tg_custom_6.VSP.n0 MUX_2_1_2.tg_custom_6.VSP 9.0005
+R68 MUX_2_1_2.tg_custom_6.VSP.n2 MUX_2_1_2.tg_custom_6.VSP.n1 0.7749
+R69 MUX_2_1_2.tg_custom_6.VSP.n3 MUX_2_1_2.tg_custom_6.VSP.n0 0.7749
+R70 MUX_2_1_2.tg_custom_6.VSP MUX_2_1_2.tg_custom_6.VSP.n4 0.1105
+R71 MUX_2_1_2.tg_custom_6.VSP.n4 MUX_2_1_2.tg_custom_6.VSP 0.0726875
+R72 MUX_2_1_2.tg_custom_6.VSP.n4 MUX_2_1_2.tg_custom_6.VSP 0.0555
+R73 VS[1].n2 VS[1] 49.0942
+R74 VS[1] VS[1].n3 27.9069
+R75 VS[1].n3 VS[1] 27.0005
+R76 VS[1].n1 VS[1].n0 18.0005
+R77 VS[1].n0 VS[1].t2 15.0005
+R78 VS[1] VS[1].t3 15.0005
+R79 VS[1] VS[1].t1 15.0005
+R80 VS[1] VS[1].t0 15.0005
+R81 VS[1].n2 VS[1].n1 9.0005
+R82 VS[1].n3 VS[1].n2 2.40396
+R83 VS[1].n1 VS[1] 0.173241
+R84 VS[1].n0 VS[1] 0.0151667
+R85 VINC.n0 VINC.t0 15.0005
+R86 VINC.n0 VINC 9.52166
+R87 VINC VINC.n0 0.0225
+R88 VST.n2 VST 49.0942
+R89 VST VST.n3 27.9069
+R90 VST.n3 VST 27.0005
+R91 VST.n0 VST.t0 15.0005
+R92 VST VST.t3 15.0005
+R93 VST VST.t2 15.0005
+R94 VST VST.t1 15.0005
+R95 VST.n1 VST.n0 13.5274
+R96 VST.n2 VST.n1 9.08525
+R97 VST.n2 VST 4.53004
+R98 VST.n3 VST.n2 2.40396
+R99 VST.n1 VST 0.087878
+R100 VST.n0 VST 0.0151667
+R101 MUX_2_1_0.tg_custom_6.VSN.n1 MUX_2_1_0.tg_custom_6.VSN 36.9663
+R102 MUX_2_1_0.tg_custom_6.VSN.n0 MUX_2_1_0.tg_custom_6.VSN 27.9685
+R103 MUX_2_1_0.tg_custom_6.VSN.n2 MUX_2_1_0.tg_custom_6.VSN 27.0005
+R104 MUX_2_1_0.tg_custom_6.VSN.n0 MUX_2_1_0.tg_custom_6.VSN 27.0005
+R105 MUX_2_1_0.tg_custom_6.VSN.n3 MUX_2_1_0.tg_custom_6.VSN 18.6611
+R106 MUX_2_1_0.tg_custom_6.VSN.n4 MUX_2_1_0.tg_custom_6.VSN.n3 18.3649
+R107 MUX_2_1_0.tg_custom_6.VSN.n4 MUX_2_1_0.tg_custom_6.VSN.t0 17.0005
+R108 MUX_2_1_0.tg_custom_6.VSN MUX_2_1_0.tg_custom_6.VSN.t2 15.0005
+R109 MUX_2_1_0.tg_custom_6.VSN MUX_2_1_0.tg_custom_6.VSN.t4 15.0005
+R110 MUX_2_1_0.tg_custom_6.VSN MUX_2_1_0.tg_custom_6.VSN.t3 15.0005
+R111 MUX_2_1_0.tg_custom_6.VSN MUX_2_1_0.tg_custom_6.VSN.t1 15.0005
+R112 MUX_2_1_0.tg_custom_6.VSN MUX_2_1_0.tg_custom_6.VSN.t5 15.0005
+R113 MUX_2_1_0.tg_custom_6.VSN.n1 MUX_2_1_0.tg_custom_6.VSN.n0 10.0641
+R114 MUX_2_1_0.tg_custom_6.VSN.n3 MUX_2_1_0.tg_custom_6.VSN.n2 9.8101
+R115 MUX_2_1_0.tg_custom_6.VSN.n2 MUX_2_1_0.tg_custom_6.VSN.n1 9.0005
+R116 MUX_2_1_0.tg_custom_6.VSN MUX_2_1_0.tg_custom_6.VSN.n4 0.0108125
+R117 VOUT.n4 VOUT.n3 18.2997
+R118 VOUT.n5 VOUT.n4 18.2987
+R119 VOUT VOUT.t2 17.7739
+R120 VOUT VOUT.t3 17.7739
+R121 VOUT.n3 VOUT.t0 17.0005
+R122 VOUT.n5 VOUT.t1 17.0005
+R123 VOUT.n2 VOUT 0.3525
+R124 VOUT.n6 VOUT 0.3525
+R125 VOUT.n1 VOUT 0.162063
+R126 VOUT.n0 VOUT 0.162063
+R127 VOUT.n1 VOUT 0.15175
+R128 VOUT.n0 VOUT 0.15175
+R129 VOUT.n4 VOUT 0.112944
+R130 VOUT.n3 VOUT.n1 0.0403276
+R131 VOUT.n3 VOUT.n2 0.0403276
+R132 VOUT.n5 VOUT.n0 0.0403276
+R133 VOUT.n6 VOUT.n5 0.0403276
+R134 VOUT.n2 VOUT 0.00998276
+R135 VOUT VOUT.n6 0.00998276
+R136 VIND.n0 VIND.t0 15.0005
+R137 VIND.n0 VIND 9.52166
+R138 VIND VIND.n0 0.0225
+R139 MUX_2_1_1.tg_custom_6.VSN.n1 MUX_2_1_1.tg_custom_6.VSN 36.9663
+R140 MUX_2_1_1.tg_custom_6.VSN.n0 MUX_2_1_1.tg_custom_6.VSN 27.9685
+R141 MUX_2_1_1.tg_custom_6.VSN.n2 MUX_2_1_1.tg_custom_6.VSN 27.0005
+R142 MUX_2_1_1.tg_custom_6.VSN.n0 MUX_2_1_1.tg_custom_6.VSN 27.0005
+R143 MUX_2_1_1.tg_custom_6.VSN.n3 MUX_2_1_1.tg_custom_6.VSN 18.6611
+R144 MUX_2_1_1.tg_custom_6.VSN.n4 MUX_2_1_1.tg_custom_6.VSN.n3 18.3649
+R145 MUX_2_1_1.tg_custom_6.VSN.n4 MUX_2_1_1.tg_custom_6.VSN.t0 17.0005
+R146 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.tg_custom_6.VSN.t5 15.0005
+R147 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.tg_custom_6.VSN.t2 15.0005
+R148 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.tg_custom_6.VSN.t4 15.0005
+R149 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.tg_custom_6.VSN.t1 15.0005
+R150 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.tg_custom_6.VSN.t3 15.0005
+R151 MUX_2_1_1.tg_custom_6.VSN.n1 MUX_2_1_1.tg_custom_6.VSN.n0 10.0641
+R152 MUX_2_1_1.tg_custom_6.VSN.n3 MUX_2_1_1.tg_custom_6.VSN.n2 9.8101
+R153 MUX_2_1_1.tg_custom_6.VSN.n2 MUX_2_1_1.tg_custom_6.VSN.n1 9.0005
+R154 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.tg_custom_6.VSN.n4 0.0108125
+R155 VS[0].n2 VS[0] 49.0942
+R156 VS[0] VS[0].n3 27.9069
+R157 VS[0].n3 VS[0] 27.0005
+R158 VS[0].n1 VS[0].n0 18.0005
+R159 VS[0].n0 VS[0].t0 15.0005
+R160 VS[0] VS[0].t3 15.0005
+R161 VS[0] VS[0].t1 15.0005
+R162 VS[0] VS[0].t2 15.0005
+R163 VS[0].n2 VS[0].n1 9.0005
+R164 VS[0].n3 VS[0].n2 2.40396
+R165 VS[0].n1 VS[0] 0.173241
+R166 VS[0].n0 VS[0] 0.0151667
+R167 VINB.n0 VINB.t0 15.0005
+R168 VINB.n0 VINB 9.52166
+R169 VINB VINB.n0 0.0225
+C0 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.tg_custom_6.VSN 0.20859f
+C1 a_12582_1576# VDD -0
+C2 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.inv_PI_0.VOUT 0.75631f
+C3 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_4.VSP 0.03351f
+C4 MUX_2_1_1.tg_custom_6.VSN VIND 0
+C5 MUX_2_1_0.tg_custom_4.VSP VDD 0.65753f
+C6 MUX_2_1_2.tg_custom_6.VOUT a_10802_1576# -0
+C7 VS[0] VINC 0.00482f
+C8 VINC VINB 0.0569f
+C9 VINA MUX_2_1_2.tg_custom_2.VOUT 0.00187f
+C10 MUX_2_1_0.tg_custom_6.VSN VST 0.0304f
+C11 MUX_2_1_0.VINA MUX_2_1_2.inv_PI_1.VOUT 0.00609f
+C12 VS[0] MUX_2_1_2.inv_PI_0.VOUT 0.22053f
+C13 a_13178_981# MUX_2_1_0.tg_custom_6.VSP 0.05112f
+C14 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.tg_custom_6.VOUT 0.45581f
+C15 a_10802_174# MUX_2_1_1.tg_custom_6.VOUT -0
+C16 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.tg_custom_6.VSN 0.08394f
+C17 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_2.inv_PI_1.VOUT 0
+C18 VST VOUT 0
+C19 a_10276_1682# MUX_2_1_2.tg_custom_4.VSP 0
+C20 VS[0] MUX_2_1_1.inv_PI_1.VOUT 0.00129f
+C21 MUX_2_1_0.tg_custom_6.VOUT a_12582_875# -0
+C22 MUX_2_1_2.inv_PI_1.VOUT VDD 0.94022f
+C23 MUX_2_1_0.tg_custom_6.VOUT a_13292_875# -0
+C24 a_10276_2383# MUX_2_1_2.tg_custom_4.VSP 0.0206f
+C25 MUX_2_1_2.tg_custom_6.VOUT a_10276_981# 0
+C26 MUX_2_1_0.inv_PI_1.VOUT VOUT 0.00572f
+C27 VS[0] MUX_2_1_2.tg_custom_6.VSP 0.03177f
+C28 MUX_2_1_0.tg_custom_6.VOUT VST 0.12971f
+C29 VINB MUX_2_1_2.tg_custom_6.VSP 0
+C30 MUX_2_1_1.tg_custom_2.VOUT VST 0.00196f
+C31 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_1.tg_custom_4.VSP 0
+C32 VST MUX_2_1_2.tg_custom_2.VOUT 0.00291f
+C33 a_13178_981# MUX_2_1_0.tg_custom_6.VSN 0.06058f
+C34 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.tg_custom_6.VOUT 0.72287f
+C35 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_1.tg_custom_2.VOUT 0.00356f
+C36 MUX_2_1_1.tg_custom_2.VOUT VINC 0.00187f
+C37 VINC VIND 0.02923f
+C38 MUX_2_1_2.inv_PI_0.VOUT MUX_2_1_2.tg_custom_2.VOUT 0.75631f
+C39 a_13178_981# VOUT 0
+C40 MUX_2_1_2.tg_custom_6.VSN a_10276_1682# 0.06058f
+C41 a_10276_2383# MUX_2_1_2.tg_custom_6.VSN 0.00585f
+C42 a_10276_1682# MUX_2_1_1.inv_PI_0.VOUT 0
+C43 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.inv_PI_1.VOUT 0.09498f
+C44 a_10276_981# VDD 0.07502f
+C45 VIND MUX_2_1_1.inv_PI_1.VOUT 0.1844f
+C46 MUX_2_1_2.tg_custom_6.VOUT VS[0] 0.12982f
+C47 MUX_2_1_2.tg_custom_6.VOUT VINB 0.00439f
+C48 a_10276_2383# VINA 0
+C49 MUX_2_1_0.tg_custom_6.VOUT a_13178_981# 0.01265f
+C50 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_1.tg_custom_6.VSP 0
+C51 VDD a_9268_875# -0
+C52 MUX_2_1_0.VINA MUX_2_1_0.tg_custom_6.VSP 0
+C53 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.tg_custom_6.VSP 0.2252f
+C54 MUX_2_1_1.tg_custom_6.VSP VIND 0
+C55 MUX_2_1_1.tg_custom_4.VSP VDD 0.55329f
+C56 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_2.tg_custom_6.VSP 0.0057f
+C57 MUX_2_1_2.tg_custom_2.VOUT MUX_2_1_2.tg_custom_6.VSP 0.22974f
+C58 VDD a_12170_1576# -0
+C59 MUX_2_1_2.tg_custom_6.VSN a_10802_2277# 0
+C60 MUX_2_1_1.inv_PI_1.VOUT MUX_2_1_1.tg_custom_6.VOUT 0.72287f
+C61 MUX_2_1_0.inv_PI_0.VOUT MUX_2_1_0.tg_custom_2.VOUT 0.75631f
+C62 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.tg_custom_6.VSP 0.03144f
+C63 MUX_2_1_0.VINB VS[1] 0
+C64 a_12994_1576# MUX_2_1_0.tg_custom_2.VOUT -0
+C65 VS[1] MUX_2_1_2.tg_custom_4.VSP 0.039f
+C66 MUX_2_1_0.VINA VS[0] 0
+C67 MUX_2_1_0.tg_custom_6.VSP VDD 0.92546f
+C68 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_0.inv_PI_0.VOUT 0
+C69 a_9680_2277# MUX_2_1_2.tg_custom_2.VOUT -0
+C70 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_6.VOUT 0.26465f
+C71 VDD a_12170_875# -0
+C72 a_10276_1682# VST 0
+C73 MUX_2_1_0.VINB a_10276_280# 0
+C74 VS[0] VDD 0.95444f
+C75 MUX_2_1_0.inv_PI_0.VOUT a_13178_1682# 0.04339f
+C76 VDD VINB 0.32454f
+C77 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_1.tg_custom_2.VOUT 0.01974f
+C78 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.tg_custom_6.VSN 0.01511f
+C79 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.tg_custom_2.VOUT 0.01974f
+C80 MUX_2_1_0.VINB a_10802_875# -0
+C81 a_10276_2383# MUX_2_1_2.inv_PI_0.VOUT 0.04339f
+C82 MUX_2_1_0.tg_custom_6.VSN VDD 1.07222f
+C83 a_13292_1576# MUX_2_1_0.tg_custom_6.VSP -0
+C84 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_0.VINB 0
+C85 MUX_2_1_2.tg_custom_6.VSN VS[1] 0.01528f
+C86 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_4.VSP 0.01511f
+C87 VS[0] MUX_2_1_2.inv_PI_1.VOUT 0.04803f
+C88 MUX_2_1_2.inv_PI_1.VOUT VINB 0.1844f
+C89 MUX_2_1_0.VINB MUX_2_1_1.tg_custom_6.VSN 0.25162f
+C90 MUX_2_1_1.tg_custom_6.VSN VS[1] 0.02795f
+C91 a_13704_1576# MUX_2_1_0.tg_custom_2.VOUT -0
+C92 MUX_2_1_0.tg_custom_4.VSP VOUT 0.00102f
+C93 MUX_2_1_0.VINB MUX_2_1_1.inv_PI_0.VOUT 0
+C94 MUX_2_1_1.inv_PI_0.VOUT VS[1] 0.22058f
+C95 MUX_2_1_1.inv_PI_0.VOUT MUX_2_1_2.tg_custom_4.VSP 0.00171f
+C96 a_10390_2277# MUX_2_1_2.tg_custom_2.VOUT -0
+C97 MUX_2_1_0.VINA MUX_2_1_1.tg_custom_2.VOUT 0.00849f
+C98 MUX_2_1_0.inv_PI_0.VOUT VST 0.23883f
+C99 VS[1] VINA 0
+C100 VINA MUX_2_1_2.tg_custom_4.VSP 0.0755f
+C101 VDD VOUT 0.13555f
+C102 MUX_2_1_0.VINA MUX_2_1_2.tg_custom_2.VOUT 0.28725f
+C103 a_10276_981# MUX_2_1_1.tg_custom_4.VSP 0.01973f
+C104 a_10276_1682# MUX_2_1_1.tg_custom_6.VSP 0
+C105 a_10276_1682# MUX_2_1_2.tg_custom_6.VSP 0.05112f
+C106 MUX_2_1_2.tg_custom_6.VSN a_10276_280# 0
+C107 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.tg_custom_6.VOUT 0.03339f
+C108 MUX_2_1_0.inv_PI_0.VOUT MUX_2_1_0.inv_PI_1.VOUT 0.01617f
+C109 a_10276_2383# MUX_2_1_2.tg_custom_6.VSP 0.05743f
+C110 a_10276_280# MUX_2_1_1.tg_custom_6.VSN 0.06063f
+C111 MUX_2_1_0.tg_custom_6.VOUT VDD 0.37684f
+C112 MUX_2_1_1.tg_custom_2.VOUT VDD 0.39866f
+C113 VDD VIND 0.24958f
+C114 VDD MUX_2_1_2.tg_custom_2.VOUT 0.39632f
+C115 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_0.tg_custom_2.VOUT 0
+C116 a_9268_2277# VDD -0
+C117 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_1.tg_custom_6.VSN 0.01044f
+C118 a_10802_2277# MUX_2_1_2.tg_custom_6.VSP 0
+C119 MUX_2_1_0.VINB VST 0.04475f
+C120 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_1.inv_PI_0.VOUT 0.00414f
+C121 VDD MUX_2_1_1.tg_custom_6.VOUT 0.22934f
+C122 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.inv_PI_0.VOUT 0.00842f
+C123 MUX_2_1_2.inv_PI_1.VOUT MUX_2_1_2.tg_custom_2.VOUT 0.09498f
+C124 VDD a_9680_875# -0
+C125 MUX_2_1_0.tg_custom_2.VOUT a_13178_1682# 0.01839f
+C126 MUX_2_1_0.inv_PI_0.VOUT MUX_2_1_2.tg_custom_6.VSP 0
+C127 MUX_2_1_2.tg_custom_6.VOUT a_10276_1682# 0.01265f
+C128 MUX_2_1_0.VINB MUX_2_1_0.inv_PI_1.VOUT 0.18641f
+C129 MUX_2_1_2.tg_custom_6.VOUT a_9680_1576# -0
+C130 VS[0] MUX_2_1_1.tg_custom_4.VSP 0.00248f
+C131 VS[1] VINC 0.23243f
+C132 VINC MUX_2_1_2.tg_custom_4.VSP 0.00101f
+C133 MUX_2_1_1.tg_custom_4.VSP VINB 0
+C134 VS[1] MUX_2_1_2.inv_PI_0.VOUT 0
+C135 MUX_2_1_2.tg_custom_4.VSP MUX_2_1_2.inv_PI_0.VOUT 0.07155f
+C136 MUX_2_1_0.VINB MUX_2_1_1.inv_PI_1.VOUT 0.00587f
+C137 MUX_2_1_0.VINA a_10276_1682# 0.00113f
+C138 VS[1] MUX_2_1_1.inv_PI_1.VOUT 0.05123f
+C139 MUX_2_1_0.tg_custom_2.VOUT VST 0.0728f
+C140 MUX_2_1_1.tg_custom_2.VOUT a_10390_875# -0
+C141 a_10276_2383# MUX_2_1_0.VINA 0
+C142 MUX_2_1_0.VINB a_13178_981# 0
+C143 MUX_2_1_2.tg_custom_6.VSN VST 0.19988f
+C144 MUX_2_1_0.VINB MUX_2_1_1.tg_custom_6.VSP 0.25107f
+C145 MUX_2_1_1.tg_custom_6.VSP VS[1] 0.02417f
+C146 MUX_2_1_1.tg_custom_6.VSN VST 0.00399f
+C147 MUX_2_1_0.tg_custom_6.VSP MUX_2_1_0.tg_custom_6.VSN 2.88681f
+C148 MUX_2_1_0.VINB MUX_2_1_2.tg_custom_6.VSP 0
+C149 VS[1] MUX_2_1_2.tg_custom_6.VSP 0
+C150 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.tg_custom_2.VOUT 0.09498f
+C151 MUX_2_1_1.inv_PI_0.VOUT VST 0
+C152 MUX_2_1_2.tg_custom_4.VSP MUX_2_1_2.tg_custom_6.VSP 0.05928f
+C153 VS[0] VINB 0.03273f
+C154 MUX_2_1_1.tg_custom_2.VOUT a_10276_981# 0.01839f
+C155 a_10276_280# MUX_2_1_1.inv_PI_1.VOUT 0.06167f
+C156 VDD a_9680_1576# -0
+C157 a_10276_1682# VDD 0.1269f
+C158 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_1.tg_custom_6.VSN 0.0018f
+C159 MUX_2_1_2.tg_custom_6.VOUT a_10390_1576# -0
+C160 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.inv_PI_0.VOUT 0.00842f
+C161 a_10276_2383# VDD 0.07757f
+C162 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_1.inv_PI_0.VOUT 0
+C163 MUX_2_1_1.inv_PI_0.VOUT VINC 0.19651f
+C164 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.tg_custom_4.VSP 0.30134f
+C165 MUX_2_1_0.tg_custom_6.VSP VOUT 0.2174f
+C166 a_13178_1682# VST 0.0206f
+C167 a_9680_2277# MUX_2_1_2.tg_custom_4.VSP -0
+C168 a_10276_280# MUX_2_1_1.tg_custom_6.VSP 0.05112f
+C169 MUX_2_1_1.tg_custom_4.VSP VIND 0.02104f
+C170 VINA MUX_2_1_2.inv_PI_0.VOUT 0.19651f
+C171 MUX_2_1_0.VINA MUX_2_1_0.inv_PI_0.VOUT 0.20202f
+C172 a_10390_174# MUX_2_1_1.tg_custom_6.VOUT -0
+C173 MUX_2_1_0.inv_PI_1.VOUT a_13178_1682# 0
+C174 MUX_2_1_1.tg_custom_6.VSP a_10802_875# 0
+C175 a_10276_1682# MUX_2_1_2.inv_PI_1.VOUT 0.06167f
+C176 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_1.inv_PI_1.VOUT 0
+C177 a_13178_981# MUX_2_1_0.tg_custom_2.VOUT 0
+C178 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_0.tg_custom_6.VSP 0.26465f
+C179 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.inv_PI_1.VOUT 0.08864f
+C180 a_10276_2383# MUX_2_1_2.inv_PI_1.VOUT 0
+C181 MUX_2_1_0.tg_custom_2.VOUT MUX_2_1_2.tg_custom_6.VSP 0
+C182 MUX_2_1_1.inv_PI_0.VOUT MUX_2_1_1.inv_PI_1.VOUT 0.01617f
+C183 MUX_2_1_1.tg_custom_4.VSP MUX_2_1_1.tg_custom_6.VOUT 0.03404f
+C184 MUX_2_1_0.tg_custom_6.VOUT a_12994_875# -0
+C185 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_1.tg_custom_6.VSP 0.07949f
+C186 MUX_2_1_1.tg_custom_4.VSP a_9680_875# -0
+C187 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.inv_PI_0.VOUT 0.07155f
+C188 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_0.VINB 0
+C189 MUX_2_1_2.tg_custom_6.VOUT VS[1] 0.00387f
+C190 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.tg_custom_4.VSP 0.03404f
+C191 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_6.VSP 2.88515f
+C192 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.tg_custom_6.VSN 2.8911f
+C193 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.inv_PI_0.VOUT 0.35718f
+C194 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_2.tg_custom_6.VSP 0.05469f
+C195 MUX_2_1_0.inv_PI_0.VOUT VDD 0.92973f
+C196 MUX_2_1_1.inv_PI_0.VOUT MUX_2_1_2.tg_custom_6.VSP 0
+C197 MUX_2_1_0.tg_custom_6.VSN VOUT 0.2192f
+C198 VS[0] MUX_2_1_1.tg_custom_2.VOUT 0
+C199 VINA MUX_2_1_2.tg_custom_6.VSP 0
+C200 MUX_2_1_0.inv_PI_1.VOUT VST 0.04911f
+C201 VS[0] VIND 0.00112f
+C202 VS[0] MUX_2_1_2.tg_custom_2.VOUT 0.0716f
+C203 a_13178_981# a_13178_1682# 0.00234f
+C204 VST MUX_2_1_2.inv_PI_0.VOUT 0
+C205 MUX_2_1_0.VINA MUX_2_1_0.VINB 0.03635f
+C206 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_0.tg_custom_6.VSN 0.45487f
+C207 MUX_2_1_0.VINA MUX_2_1_2.tg_custom_4.VSP 0.00102f
+C208 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_0.tg_custom_2.VOUT 0
+C209 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.VINB 0.02104f
+C210 a_10276_1682# a_10276_981# 0.00212f
+C211 MUX_2_1_0.tg_custom_6.VOUT VOUT 0.33029f
+C212 MUX_2_1_0.tg_custom_6.VOUT a_13704_875# -0
+C213 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_6.VOUT 0.45487f
+C214 a_13178_981# VST 0
+C215 MUX_2_1_0.VINB VDD 0.57233f
+C216 VDD VS[1] 0.79128f
+C217 MUX_2_1_1.tg_custom_6.VSP VST 0.03202f
+C218 VDD MUX_2_1_2.tg_custom_4.VSP 0.58946f
+C219 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_1.tg_custom_6.VSN 0.00179f
+C220 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_1.inv_PI_0.VOUT 0.09498f
+C221 VST MUX_2_1_2.tg_custom_6.VSP 0.03715f
+C222 VINC MUX_2_1_1.inv_PI_1.VOUT 0
+C223 MUX_2_1_0.inv_PI_1.VOUT a_13178_981# 0.06167f
+C224 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_1.tg_custom_6.VSP 0.00226f
+C225 MUX_2_1_1.tg_custom_6.VSP VINC 0
+C226 MUX_2_1_0.VINA MUX_2_1_0.tg_custom_2.VOUT 0.00212f
+C227 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_0.VINA 0.23906f
+C228 a_10276_280# VDD 0.12323f
+C229 MUX_2_1_2.inv_PI_1.VOUT VS[1] 0.00439f
+C230 MUX_2_1_2.inv_PI_1.VOUT MUX_2_1_2.tg_custom_4.VSP 0.135f
+C231 MUX_2_1_2.inv_PI_0.VOUT MUX_2_1_2.tg_custom_6.VSP 0.3575f
+C232 a_12582_1576# MUX_2_1_0.tg_custom_2.VOUT -0
+C233 MUX_2_1_0.VINA MUX_2_1_1.tg_custom_6.VSN 0.00236f
+C234 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.tg_custom_2.VOUT 0.30134f
+C235 MUX_2_1_0.tg_custom_2.VOUT VDD 0.38974f
+C236 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_0.tg_custom_4.VSP 0.00181f
+C237 MUX_2_1_1.tg_custom_2.VOUT MUX_2_1_1.tg_custom_6.VOUT 0.01974f
+C238 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_1.inv_PI_1.VOUT 0.43913f
+C239 MUX_2_1_1.tg_custom_2.VOUT a_9680_875# -0
+C240 VIND MUX_2_1_1.tg_custom_6.VOUT 0.00439f
+C241 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_1.tg_custom_6.VSN 0.00218f
+C242 MUX_2_1_0.VINA a_13178_1682# 0
+C243 MUX_2_1_2.tg_custom_6.VSN VDD 1.1424f
+C244 a_10276_1682# VINB 0
+C245 a_10276_2383# VS[0] 0.02073f
+C246 MUX_2_1_2.tg_custom_6.VOUT VST 0.00454f
+C247 MUX_2_1_1.tg_custom_6.VSN VDD 0.7514f
+C248 MUX_2_1_1.inv_PI_0.VOUT VDD 0.92891f
+C249 MUX_2_1_1.tg_custom_6.VSP MUX_2_1_2.tg_custom_6.VSP 0
+C250 VDD VINA 0.35649f
+C251 MUX_2_1_0.tg_custom_4.VSP a_13178_1682# 0.01973f
+C252 MUX_2_1_0.VINB a_10390_875# -0
+C253 MUX_2_1_0.inv_PI_0.VOUT MUX_2_1_0.tg_custom_6.VSP 0.35718f
+C254 a_13178_1682# VDD 0.07513f
+C255 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.inv_PI_1.VOUT 0.08394f
+C256 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_2.inv_PI_1.VOUT 0
+C257 MUX_2_1_0.VINA VST 0.52683f
+C258 MUX_2_1_1.inv_PI_0.VOUT MUX_2_1_2.inv_PI_1.VOUT 0.01617f
+C259 MUX_2_1_0.VINB a_10276_981# 0
+C260 a_10276_981# VS[1] 0.02043f
+C261 a_13292_1576# MUX_2_1_0.tg_custom_2.VOUT -0
+C262 MUX_2_1_2.inv_PI_1.VOUT VINA 0
+C263 a_10092_2277# MUX_2_1_2.tg_custom_2.VOUT -0
+C264 a_9680_174# MUX_2_1_1.tg_custom_6.VOUT -0
+C265 VDD a_13292_875# -0
+C266 MUX_2_1_0.VINB MUX_2_1_1.tg_custom_4.VSP 0.00102f
+C267 MUX_2_1_0.VINA MUX_2_1_0.inv_PI_1.VOUT 0
+C268 MUX_2_1_1.tg_custom_4.VSP VS[1] 1.87233f
+C269 MUX_2_1_1.tg_custom_4.VSP MUX_2_1_2.tg_custom_4.VSP 0.0019f
+C270 MUX_2_1_0.tg_custom_4.VSP VST 1.87329f
+C271 MUX_2_1_0.VINA MUX_2_1_2.inv_PI_0.VOUT 0
+C272 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_1.tg_custom_6.VSP 0.01145f
+C273 VDD VST 1.52223f
+C274 a_10276_280# a_10276_981# 0.00234f
+C275 a_10276_1682# MUX_2_1_2.tg_custom_2.VOUT 0
+C276 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.tg_custom_6.VSP 0.26465f
+C277 MUX_2_1_0.inv_PI_0.VOUT MUX_2_1_0.tg_custom_6.VSN 0.00842f
+C278 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_0.inv_PI_1.VOUT 0.13216f
+C279 a_10276_2383# MUX_2_1_2.tg_custom_2.VOUT 0.01839f
+C280 MUX_2_1_0.VINB MUX_2_1_0.tg_custom_6.VSP 0
+C281 a_10276_280# MUX_2_1_1.tg_custom_4.VSP 0
+C282 MUX_2_1_0.inv_PI_1.VOUT VDD 0.94493f
+C283 VDD VINC 0.35642f
+C284 VDD MUX_2_1_2.inv_PI_0.VOUT 0.93382f
+C285 a_13704_1576# MUX_2_1_0.tg_custom_6.VSP 0
+C286 MUX_2_1_0.inv_PI_0.VOUT VOUT 0
+C287 MUX_2_1_2.inv_PI_1.VOUT VST 0.00146f
+C288 MUX_2_1_0.VINA MUX_2_1_1.tg_custom_6.VSP 0.00121f
+C289 a_10390_2277# MUX_2_1_2.tg_custom_6.VSP -0
+C290 MUX_2_1_2.tg_custom_6.VSN a_10276_981# 0
+C291 MUX_2_1_0.VINA MUX_2_1_2.tg_custom_6.VSP 0.22267f
+C292 a_10276_981# MUX_2_1_1.tg_custom_6.VSN 0.00585f
+C293 VS[0] VS[1] 0.0775f
+C294 VS[0] MUX_2_1_2.tg_custom_4.VSP 1.87227f
+C295 VS[1] VINB 0.00767f
+C296 VINB MUX_2_1_2.tg_custom_4.VSP 0.02104f
+C297 a_10276_981# MUX_2_1_1.inv_PI_0.VOUT 0.04339f
+C298 a_10802_2277# MUX_2_1_2.tg_custom_2.VOUT -0
+C299 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_1.tg_custom_4.VSP 0
+C300 VDD MUX_2_1_1.inv_PI_1.VOUT 0.89671f
+C301 MUX_2_1_0.tg_custom_4.VSP a_13178_981# 0
+C302 MUX_2_1_1.tg_custom_6.VSN MUX_2_1_1.tg_custom_4.VSP 0.01556f
+C303 MUX_2_1_2.inv_PI_1.VOUT MUX_2_1_2.inv_PI_0.VOUT 0.01617f
+C304 MUX_2_1_1.tg_custom_4.VSP MUX_2_1_1.inv_PI_0.VOUT 0.07155f
+C305 MUX_2_1_0.tg_custom_4.VSP MUX_2_1_2.tg_custom_6.VSP 0.01504f
+C306 MUX_2_1_0.VINB MUX_2_1_0.tg_custom_6.VSN 0
+C307 a_13178_981# VDD 0.12454f
+C308 MUX_2_1_1.tg_custom_6.VSP VDD 0.89643f
+C309 MUX_2_1_0.tg_custom_2.VOUT MUX_2_1_0.tg_custom_6.VSP 0.2252f
+C310 VDD MUX_2_1_2.tg_custom_6.VSP 0.96596f
+C311 a_13704_1576# MUX_2_1_0.tg_custom_6.VSN 0
+C312 MUX_2_1_1.tg_custom_6.VSN a_12170_875# 0
+C313 a_9680_2277# VDD -0
+C314 MUX_2_1_1.tg_custom_2.VOUT a_10092_875# -0
+C315 MUX_2_1_0.VINA MUX_2_1_2.tg_custom_6.VOUT 0.34458f
+C316 MUX_2_1_2.inv_PI_1.VOUT MUX_2_1_2.tg_custom_6.VSP 0.43913f
+C317 MUX_2_1_2.tg_custom_6.VSN VS[0] 0.024f
+C318 MUX_2_1_2.tg_custom_6.VSN VINB 0
+C319 MUX_2_1_0.tg_custom_6.VSP a_13178_1682# 0.0558f
+C320 a_10276_981# VST 0
+C321 MUX_2_1_0.VINB MUX_2_1_0.tg_custom_6.VOUT 0.00639f
+C322 VS[0] MUX_2_1_1.inv_PI_0.VOUT 0.00504f
+C323 MUX_2_1_0.VINB MUX_2_1_1.tg_custom_2.VOUT 0.29051f
+C324 MUX_2_1_1.tg_custom_2.VOUT VS[1] 0.07164f
+C325 MUX_2_1_1.inv_PI_0.VOUT VINB 0
+C326 MUX_2_1_0.tg_custom_2.VOUT MUX_2_1_0.tg_custom_6.VSN 0.20859f
+C327 VS[0] VINA 0.23243f
+C328 a_10276_2383# a_10276_1682# 0.00234f
+C329 VS[1] VIND 0.03637f
+C330 VS[1] MUX_2_1_2.tg_custom_2.VOUT 0
+C331 VINA VINB 0.02923f
+C332 MUX_2_1_2.tg_custom_4.VSP MUX_2_1_2.tg_custom_2.VOUT 0.30207f
+C333 VDD a_9268_1576# -0
+C334 MUX_2_1_2.tg_custom_6.VOUT a_10092_1576# -0
+C335 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_0.tg_custom_4.VSP 0.00365f
+C336 a_10276_981# VINC 0
+C337 MUX_2_1_2.tg_custom_6.VOUT VDD 0.40109f
+C338 MUX_2_1_1.tg_custom_4.VSP VINC 0.0755f
+C339 MUX_2_1_0.tg_custom_2.VOUT VOUT 0.28725f
+C340 a_10276_280# MUX_2_1_1.tg_custom_2.VOUT 0
+C341 MUX_2_1_0.VINB MUX_2_1_1.tg_custom_6.VOUT 0.33319f
+C342 VS[1] MUX_2_1_1.tg_custom_6.VOUT 0.13017f
+C343 MUX_2_1_0.tg_custom_6.VSP VST 0.04243f
+C344 a_10092_174# MUX_2_1_1.tg_custom_6.VOUT -0
+C345 a_10276_280# VIND 0
+C346 MUX_2_1_1.tg_custom_6.VSP a_10390_875# -0
+C347 a_13178_1682# MUX_2_1_0.tg_custom_6.VSN 0.00585f
+C348 MUX_2_1_0.VINA MUX_2_1_0.tg_custom_4.VSP 0.09308f
+C349 a_10276_981# MUX_2_1_1.inv_PI_1.VOUT 0
+C350 MUX_2_1_1.tg_custom_2.VOUT a_10802_875# -0
+C351 MUX_2_1_2.tg_custom_6.VOUT MUX_2_1_2.inv_PI_1.VOUT 0.72287f
+C352 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_0.tg_custom_2.VOUT 0.01974f
+C353 MUX_2_1_0.inv_PI_1.VOUT MUX_2_1_0.tg_custom_6.VSP 0.43913f
+C354 MUX_2_1_0.VINA VDD 0.59594f
+C355 MUX_2_1_1.tg_custom_6.VSP a_10276_981# 0.0558f
+C356 MUX_2_1_1.tg_custom_4.VSP MUX_2_1_1.inv_PI_1.VOUT 0.135f
+C357 MUX_2_1_0.tg_custom_4.VSP a_12582_1576# -0
+C358 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_1.tg_custom_2.VOUT 0.00271f
+C359 a_10276_280# MUX_2_1_1.tg_custom_6.VOUT 0.01265f
+C360 a_13178_1682# VOUT 0
+C361 MUX_2_1_0.tg_custom_6.VOUT MUX_2_1_1.tg_custom_6.VSN 0
+C362 MUX_2_1_2.tg_custom_6.VSN MUX_2_1_2.tg_custom_2.VOUT 0.20859f
+C363 VIND VSS 0.63943f
+C364 VINC VSS 0.46337f
+C365 VS[1] VSS 1.51156f
+C366 VOUT VSS 0.42114f
+C367 VST VSS 2.24609f
+C368 VINB VSS 0.54482f
+C369 VINA VSS 0.51709f
+C370 VS[0] VSS 1.42248f
+C371 a_10802_174# VSS 0.00838f $ **FLOATING
+C372 a_10390_174# VSS 0.00838f $ **FLOATING
+C373 a_10092_174# VSS 0.00838f $ **FLOATING
+C374 a_9680_174# VSS 0.00838f $ **FLOATING
+C375 a_9268_174# VSS 0.00838f $ **FLOATING
+C376 a_10276_280# VSS 0.1882f
+C377 MUX_2_1_1.tg_custom_6.VOUT VSS 1.08299f
+C378 MUX_2_1_1.inv_PI_1.VOUT VSS 0.56125f
+C379 a_13704_875# VSS 0.00838f $ **FLOATING
+C380 a_13292_875# VSS 0.00838f $ **FLOATING
+C381 a_12994_875# VSS 0.00838f $ **FLOATING
+C382 a_12582_875# VSS 0.00838f $ **FLOATING
+C383 a_12170_875# VSS 0.00838f $ **FLOATING
+C384 a_10802_875# VSS 0.00838f $ **FLOATING
+C385 a_10390_875# VSS 0.00838f $ **FLOATING
+C386 a_10092_875# VSS 0.00838f $ **FLOATING
+C387 a_9680_875# VSS 0.00838f $ **FLOATING
+C388 a_9268_875# VSS 0.00838f $ **FLOATING
+C389 a_8742_875# VSS 0.00838f $ **FLOATING
+C390 a_13178_981# VSS 0.18866f
+C391 MUX_2_1_0.tg_custom_6.VOUT VSS 1.01566f
+C392 MUX_2_1_0.inv_PI_1.VOUT VSS 0.54169f
+C393 MUX_2_1_0.VINB VSS 1.1551f
+C394 MUX_2_1_1.tg_custom_6.VSN VSS 2.08552f
+C395 a_10276_981# VSS 0.23281f
+C396 MUX_2_1_1.tg_custom_6.VSP VSS 2.43302f
+C397 MUX_2_1_1.tg_custom_2.VOUT VSS 0.88239f
+C398 MUX_2_1_1.inv_PI_0.VOUT VSS 0.51736f
+C399 MUX_2_1_1.tg_custom_4.VSP VSS 1.50647f
+C400 a_13704_1576# VSS 0.00838f $ **FLOATING
+C401 a_13292_1576# VSS 0.00838f $ **FLOATING
+C402 a_12994_1576# VSS 0.00838f $ **FLOATING
+C403 a_12582_1576# VSS 0.00838f $ **FLOATING
+C404 a_12170_1576# VSS 0.00838f $ **FLOATING
+C405 a_11644_1576# VSS 0.00838f $ **FLOATING
+C406 a_10802_1576# VSS 0.00838f $ **FLOATING
+C407 a_10390_1576# VSS 0.00838f $ **FLOATING
+C408 a_10092_1576# VSS 0.00838f $ **FLOATING
+C409 a_9680_1576# VSS 0.00838f $ **FLOATING
+C410 a_9268_1576# VSS 0.00838f $ **FLOATING
+C411 MUX_2_1_0.tg_custom_6.VSN VSS 2.1633f
+C412 a_13178_1682# VSS 0.2358f
+C413 MUX_2_1_0.tg_custom_6.VSP VSS 2.58176f
+C414 MUX_2_1_0.tg_custom_2.VOUT VSS 0.92649f
+C415 MUX_2_1_0.inv_PI_0.VOUT VSS 0.61397f
+C416 MUX_2_1_0.tg_custom_4.VSP VSS 1.42981f
+C417 a_10276_1682# VSS 0.18255f
+C418 MUX_2_1_2.tg_custom_6.VOUT VSS 0.8756f
+C419 MUX_2_1_2.inv_PI_1.VOUT VSS 0.53673f
+C420 a_10802_2277# VSS 0.00838f $ **FLOATING
+C421 a_10390_2277# VSS 0.00838f $ **FLOATING
+C422 a_10092_2277# VSS 0.00838f $ **FLOATING
+C423 a_9680_2277# VSS 0.00838f $ **FLOATING
+C424 a_9268_2277# VSS 0.00838f $ **FLOATING
+C425 a_8742_2277# VSS 0.00838f $ **FLOATING
+C426 MUX_2_1_0.VINA VSS 0.89256f
+C427 MUX_2_1_2.tg_custom_6.VSN VSS 1.88544f
+C428 a_10276_2383# VSS 0.2261f
+C429 MUX_2_1_2.tg_custom_6.VSP VSS 2.15564f
+C430 MUX_2_1_2.tg_custom_2.VOUT VSS 0.89804f
+C431 MUX_2_1_2.inv_PI_0.VOUT VSS 0.5591f
+C432 MUX_2_1_2.tg_custom_4.VSP VSS 1.28979f
+C433 VDD VSS 19.0048f
+C434 MUX_2_1_1.tg_custom_6.VSN.t2 VSS 0.15308f
+C435 MUX_2_1_1.tg_custom_6.VSN.t1 VSS 0.15308f
+C436 MUX_2_1_1.tg_custom_6.VSN.t4 VSS 0.10174f
+C437 MUX_2_1_1.tg_custom_6.VSN.n0 VSS 0.41657f
+C438 MUX_2_1_1.tg_custom_6.VSN.n1 VSS 0.70493f
+C439 MUX_2_1_1.tg_custom_6.VSN.t5 VSS 0.10174f
+C440 MUX_2_1_1.tg_custom_6.VSN.n2 VSS 0.25684f
+C441 MUX_2_1_1.tg_custom_6.VSN.t3 VSS 0.10174f
+C442 MUX_2_1_1.tg_custom_6.VSN.n3 VSS 0.27094f
+C443 MUX_2_1_1.tg_custom_6.VSN.t0 VSS 0.04092f
+C444 MUX_2_1_1.tg_custom_6.VSN.n4 VSS 0.08418f
+C445 MUX_2_1_0.tg_custom_6.VSN.t4 VSS 0.15308f
+C446 MUX_2_1_0.tg_custom_6.VSN.t1 VSS 0.15308f
+C447 MUX_2_1_0.tg_custom_6.VSN.t3 VSS 0.10174f
+C448 MUX_2_1_0.tg_custom_6.VSN.n0 VSS 0.41657f
+C449 MUX_2_1_0.tg_custom_6.VSN.n1 VSS 0.70493f
+C450 MUX_2_1_0.tg_custom_6.VSN.t2 VSS 0.10174f
+C451 MUX_2_1_0.tg_custom_6.VSN.n2 VSS 0.25684f
+C452 MUX_2_1_0.tg_custom_6.VSN.t5 VSS 0.10174f
+C453 MUX_2_1_0.tg_custom_6.VSN.n3 VSS 0.27094f
+C454 MUX_2_1_0.tg_custom_6.VSN.t0 VSS 0.04092f
+C455 MUX_2_1_0.tg_custom_6.VSN.n4 VSS 0.08418f
+C456 MUX_2_1_2.tg_custom_6.VSP.t4 VSS 0.09525f
+C457 MUX_2_1_2.tg_custom_6.VSP.t1 VSS 0.14332f
+C458 MUX_2_1_2.tg_custom_6.VSP.n0 VSS 0.36498f
+C459 MUX_2_1_2.tg_custom_6.VSP.t2 VSS 0.09525f
+C460 MUX_2_1_2.tg_custom_6.VSP.t5 VSS 0.14332f
+C461 MUX_2_1_2.tg_custom_6.VSP.n1 VSS 0.31369f
+C462 MUX_2_1_2.tg_custom_6.VSP.t3 VSS 0.14332f
+C463 MUX_2_1_2.tg_custom_6.VSP.n2 VSS 0.50184f
+C464 MUX_2_1_2.tg_custom_6.VSP.n3 VSS 0.37065f
+C465 MUX_2_1_2.tg_custom_6.VSP.t0 VSS 0.03832f
+C466 MUX_2_1_2.tg_custom_6.VSP.n4 VSS 0.08022f
+C467 MUX_2_1_1.tg_custom_6.VSP.t1 VSS 0.09525f
+C468 MUX_2_1_1.tg_custom_6.VSP.t3 VSS 0.14332f
+C469 MUX_2_1_1.tg_custom_6.VSP.n0 VSS 0.36498f
+C470 MUX_2_1_1.tg_custom_6.VSP.t5 VSS 0.09525f
+C471 MUX_2_1_1.tg_custom_6.VSP.t4 VSS 0.14332f
+C472 MUX_2_1_1.tg_custom_6.VSP.n1 VSS 0.31369f
+C473 MUX_2_1_1.tg_custom_6.VSP.t2 VSS 0.14332f
+C474 MUX_2_1_1.tg_custom_6.VSP.n2 VSS 0.50184f
+C475 MUX_2_1_1.tg_custom_6.VSP.n3 VSS 0.37065f
+C476 MUX_2_1_1.tg_custom_6.VSP.t0 VSS 0.03832f
+C477 MUX_2_1_1.tg_custom_6.VSP.n4 VSS 0.08022f
+C478 MUX_2_1_0.tg_custom_6.VSP.t5 VSS 0.09525f
+C479 MUX_2_1_0.tg_custom_6.VSP.t4 VSS 0.14332f
+C480 MUX_2_1_0.tg_custom_6.VSP.n0 VSS 0.36498f
+C481 MUX_2_1_0.tg_custom_6.VSP.t3 VSS 0.09525f
+C482 MUX_2_1_0.tg_custom_6.VSP.t2 VSS 0.14332f
+C483 MUX_2_1_0.tg_custom_6.VSP.n1 VSS 0.31369f
+C484 MUX_2_1_0.tg_custom_6.VSP.t1 VSS 0.14332f
+C485 MUX_2_1_0.tg_custom_6.VSP.n2 VSS 0.50184f
+C486 MUX_2_1_0.tg_custom_6.VSP.n3 VSS 0.37065f
+C487 MUX_2_1_0.tg_custom_6.VSP.t0 VSS 0.03832f
+C488 MUX_2_1_0.tg_custom_6.VSP.n4 VSS 0.08022f
+C489 MUX_2_1_2.tg_custom_6.VSN.t3 VSS 0.15308f
+C490 MUX_2_1_2.tg_custom_6.VSN.t4 VSS 0.15308f
+C491 MUX_2_1_2.tg_custom_6.VSN.t2 VSS 0.10174f
+C492 MUX_2_1_2.tg_custom_6.VSN.n0 VSS 0.41657f
+C493 MUX_2_1_2.tg_custom_6.VSN.n1 VSS 0.70493f
+C494 MUX_2_1_2.tg_custom_6.VSN.t1 VSS 0.10174f
+C495 MUX_2_1_2.tg_custom_6.VSN.n2 VSS 0.25684f
+C496 MUX_2_1_2.tg_custom_6.VSN.t5 VSS 0.10174f
+C497 MUX_2_1_2.tg_custom_6.VSN.n3 VSS 0.27094f
+C498 MUX_2_1_2.tg_custom_6.VSN.t0 VSS 0.04092f
+C499 MUX_2_1_2.tg_custom_6.VSN.n4 VSS 0.08418f
+.ends

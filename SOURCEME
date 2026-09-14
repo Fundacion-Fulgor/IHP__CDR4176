@@ -1,0 +1,165 @@
+_sourceme_main() {
+  local is_direct=0
+  local src=""
+  if [ -n "${BASH_VERSION:-}" ]; then
+    src="${BASH_SOURCE[0]}"
+    if [ "$src" = "$0" ]; then
+      is_direct=1
+    fi
+  elif [ -n "${ZSH_VERSION:-}" ]; then
+    src="${(%):-%x}"
+    case "${ZSH_EVAL_CONTEXT:-}" in
+      *:file*) ;;
+      *) is_direct=1 ;;
+    esac
+  else
+    echo "Error: Only Bash and Zsh are supported." >&2
+    unset -f _sourceme_main
+    return 1 2>/dev/null || exit 1
+  fi
+
+  if [ "$is_direct" -eq 1 ]; then
+    echo "SOURCEME must be sourced. Run: source ${src:-$0}" >&2
+    unset -f _sourceme_main
+    exit 1
+  fi
+
+  local root_dir
+  root_dir="$(cd -P -- "$(dirname -- "$src")" >/dev/null 2>&1 && pwd)" || root_dir=""
+  if [ -z "$root_dir" ] || [ ! -d "$root_dir" ]; then
+    echo "Error: Failed to determine repository root directory." >&2
+    unset -f _sourceme_main
+    return 1
+  fi
+
+  local pdk="${PDK:-ihp-sg13g2}"
+  local pdk_root=""
+  local using_external=0
+  local pinned_pdk="${root_dir}/IHP-Open-PDK"
+
+  if [ -n "${PDK_ROOT:-}" ] && [ -d "${PDK_ROOT}" ] && [ -f "${PDK_ROOT}/${pdk}/libs.tech/klayout/tech/sg13g2.lyt" ] && [ -f "${PDK_ROOT}/${pdk}/libs.ref/sg13g2_stdcell/gds/sg13g2_stdcell.gds" ]; then
+    pdk_root="$(cd -P -- "${PDK_ROOT}" >/dev/null 2>&1 && pwd)" || pdk_root="${PDK_ROOT}"
+    local norm_pinned
+    norm_pinned="$(cd -P -- "${pinned_pdk}" >/dev/null 2>&1 && pwd)" || norm_pinned="${pinned_pdk}"
+    if [ "$pdk_root" != "$norm_pinned" ]; then
+      using_external=1
+    fi
+  else
+    pdk_root="${pinned_pdk}"
+  fi
+
+  local tech_dir="${pdk_root}/${pdk}/libs.tech/klayout/tech"
+  local lyt_file="${tech_dir}/sg13g2.lyt"
+  local klayout_repo_dir="${root_dir}/klayout"
+  local klayout_tech_parent="${pdk_root}/${pdk}/libs.tech/klayout"
+  local gds_file="${pdk_root}/${pdk}/libs.ref/sg13g2_stdcell/gds/sg13g2_stdcell.gds"
+  local lib_file="${klayout_repo_dir}/libraries/sg13g2_stdcell.gds"
+
+  if [ ! -d "$pdk_root" ] || [ ! -d "$tech_dir" ] || [ ! -f "$lyt_file" ] || [ ! -f "$gds_file" ]; then
+    echo "Error: SG13G2 PDK dependencies missing or incomplete." >&2
+    echo "Please initialize git submodules using:" >&2
+    echo "  git submodule update --init --recursive" >&2
+    unset -f _sourceme_main
+    return 1
+  fi
+
+  if [ "$using_external" -eq 0 ]; then
+    if [ ! -L "$lib_file" ] && [ ! -f "$lib_file" ]; then
+      echo "Error: SG13G2 PDK dependencies missing or incomplete." >&2
+      echo "Please initialize git submodules using:" >&2
+      echo "  git submodule update --init --recursive" >&2
+      unset -f _sourceme_main
+      return 1
+    fi
+    if [ ! -f "$lib_file" ]; then
+      echo "Error: SG13G2 PDK dependencies missing or incomplete." >&2
+      echo "Please initialize git submodules using:" >&2
+      echo "  git submodule update --init --recursive" >&2
+      unset -f _sourceme_main
+      return 1
+    fi
+  fi
+
+  local new_klayout_path=""
+  _sourceme_add_path() {
+    local target="$1"
+    if [ -z "$target" ]; then
+      return 0
+    fi
+    case ":${new_klayout_path}:" in
+      *:"$target":*) ;;
+      *)
+        if [ -z "$new_klayout_path" ]; then
+          new_klayout_path="$target"
+        else
+          new_klayout_path="${new_klayout_path}:${target}"
+        fi
+        ;;
+    esac
+  }
+
+  if [ "$using_external" -eq 1 ]; then
+    local pdk_key=""
+    if command -v md5sum >/dev/null 2>&1; then
+      pdk_key="$(printf "%s" "$pdk_root" | md5sum | cut -d' ' -f1)"
+    elif command -v cksum >/dev/null 2>&1; then
+      pdk_key="$(printf "%s" "$pdk_root" | cksum | cut -d' ' -f1)"
+    else
+      pdk_key="$(printf "%s" "$pdk_root" | tr '/ :' '___')"
+    fi
+    local ext_klayout_dir="${root_dir}/CDR4176-main/simulation/klayout-external/${pdk_key}"
+    mkdir -p "${ext_klayout_dir}/libraries" || {
+      echo "Error: Failed to create external KLayout directory ${ext_klayout_dir}/libraries" >&2
+      unset -f _sourceme_main
+      return 1
+    }
+    ln -sf "$gds_file" "${ext_klayout_dir}/libraries/sg13g2_stdcell.gds" || {
+      echo "Error: Failed to link standard cells in ${ext_klayout_dir}/libraries" >&2
+      unset -f _sourceme_main
+      return 1
+    }
+    _sourceme_add_path "$ext_klayout_dir"
+  else
+    _sourceme_add_path "$klayout_repo_dir"
+  fi
+  _sourceme_add_path "$klayout_tech_parent"
+  _sourceme_add_path "$tech_dir"
+
+  local cur_klayout="${KLAYOUT_PATH:-}"
+  local rem="$cur_klayout"
+  local part
+  while [ -n "$rem" ]; do
+    part="${rem%%:*}"
+    local skip=0
+    case "$part" in
+      "${root_dir}/klayout"|"${root_dir}/klayout/"*) skip=1 ;;
+      "${root_dir}/IHP-Open-PDK"|"${root_dir}/IHP-Open-PDK/"*) skip=1 ;;
+      "${root_dir}/CDR4176-main/simulation/klayout-external"*) skip=1 ;;
+    esac
+    if [ -n "${_SOURCEME_MANAGED_PDK_ROOT:-}" ]; then
+      case "$part" in
+        "${_SOURCEME_MANAGED_PDK_ROOT}"|"${_SOURCEME_MANAGED_PDK_ROOT}/"*) skip=1 ;;
+      esac
+    fi
+    if [ "$skip" -eq 0 ]; then
+      _sourceme_add_path "$part"
+    fi
+    if [ "$rem" = "$part" ]; then
+      rem=""
+    else
+      rem="${rem#*:}"
+    fi
+  done
+
+  unset -f _sourceme_add_path
+
+  export PDK_ROOT="$pdk_root"
+  export PDK="$pdk"
+  export KLAYOUT_PATH="$new_klayout_path"
+  export _SOURCEME_MANAGED_PDK_ROOT="$pdk_root"
+
+  unset -f _sourceme_main
+  return 0
+}
+_sourceme_main "$@"
+return $? 2>/dev/null || exit $?
