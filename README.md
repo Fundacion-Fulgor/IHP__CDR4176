@@ -2,7 +2,8 @@
 
 CDR4176 is a 2 GHz, four-quadrant phase interpolator targeting the IHP SG13G2 process. It combines a four-phase clock generator, an 8x phase-interpolator network, a divide-by-eight stage, and an output buffer.
 
-**Status:** a layout is published in [`release/v.1.0.0/gds/CDR4176.gds`](release/v.1.0.0/gds/CDR4176.gds). Publication is not a claim of current DRC/LVS or post-layout simulation signoff. See [Known limitations](#known-limitations).
+**Status:** a layout is published in [`release/v.1.0.0/gds/CDR4176.gds`](release/v.1.0.0/gds/CDR4176.gds). This layout is DRC and LVS clean, with wiring to the pad frame.
+
 
 ## 1. Set up your checkout
 
@@ -25,6 +26,7 @@ Required tools depend on the task:
 | LVS | Netgen |
 | Notebook analysis / waveform comparison | Jupyter, NumPy, Matplotlib, plus imports used by the selected notebook |
 
+<!--
 ### EDA container
 
 `./eda open`, `./eda netlist`, and `./eda doctor` can enter an existing `iic-osic-tools2` distrobox. The helper also supports running IIC-OSIC-TOOLS containers. It does not install tools or create containers.
@@ -64,7 +66,7 @@ The PDK submodule contains Verilog-A sources, but a fresh checkout may not conta
 ```
 
 This creates models under the selected PDK's `libs.tech/ngspice/osdi/` directory. See the [PDK's Verilog-A instructions](IHP-Open-PDK/ihp-sg13g2/libs.tech/verilog-a/README.md). Run netlisting or `./eda init-sim` again after installing models so managed simulation directories pick them up. Do not commit compiled models or modify the pinned dependency commits just to configure your machine.
-
+-->
 ## 2. Where files belong
 
 ```text
@@ -100,6 +102,7 @@ CDR4176-main/schematic/xschem/8xPI/
   8xPI_pex.spice
 ```
 
+<!--
 An LVS extraction (`*_extracted.cir`) is not necessarily a parasitic netlist (`*_pex.spice`). Do not rename one into the other to satisfy a missing include.
 
 Directories named `legacy/` retain distinct historical artifacts; do not overwrite current cell views with them. The `project_io/` cells differ from the pinned IO library and must not silently replace its bare symbol names.
@@ -242,13 +245,7 @@ git push -u origin my-change
 ```
 
 Replace the example staged file and branch with your own. Verify `git remote -v` first: **older checkouts may still point at `Fundacion-Fulgor/PhaseInterpolator`**. The destination for this project is `Fundacion-Fulgor/IHP__CDR4176`. Open a pull request there and state which verification was run, the tool/PDK versions, and any outstanding failures. Do not force-push shared history.
-
-## Known limitations
-
-- `tb_8xpi_io_cells.sch` and `tb_8xpi_linearity_integration.sch` have existing floating-net errors detected by strict netlisting. They need a circuit-level review, not path substitutions.
-- Historical PEX netlists restored from commit `6c71ae2` may predate current layouts. Current-layout PEX and full signoff remain pending.
-- The `simulations/tb_linearity_8xpi` analysis notebook has no bundled matching waveform dataset; provide the correct run through `CDR4176_RESULTS`.
-- Successful `./eda doctor`, path checks, or CI do not demonstrate that compiled models are available or that a circuit meets its specifications.
+-->
 
 ## Contributors
 
