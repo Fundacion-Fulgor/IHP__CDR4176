@@ -15,6 +15,8 @@ cd IHP__CDR4176
 
 `./eda setup` initializes the pinned `IHP-Open-PDK` and `openpdk-libraries` submodules and installs the path-checking pre-commit hook. It refuses to overwrite dirty submodules or an unrelated existing hook. If your dependencies are already initialized, use `./eda install-hooks` to install only the hook.
 
+The hook fixes exact tracked absolute Xschem source references in staged `.sch` and `.sym` files to source-relative paths. Use `--library-root` only for roots searched by `xschemrc`; unknown, ambiguous, and other-machine references require manual review without basename guessing. It refuses partially staged files that need fixes, leaves netlist provenance untouched, and CI runs the checker read-only.
+
 Required tools depend on the task:
 
 | Task | Tools |

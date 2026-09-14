@@ -1,5 +1,6 @@
 from importlib.machinery import SourceFileLoader
 import importlib.util
+import io
 import os
 from pathlib import Path
 import platform
@@ -311,6 +312,84 @@ class TestEda(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             eda.init_simulation_directory(sim, ROOT)
         self.assertEqual(init.read_text(), "set custom\n")
+
+    def test_install_hooks_upgrades_known_hooks_and_preserves_custom_hook(self):
+        repo = self.temp_dir / "hook repo"
+        subprocess.run(["git", "init", str(repo)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        source_dir = repo / ".githooks"
+        source_dir.mkdir()
+        source = source_dir / "pre-commit"
+        source.write_bytes((ROOT / ".githooks" / "pre-commit").read_bytes())
+        source.chmod(0o755)
+        target = repo / ".git" / "hooks" / "pre-commit"
+        target.parent.mkdir(parents=True, exist_ok=True)
+
+        for old_hook in eda.KNOWN_OLD_HOOKS:
+            with self.subTest(old_hook=old_hook):
+                target.write_bytes(old_hook)
+                target.chmod(0o755)
+                self.assertEqual(eda.cmd_install_hooks(repo), 0)
+                self.assertEqual(target.read_bytes(), source.read_bytes())
+
+        custom = b"#!/bin/sh\necho custom\nexit 0\n"
+        target.write_bytes(custom)
+        target.chmod(0o755)
+        stderr = io.StringIO()
+        with patch("sys.stderr", stderr):
+            self.assertEqual(eda.cmd_install_hooks(repo), 1)
+        self.assertEqual(target.read_bytes(), custom)
+        self.assertIn('sh "$(git rev-parse --show-toplevel)/.githooks/pre-commit" || exit $?', stderr.getvalue())
+
+    def test_manual_hook_chaining_preserves_remainder_and_failure(self):
+        repo = self.temp_dir / "manual hook repo"
+        subprocess.run(["git", "init", str(repo)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        source_dir = repo / ".githooks"
+        source_dir.mkdir()
+        source = source_dir / "pre-commit"
+        source.write_bytes((ROOT / ".githooks" / "pre-commit").read_bytes())
+        source.chmod(0o755)
+        scripts = repo / "scripts"
+        scripts.mkdir()
+        (scripts / "fix_xschem_paths.py").write_text("import sys\nsys.exit(0)\n")
+        checker = scripts / "check_xschem_paths.py"
+        checker.write_text("import sys\nsys.exit(0)\n")
+        custom = repo / "custom-pre-commit"
+        custom.write_text(
+            "#!/bin/sh\n"
+            "root=\"$(git rev-parse --show-toplevel)\"\n"
+            "sh \"$root/.githooks/pre-commit\" || exit $?\n"
+            "touch \"$root/custom-ran\"\n"
+        )
+        custom.chmod(0o755)
+
+        success = subprocess.run(["sh", str(custom)], cwd=str(repo))
+        self.assertEqual(success.returncode, 0)
+        self.assertTrue((repo / "custom-ran").is_file())
+
+        (repo / "custom-ran").unlink()
+        checker.write_text("import sys\nsys.exit(7)\n")
+        failure = subprocess.run(["sh", str(custom)], cwd=str(repo))
+        self.assertEqual(failure.returncode, 7)
+        self.assertFalse((repo / "custom-ran").exists())
+
+    def test_install_hooks_upgrade_write_error(self):
+        repo = self.temp_dir / "hook repo"
+        subprocess.run(["git", "init", str(repo)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        source_dir = repo / ".githooks"
+        source_dir.mkdir()
+        source = source_dir / "pre-commit"
+        source.write_bytes((ROOT / ".githooks" / "pre-commit").read_bytes())
+        source.chmod(0o755)
+        target = repo / ".git" / "hooks" / "pre-commit"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(eda.KNOWN_OLD_HOOKS[0])
+        target.chmod(0o755)
+
+        stderr = io.StringIO()
+        with patch.object(Path, "write_bytes", side_effect=OSError("read-only")):
+            with patch("sys.stderr", stderr):
+                self.assertEqual(eda.cmd_install_hooks(repo), 1)
+        self.assertIn("Error al actualizar hook", stderr.getvalue())
 
     def test_quoting_and_spaces_robustness(self):
         repo_spaces = self.temp_dir / "repo with spaces"
