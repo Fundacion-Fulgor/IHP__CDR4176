@@ -9,9 +9,12 @@ import re
 import stat
 import subprocess
 import sys
+import tempfile
 from urllib.parse import unquote, urlsplit
 
-SOURCE_EXTENSIONS = {".sch", ".sym"}
+SOURCE_EXTENSIONS = {".sch", ".sym", ".spice", ".cir"}
+SPICE_EXTENSIONS = {".spice", ".cir"}
+SPICE_METADATA_RE = re.compile(rb"^([ \t]*\*\*(?!\*)[ \t]*(sch_path|sym_path):[ \t]*)(.*?)(\r\n|[\r\n])?$")
 
 
 def git(repo_root: Path, *args: str, data: bytes | None = None) -> bytes:
@@ -92,13 +95,14 @@ def file_uri_path(reference: str) -> str:
     if parsed.scheme.lower() != "file" or parsed.netloc or parsed.query or parsed.fragment:
         raise ValueError(f"unsupported file URI symbol reference {reference!r}")
     path = unquote(parsed.path)
-    if not path or path.startswith("//"):
+    if not path or path.startswith("//") or any(char in path for char in "\r\n"):
         raise ValueError(f"unsupported file URI symbol reference {reference!r}")
     return path
 
 
 def resolve_symbol(reference: str, source: str, root: Path,
-                   entries: dict, libraries: list[Path]) -> str:
+                   entries: dict, libraries: list[Path],
+                   check_worktree: bool = False) -> str:
     file_uri = reference.lower().startswith("file:")
     without_scheme = file_uri_path(reference) if file_uri else reference
     normalized = without_scheme.replace("\\", "/")
@@ -114,7 +118,8 @@ def resolve_symbol(reference: str, source: str, root: Path,
             return stripped
     symbols = {p for p, (mode, oid, stage) in entries.items()
                if mode in ("100644", "100755") and stage == "0" and p.endswith(".sym")}
-    candidates = set()
+    candidates = {}
+    local_cand = None
 
     def local_candidate(relative):
         portable = posixpath.relpath(relative, posixpath.dirname(source) or ".")
@@ -129,18 +134,32 @@ def resolve_symbol(reference: str, source: str, root: Path,
                 except ValueError:
                     local_target = None
                 if local_target is not None:
-                    exists = local_target in entries
+                    exists = local_target in entries or (check_worktree and (target.exists() or target.is_symlink()))
                 else:
-                    exists = regular_path(library, norm)
-                if target != root / relative and exists:
+                    exists = regular_path(library, norm) or (check_worktree and (target.exists() or target.is_symlink()))
+                if target.resolve() != (root / relative).resolve() and exists:
                     raise ValueError(f"ambiguous symbol reference {reference!r}")
+        if check_worktree:
+            local_shadow = root / (posixpath.dirname(source) or ".") / posixpath.basename(relative)
+            is_same = False
+            try:
+                is_same = local_shadow.resolve() == (root / relative).resolve()
+            except OSError:
+                is_same = False
+            if not is_same and (local_shadow.exists() or local_shadow.is_symlink()):
+                raise ValueError(f"ambiguous symbol reference {reference!r}")
         return portable
 
     prefix = root.as_posix() + "/"
     if normalized.startswith(prefix):
         relative = normalized[len(prefix):]
         if relative in symbols:
-            candidates.add(local_candidate(relative))
+            if check_worktree:
+                target_dest = root / relative
+                if target_dest.is_symlink() or not regular_path(root, relative):
+                    raise ValueError(f"{relative!r}: missing or non-regular worktree symbol")
+            local_cand = local_candidate(relative)
+            candidates[local_cand] = (root / relative).resolve()
     for library in libraries:
         library_prefix = library.as_posix() + "/"
         relative = None
@@ -159,7 +178,9 @@ def resolve_symbol(reference: str, source: str, root: Path,
         if repo_relative is None and not regular_path(library, relative):
             continue
         local = posixpath.normpath(posixpath.join(posixpath.dirname(source), relative))
-        if local in symbols:
+        target_path = (library / relative).resolve()
+        local_path = (root / local).resolve()
+        if (local in symbols or (check_worktree and ((root / local).exists() or (root / local).is_symlink()))) and local_path != target_path:
             raise ValueError(f"ambiguous symbol reference {reference!r}")
         destinations = set()
         for search_root in libraries:
@@ -170,14 +191,19 @@ def resolve_symbol(reference: str, source: str, root: Path,
                 tracked = None
             if tracked is not None:
                 if tracked in entries:
-                    destinations.add(str(target))
+                    destinations.add(str(target.resolve()))
             elif regular_path(search_root, relative):
-                destinations.add(str(target))
+                destinations.add(str(target.resolve()))
         if len(destinations) != 1:
             raise ValueError(f"ambiguous symbol reference {reference!r}")
-        candidates.add(relative)
+        candidates[relative] = target_path
+
+    if len(candidates) > 1 and len(set(candidates.values())) == 1:
+        non_local = [c for c in candidates if local_cand is None or c != local_cand]
+        if len(non_local) == 1:
+            candidates = {non_local[0]: list(candidates.values())[0]}
     if len(candidates) == 1:
-        result = candidates.pop()
+        result = next(iter(candidates))
         if any(char in result for char in "{}\\\r\n"):
             raise ValueError(f"unsupported symbol filename {reference!r}")
         return result
@@ -192,20 +218,101 @@ def resolve_symbol(reference: str, source: str, root: Path,
     raise ValueError(message)
 
 
-def fix_content(content: bytes, source: str, root: Path, entries: dict,
-                libraries: list[Path]) -> bytes:
+def resolve_metadata(reference: str, kind: str, root: Path, entries: dict) -> str:
+    quoted = len(reference) >= 2 and reference[0] == reference[-1] and reference[0] in ('"', "'")
+    unquoted = reference[1:-1] if quoted else reference
+    if not unquoted or unquoted.startswith("$SCRIPT_DIR/"):
+        return reference
+    if unquoted.lower().startswith("file:"):
+        try:
+            without_scheme = file_uri_path(unquoted)
+        except ValueError as error:
+            if any(char in unquote(unquoted) for char in "\r\n"):
+                raise ValueError(f"unsupported metadata path {unquoted!r}") from error
+            return reference
+    else:
+        without_scheme = unquoted
+    if any(char in without_scheme for char in "\r\n"):
+        raise ValueError(f"unsupported metadata path {unquoted!r}")
+    normalized = without_scheme.replace("\\", "/")
+    expected_ext = ".sch" if kind == "sch_path" else ".sym"
+    targets = {p for p, (mode, oid, stage) in entries.items()
+               if mode in ("100644", "100755") and stage == "0" and p.endswith(expected_ext)}
+    candidates = set()
+    prefix = root.as_posix() + "/"
+    if normalized.startswith(prefix):
+        relative = normalized[len(prefix):]
+        if relative in targets:
+            candidates.add(relative)
+    else:
+        is_abs = (normalized.startswith(("/", "//")) or
+                  re.match(r"^[A-Za-z]:", normalized) is not None)
+        is_variable_or_rel = (without_scheme.startswith(("$", "~", "[")) or not is_abs)
+        if is_abs and not is_variable_or_rel:
+            marker = f"/{root.name}/"
+            search_str = normalized if normalized.startswith("/") else f"/{normalized}"
+            pos = 0
+            while True:
+                idx = search_str.find(marker, pos)
+                if idx < 0:
+                    break
+                suffix = search_str[idx + len(marker):]
+                if suffix in targets:
+                    candidates.add(suffix)
+                pos = idx + 1
+    if len(candidates) > 1:
+        raise ValueError(f"ambiguous metadata path {unquoted!r}")
+    if len(candidates) == 1:
+        target = candidates.pop()
+        if any(char in target for char in "\r\n"):
+            raise ValueError(f"unsupported metadata path {unquoted!r}")
+        fixed = f"$SCRIPT_DIR/{target}"
+        if any(char in fixed for char in "\r\n"):
+            raise ValueError(f"unsupported metadata path {unquoted!r}")
+        return f'"{fixed}"' if quoted else fixed
+    return reference
+
+
+def fix_spice_content(content: bytes, root: Path, entries: dict) -> bytes:
+    lines = content.splitlines(keepends=True)
+    result = []
+    for line in lines:
+        match = SPICE_METADATA_RE.match(line)
+        if match:
+            prefix, kind_bytes, raw_val, ending = match.groups()
+            trimmed_val = raw_val.rstrip(b" \t")
+            trailing_ws = raw_val[len(trimmed_val):]
+            reference = os.fsdecode(trimmed_val)
+            fixed = resolve_metadata(reference, kind_bytes.decode("ascii"), root, entries)
+            if fixed != reference:
+                if any(char in fixed for char in "\r\n"):
+                    raise ValueError(f"unsupported metadata path {reference!r}")
+                line = prefix + os.fsencode(fixed) + trailing_ws + (ending or b"")
+        result.append(line)
+    return b"".join(result)
+
+
+def fix_xschem_content(content: bytes, source: str, root: Path, entries: dict,
+                       libraries: list[Path], check_worktree: bool = False) -> bytes:
     replacements = []
     for start, end in component_spans(content):
         span = content[start:end]
         trimmed = span.strip()
         reference = os.fsdecode(trimmed)
-        fixed = resolve_symbol(reference, source, root, entries, libraries)
+        fixed = resolve_symbol(reference, source, root, entries, libraries, check_worktree)
         if fixed != reference:
             leading = len(span) - len(span.lstrip())
             replacements.append((start + leading, start + leading + len(trimmed), os.fsencode(fixed)))
     for start, end, replacement in reversed(replacements):
         content = content[:start] + replacement + content[end:]
     return content
+
+
+def fix_content(content: bytes, source: str, root: Path, entries: dict,
+                libraries: list[Path], check_worktree: bool = False) -> bytes:
+    if Path(source).suffix.lower() in SPICE_EXTENSIONS:
+        return fix_spice_content(content, root, entries)
+    return fix_xschem_content(content, source, root, entries, libraries, check_worktree)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -239,6 +346,8 @@ def main(argv: list[str] | None = None) -> int:
         paths = (b"\0".join(os.fsencode(path) for path in entries) if args.all else
                  git(root, "diff", "--cached", "--name-only", "--no-renames", "--diff-filter=ACMT", "-z"))
         plans = []
+        snapshots = {}
+        original_index_entries = bytearray()
         for raw_path in paths.split(b"\0"):
             if not raw_path:
                 continue
@@ -250,7 +359,7 @@ def main(argv: list[str] | None = None) -> int:
                 raise ValueError(f"{path!r}: source is not a regular staged file")
             content = git(root, "cat-file", "blob", oid)
             try:
-                fixed = fix_content(content, path, root, entries, libraries)
+                fixed = fix_content(content, path, root, entries, libraries, check_worktree=not args.check)
             except ValueError as error:
                 raise ValueError(f"{path!r}: {error}") from error
             if fixed == content:
@@ -261,22 +370,85 @@ def main(argv: list[str] | None = None) -> int:
             full_path = root / path
             if not regular_path(root, path):
                 raise ValueError(f"{path!r}: missing or non-regular worktree source")
-            work_mode = "100755" if full_path.stat().st_mode & 0o111 else "100644"
-            if full_path.read_bytes() != content or work_mode != mode:
+            st = full_path.lstat()
+            if stat.S_ISLNK(st.st_mode) or not stat.S_ISREG(st.st_mode):
+                raise ValueError(f"{path!r}: missing or non-regular worktree source")
+            work_mode = "100755" if st.st_mode & 0o111 else "100644"
+            cur_bytes = full_path.read_bytes()
+            if cur_bytes != content or work_mode != mode:
                 raise ValueError(f"{path!r}: unstaged content or mode changes; refusing to overwrite")
+            snapshots[path] = (cur_bytes, st.st_mode)
+            original_index_entries.extend(mode.encode() + b" " + oid.encode() + b"\t" + os.fsencode(path) + b"\0")
             plans.append((path, mode, fixed))
         if args.check:
             for path, mode, fixed in plans:
                 print(f"Needs fix: {path!r}")
             return int(bool(plans))
+        if not plans:
+            return 0
         updates = bytearray()
         for path, mode, fixed in plans:
             oid = git(root, "hash-object", "-w", "--stdin", data=fixed).strip()
             updates.extend(mode.encode() + b" " + oid + b"\t" + os.fsencode(path) + b"\0")
-        for path, mode, fixed in plans:
-            (root / path).write_bytes(fixed)
-        if updates:
-            git(root, "update-index", "-z", "--index-info", data=bytes(updates))
+        index_updated = False
+        written_paths = []
+        try:
+            if updates:
+                git(root, "update-index", "-z", "--index-info", data=bytes(updates))
+                index_updated = True
+            for path, mode, fixed in plans:
+                full_path = root / path
+                if not regular_path(root, path):
+                    raise ValueError(f"{path!r}: worktree file changed during write")
+                st = full_path.lstat()
+                if stat.S_ISLNK(st.st_mode) or not stat.S_ISREG(st.st_mode):
+                    raise ValueError(f"{path!r}: worktree file changed to non-regular during write")
+                work_mode = "100755" if st.st_mode & 0o111 else "100644"
+                orig_bytes, orig_mode = snapshots[path]
+                cur_bytes = full_path.read_bytes()
+                if cur_bytes != orig_bytes or work_mode != mode:
+                    raise ValueError(f"{path!r}: worktree content or mode modified during write")
+                tmp = tempfile.NamedTemporaryFile(dir=full_path.parent, prefix=".tmp_fix_", delete=False)
+                tmp_path = Path(tmp.name)
+                try:
+                    tmp.write(fixed)
+                    tmp.flush()
+                    os.fsync(tmp.fileno())
+                    tmp.close()
+                    os.chmod(tmp_path, stat.S_IMODE(orig_mode))
+                    pre_st = full_path.lstat()
+                    if stat.S_ISLNK(pre_st.st_mode) or not stat.S_ISREG(pre_st.st_mode) or not regular_path(root, path):
+                        raise ValueError(f"{path!r}: worktree file changed before replacement")
+                    os.replace(tmp_path, full_path)
+                    written_paths.append(path)
+                except Exception:
+                    if tmp_path.exists():
+                        try:
+                            tmp_path.unlink()
+                        except OSError:
+                            pass
+                    raise
+        except Exception:
+            for w_path in written_paths:
+                try:
+                    w_full = root / w_path
+                    w_bytes, w_mode = snapshots[w_path]
+                    w_tmp = tempfile.NamedTemporaryFile(dir=w_full.parent, prefix=".tmp_rollback_", delete=False)
+                    w_tmp_path = Path(w_tmp.name)
+                    w_tmp.write(w_bytes)
+                    w_tmp.flush()
+                    os.fsync(w_tmp.fileno())
+                    w_tmp.close()
+                    os.chmod(w_tmp_path, stat.S_IMODE(w_mode))
+                    os.replace(w_tmp_path, w_full)
+                except Exception:
+                    pass
+            if index_updated and original_index_entries:
+                try:
+                    git(root, "update-index", "-z", "--index-info", data=bytes(original_index_entries))
+                except Exception:
+                    pass
+            raise
         for path, mode, fixed in plans:
             print(f"Fixed: {path!r}")
         return 0
