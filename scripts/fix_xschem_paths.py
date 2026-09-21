@@ -14,7 +14,6 @@ from urllib.parse import unquote, urlsplit
 
 SOURCE_EXTENSIONS = {".sch", ".sym", ".spice", ".cir"}
 SPICE_EXTENSIONS = {".spice", ".cir"}
-SPICE_METADATA_RE = re.compile(rb"^([ \t]*\*\*(?!\*)[ \t]*(sch_path|sym_path):[ \t]*)(.*?)(\r\n|[\r\n])?$")
 
 
 def git(repo_root: Path, *args: str, data: bytes | None = None) -> bytes:
@@ -218,80 +217,6 @@ def resolve_symbol(reference: str, source: str, root: Path,
     raise ValueError(message)
 
 
-def resolve_metadata(reference: str, kind: str, root: Path, entries: dict) -> str:
-    quoted = len(reference) >= 2 and reference[0] == reference[-1] and reference[0] in ('"', "'")
-    unquoted = reference[1:-1] if quoted else reference
-    if not unquoted or unquoted.startswith("$SCRIPT_DIR/"):
-        return reference
-    if unquoted.lower().startswith("file:"):
-        try:
-            without_scheme = file_uri_path(unquoted)
-        except ValueError as error:
-            if any(char in unquote(unquoted) for char in "\r\n"):
-                raise ValueError(f"unsupported metadata path {unquoted!r}") from error
-            return reference
-    else:
-        without_scheme = unquoted
-    if any(char in without_scheme for char in "\r\n"):
-        raise ValueError(f"unsupported metadata path {unquoted!r}")
-    normalized = without_scheme.replace("\\", "/")
-    expected_ext = ".sch" if kind == "sch_path" else ".sym"
-    targets = {p for p, (mode, oid, stage) in entries.items()
-               if mode in ("100644", "100755") and stage == "0" and p.endswith(expected_ext)}
-    candidates = set()
-    prefix = root.as_posix() + "/"
-    if normalized.startswith(prefix):
-        relative = normalized[len(prefix):]
-        if relative in targets:
-            candidates.add(relative)
-    else:
-        is_abs = (normalized.startswith(("/", "//")) or
-                  re.match(r"^[A-Za-z]:", normalized) is not None)
-        is_variable_or_rel = (without_scheme.startswith(("$", "~", "[")) or not is_abs)
-        if is_abs and not is_variable_or_rel:
-            marker = f"/{root.name}/"
-            search_str = normalized if normalized.startswith("/") else f"/{normalized}"
-            pos = 0
-            while True:
-                idx = search_str.find(marker, pos)
-                if idx < 0:
-                    break
-                suffix = search_str[idx + len(marker):]
-                if suffix in targets:
-                    candidates.add(suffix)
-                pos = idx + 1
-    if len(candidates) > 1:
-        raise ValueError(f"ambiguous metadata path {unquoted!r}")
-    if len(candidates) == 1:
-        target = candidates.pop()
-        if any(char in target for char in "\r\n"):
-            raise ValueError(f"unsupported metadata path {unquoted!r}")
-        fixed = f"$SCRIPT_DIR/{target}"
-        if any(char in fixed for char in "\r\n"):
-            raise ValueError(f"unsupported metadata path {unquoted!r}")
-        return f'"{fixed}"' if quoted else fixed
-    return reference
-
-
-def fix_spice_content(content: bytes, root: Path, entries: dict) -> bytes:
-    lines = content.splitlines(keepends=True)
-    result = []
-    for line in lines:
-        match = SPICE_METADATA_RE.match(line)
-        if match:
-            prefix, kind_bytes, raw_val, ending = match.groups()
-            trimmed_val = raw_val.rstrip(b" \t")
-            trailing_ws = raw_val[len(trimmed_val):]
-            reference = os.fsdecode(trimmed_val)
-            fixed = resolve_metadata(reference, kind_bytes.decode("ascii"), root, entries)
-            if fixed != reference:
-                if any(char in fixed for char in "\r\n"):
-                    raise ValueError(f"unsupported metadata path {reference!r}")
-                line = prefix + os.fsencode(fixed) + trailing_ws + (ending or b"")
-        result.append(line)
-    return b"".join(result)
-
-
 def fix_xschem_content(content: bytes, source: str, root: Path, entries: dict,
                        libraries: list[Path], check_worktree: bool = False) -> bytes:
     replacements = []
@@ -311,7 +236,7 @@ def fix_xschem_content(content: bytes, source: str, root: Path, entries: dict,
 def fix_content(content: bytes, source: str, root: Path, entries: dict,
                 libraries: list[Path], check_worktree: bool = False) -> bytes:
     if Path(source).suffix.lower() in SPICE_EXTENSIONS:
-        return fix_spice_content(content, root, entries)
+        return content
     return fix_xschem_content(content, source, root, entries, libraries, check_worktree)
 
 

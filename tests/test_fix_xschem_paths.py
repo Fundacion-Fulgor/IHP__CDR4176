@@ -36,6 +36,10 @@ class FixPathsTests(unittest.TestCase):
         return subprocess.run([sys.executable, str(SCRIPT), *args], cwd=self.root,
                               env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+    def run_checker(self, *args, env=None):
+        return subprocess.run([sys.executable, str(CHECKER), *args], cwd=self.root,
+                              env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
     def absolute(self, name="part with space.sym"):
         return os.fsencode(self.root / name)
 
@@ -312,10 +316,54 @@ class FixPathsTests(unittest.TestCase):
         original = b"C {" + self.absolute("part.sym") + b"} 0 0 0 0 {}\r\n"
         self.put("main.sch", original)
         self.put("other.bin", b"other bytes\x00\r\n")
+        spice_data = (
+            b"** sch_path: " + self.absolute("main.sch") + b"\r\n"
+            b"** sym_path: /legacy/foreign/part.sym\n"
+            b"* regular comment with /opt/something\n"
+            b".subckt top in out\n"
+            b"R1 in out 1k\n"
+            b".ends\n"
+        )
+        cir_data = b"** sch_path: file:///foreign/%0a/path.sch\n* comment at eof\n"
+        self.put("sim.spice", spice_data)
+        self.put("sim.cir", cir_data)
         self.git("commit", "-qm", "hook test")
         self.assertEqual(self.git("show", "HEAD:main.sch"),
                          original.replace(self.absolute("part.sym"), b"part.sym"))
         self.assertEqual(self.git("show", "HEAD:other.bin"), b"other bytes\x00\r\n")
+        self.assertEqual(self.git("show", "HEAD:sim.spice"), spice_data)
+        self.assertEqual((self.root / "sim.spice").read_bytes(), spice_data)
+        self.assertEqual(self.git("show", "HEAD:sim.cir"), cir_data)
+        self.assertEqual((self.root / "sim.cir").read_bytes(), cir_data)
+        self.put("bad.spice", b".include /absolute/path/models.spice\n")
+        proc_inc = subprocess.run(["git", "commit", "-m", "bad include"],
+                                  cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.assertNotEqual(proc_inc.returncode, 0)
+        self.assertIn(b"/absolute/path/models.spice", proc_inc.stdout + proc_inc.stderr)
+        self.git("rm", "-f", "bad.spice")
+        self.put("bad.cir", b".lib /opt/pdk/corners.lib typ\n")
+        proc_lib = subprocess.run(["git", "commit", "-m", "bad lib"],
+                                  cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.assertNotEqual(proc_lib.returncode, 0)
+        self.assertIn(b"/opt/pdk/corners.lib", proc_lib.stdout + proc_lib.stderr)
+        self.git("rm", "-f", "bad.cir")
+
+    def test_hook_and_checker_spice_comments_allowed_executable_rejected(self):
+        spice_data = (
+            b"** sch_path: /legacy/some/root/cell.sch\n"
+            b"** sym_path: " + os.fsencode(self.root / "cell.sym") + b"\r\n"
+            b"* comment\n"
+        )
+        self.put("test.spice", spice_data)
+        self.assertEqual(self.run_checker("--staged").returncode, 0)
+        self.put("test.spice", spice_data + b".include /root/external/models.spice\n")
+        check_inc = self.run_checker("--staged")
+        self.assertEqual(check_inc.returncode, 1)
+        self.assertIn(b"/root/external/models.spice", check_inc.stderr)
+        self.put("test.cir", spice_data + b".lib /opt/pdk/corners.lib typ\n")
+        check_lib = self.run_checker("--staged")
+        self.assertEqual(check_lib.returncode, 1)
+        self.assertIn(b"/opt/pdk/corners.lib", check_lib.stderr)
 
     def test_alternate_index_and_pathspec_characters(self):
         original = self.prepare()
@@ -335,49 +383,74 @@ class FixPathsTests(unittest.TestCase):
         raw_non_utf8 = b"* \xff\xfe raw non utf8 comment\r\n"
         sch_line = b"  **  sch_path:   " + os.fsencode((self.root / "blocks/comp.sch").as_posix()) + b"   \r\n"
         sym_line = b"** sym_path: /legacy/root/" + os.fsencode(self.root.name) + b"/blocks/comp.sym\r\n"
-        original = raw_non_utf8 + sch_line + sym_line
-        self.put("sim.spice", original)
-        result = self.run_fixer()
-        self.assertEqual(result.returncode, 0, result.stderr)
-        expected_sch = b"  **  sch_path:   $SCRIPT_DIR/blocks/comp.sch   \r\n"
-        expected_sym = b"** sym_path: $SCRIPT_DIR/blocks/comp.sym\r\n"
-        expected = raw_non_utf8 + expected_sch + expected_sym
-        self.assertEqual((self.root / "sim.spice").read_bytes(), expected)
-        self.assertEqual(self.git("show", ":sim.spice"), expected)
+        eof_line = b"** sch_path: /legacy/trailing_no_newline.sch"
+        original = raw_non_utf8 + sch_line + sym_line + eof_line
+        for ext in ("sim.spice", "sim.cir"):
+            with self.subTest(ext=ext):
+                self.put(ext, original)
+                result = self.run_fixer()
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout, b"")
+                self.assertEqual(result.stderr, b"")
+                self.assertEqual((self.root / ext).read_bytes(), original)
+                self.assertEqual(self.git("show", f":{ext}"), original)
 
-    def test_metadata_idempotent(self):
+    def test_metadata_modes_success_and_idempotent(self):
         self.put("blocks/comp.sch", b"v {}\n")
-        original = b"** sch_path: " + os.fsencode(self.root / "blocks/comp.sch") + b"\n"
-        self.put("sim.cir", original)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        fixed = self.git("show", ":sim.cir")
-        self.assertEqual(fixed, b"** sch_path: $SCRIPT_DIR/blocks/comp.sch\n")
-        second = self.run_fixer()
-        self.assertEqual(second.returncode, 0)
-        self.assertEqual(self.git("show", ":sim.cir"), fixed)
-        self.assertEqual((self.root / "sim.cir").read_bytes(), fixed)
-        self.assertEqual(second.stdout, b"")
-
-    def test_metadata_check_readonly(self):
-        self.put("blocks/comp.sch", b"v {}\n")
-        original = b"** sch_path: " + os.fsencode(self.root / "blocks/comp.sch") + b"\n"
-        self.put("sim.cir", original)
-        result = self.run_fixer("--check")
-        self.assertEqual(result.returncode, 1)
-        self.assertIn(b"Needs fix: 'sim.cir'", result.stdout)
-        self.assertEqual(self.git("show", ":sim.cir"), original)
-        self.assertEqual((self.root / "sim.cir").read_bytes(), original)
+        content = (
+            b"** sch_path: " + os.fsencode(self.root / "blocks/comp.sch") + b"\r\n"
+            b"** sym_path: /legacy/foreign/path.sym\n"
+            b"* comment\n"
+        )
+        for ext in ("sim.spice", "sim.cir"):
+            with self.subTest(ext=ext):
+                self.put(ext, content)
+                index = (self.root / ".git/index").read_bytes()
+                for mode_args in ([], ["--staged"], ["--check"], ["--all", "--check"]):
+                    with self.subTest(mode=mode_args):
+                        result = self.run_fixer(*mode_args)
+                        self.assertEqual((self.root / ".git/index").read_bytes(), index)
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        self.assertEqual(result.stdout, b"")
+                        self.assertEqual(result.stderr, b"")
+                        self.assertEqual((self.root / ext).read_bytes(), content)
+                        self.assertEqual(self.git("show", f":{ext}"), content)
+                second = self.run_fixer()
+                self.assertEqual(second.returncode, 0, second.stderr)
+                self.assertEqual(second.stdout, b"")
+                self.assertEqual(second.stderr, b"")
+                self.assertEqual((self.root / ext).read_bytes(), content)
+                self.assertEqual(self.git("show", f":{ext}"), content)
 
     def test_metadata_partial_staging_preflight(self):
-        self.put("blocks/comp.sch", b"v {}\n")
-        original = b"** sch_path: " + os.fsencode(self.root / "blocks/comp.sch") + b"\n"
-        self.put("sim.spice", original)
-        self.put("sim.spice", original + b"* unstaged\n", stage=False)
+        original_sch = self.prepare()
+        expected_sch = original_sch.replace(self.absolute(), b"part with space.sym")
+        spice_content = b"** sch_path: " + os.fsencode(self.root / "main.sch") + b"\n.subckt sim in out\n.ends\n"
+        cir_content = b"** sym_path: /legacy/comp.sym\r\n"
+        self.put("sim.spice", spice_content)
+        self.put("sim.cir", cir_content)
+        spice_worktree = spice_content + b"* unstaged spice line\n"
+        cir_worktree = cir_content + b"* unstaged cir line\r\n"
+        self.put("sim.spice", spice_worktree, stage=False)
+        self.put("sim.cir", cir_worktree, stage=False)
         result = self.run_fixer()
-        self.assertEqual(result.returncode, 1)
-        self.assertIn(b"unstaged", result.stderr)
-        self.assertEqual(self.git("show", ":sim.spice"), original)
-        self.assertEqual((self.root / "sim.spice").read_bytes(), original + b"* unstaged\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stderr, b"")
+        self.assertIn(b"main.sch", result.stdout)
+        self.assertEqual((self.root / "main.sch").read_bytes(), expected_sch)
+        self.assertEqual(self.git("show", ":main.sch"), expected_sch)
+        self.assertEqual((self.root / "sim.spice").read_bytes(), spice_worktree)
+        self.assertEqual(self.git("show", ":sim.spice"), spice_content)
+        self.assertEqual((self.root / "sim.cir").read_bytes(), cir_worktree)
+        self.assertEqual(self.git("show", ":sim.cir"), cir_content)
+        result_isolated = self.run_fixer()
+        self.assertEqual(result_isolated.returncode, 0, result_isolated.stderr)
+        self.assertEqual(result_isolated.stdout, b"")
+        self.assertEqual(result_isolated.stderr, b"")
+        self.assertEqual((self.root / "sim.spice").read_bytes(), spice_worktree)
+        self.assertEqual(self.git("show", ":sim.spice"), spice_content)
+        self.assertEqual((self.root / "sim.cir").read_bytes(), cir_worktree)
+        self.assertEqual(self.git("show", ":sim.cir"), cir_content)
 
     def test_metadata_unknown_and_executable_preservation(self):
         content = (
@@ -391,108 +464,98 @@ class FixPathsTests(unittest.TestCase):
             b"** sym_path: /completely/unknown/external/path.sym\n"
             b"** sch_path: $PDK_ROOT/$PDK/libs.ref/sg13g2/gate.sch\n"
         )
-        self.put("sim.spice", content)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":sim.spice"), content)
-        self.assertEqual((self.root / "sim.spice").read_bytes(), content)
-        self.assertEqual(self.run_fixer("--check").returncode, 0)
-
-    def test_metadata_tracked_target_validation(self):
-        repo = os.fsencode(self.root.name)
-        self.put("untracked.sch", b"v {}\n", stage=False)
-        line = b"** sch_path: /legacy/" + repo + b"/untracked.sch\n"
-        self.put("test_untracked.cir", line)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":test_untracked.cir"), line)
-
-        self.put("seed", b"seed")
-        self.git("commit", "-qm", "initial")
-        oid = self.git("rev-parse", "HEAD").strip().decode()
-        self.git("update-index", "--add", "--cacheinfo", "160000," + oid + ",sub")
-        sub_line = b"** sch_path: /legacy/" + repo + b"/sub/cell.sch\n"
-        self.put("test_sub.cir", sub_line)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":test_sub.cir"), sub_line)
-
-        self.put("cell.sym", b"v {}\n")
-        sch_with_sym = b"** sch_path: /legacy/" + repo + b"/cell.sym\n"
-        self.put("test_mismatch.cir", sch_with_sym)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":test_mismatch.cir"), sch_with_sym)
-
-        self.put("nested/folder/target.sch", b"v {}\n")
-        guessed_line = b"** sch_path: /other/machine/target.sch\n"
-        self.put("test_guess.cir", guessed_line)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":test_guess.cir"), guessed_line)
-
-        self.put("cell.sch", b"v {}\n")
-        self.put(self.root.name + "/cell.sch", b"v {}\n")
-        ambig_line = b"** sch_path: /legacy/" + repo + b"/" + repo + b"/cell.sch\n"
-        self.put("test_ambig.cir", ambig_line)
-        result = self.run_fixer()
-        self.assertEqual(result.returncode, 1)
-        self.assertIn(b"ambiguous", result.stderr)
-        self.assertEqual(self.git("show", ":test_ambig.cir"), ambig_line)
-
-        self.git("rm", "-f", self.root.name + "/cell.sch")
-        single_result = self.run_fixer()
-        self.assertEqual(single_result.returncode, 0, single_result.stderr)
-        self.assertEqual(self.git("show", ":test_ambig.cir"), b"** sch_path: $SCRIPT_DIR/cell.sch\n")
+        for ext in ("sim.spice", "sim.cir"):
+            with self.subTest(ext=ext):
+                self.put(ext, content)
+                for mode_args in ([], ["--staged"], ["--check"], ["--all", "--check"]):
+                    with self.subTest(mode=mode_args):
+                        res = self.run_fixer(*mode_args)
+                        self.assertEqual(res.returncode, 0, res.stderr)
+                        self.assertEqual(res.stdout, b"")
+                        self.assertEqual(res.stderr, b"")
+                        self.assertEqual((self.root / ext).read_bytes(), content)
+                        self.assertEqual(self.git("show", f":{ext}"), content)
 
     def test_spice_alternate_index_and_check_all_index_only(self):
-        self.put("cell.sch", b"v {}\n")
-        original = b"** sch_path: " + os.fsencode(self.root / "cell.sch") + b"\n"
-        self.put("sim.spice", original)
-        self.git("commit", "-qm", "initial")
-        index = (self.root / ".git/index").read_bytes()
-        self.assertEqual(self.run_fixer("--check").returncode, 0)
-        self.put("sim.spice", b"dirty", stage=False)
-        for state in ("dirty", "missing", "symlink"):
-            with self.subTest(state=state):
-                if state == "missing":
-                    (self.root / "sim.spice").unlink()
-                elif state == "symlink":
-                    (self.root / "sim.spice").symlink_to("missing")
-                result = self.run_fixer("--all", "--check")
-                self.assertEqual(result.returncode, 1, result.stderr)
-                self.assertIn(b"Needs fix: 'sim.spice'", result.stdout)
-                self.assertEqual(result.stderr, b"")
-                self.assertEqual(self.git("show", ":sim.spice"), original)
-                self.assertEqual((self.root / ".git/index").read_bytes(), index)
-        (self.root / "sim.spice").unlink()
-        self.git("checkout", "HEAD", "--", "sim.spice")
-        self.put("sim.cir", original)
+        repo = os.fsencode(self.root.name)
+        spice_data = b"** sch_path: " + os.fsencode(self.root / "cell.sch") + b"\n"
+        cir_data = b"** sym_path: /legacy/" + repo + b"/cell.sym\r\n"
+        self.put("sim.spice", spice_data)
+        self.put("sim.cir", cir_data)
         alternate = self.root / "alternate-index"
-        alternate.write_bytes((self.root / ".git/index").read_bytes())
-        self.git("reset", "--hard", "HEAD")
-        (self.root / "sim.cir").write_bytes(original)
+        orig_index = (self.root / ".git/index").read_bytes()
+        alternate.write_bytes(orig_index)
         env = dict(os.environ, GIT_INDEX_FILE=str(alternate))
         result = self.run_fixer(env=env)
         self.assertEqual(result.returncode, 0, result.stderr)
-        staged = subprocess.check_output(["git", "show", ":sim.cir"], cwd=self.root, env=env)
-        self.assertEqual(staged, b"** sch_path: $SCRIPT_DIR/cell.sch\n")
+        self.assertEqual(result.stdout, b"")
+        self.assertEqual(result.stderr, b"")
+        self.assertEqual(alternate.read_bytes(), orig_index)
+        self.assertEqual((self.root / "sim.spice").read_bytes(), spice_data)
+        self.assertEqual((self.root / "sim.cir").read_bytes(), cir_data)
+        self.git("commit", "-qm", "initial spice")
+        index = (self.root / ".git/index").read_bytes()
+        self.assertEqual(self.run_fixer("--all", "--check").returncode, 0)
+        for state in ("dirty", "missing", "symlink"):
+            with self.subTest(state=state):
+                if state == "dirty":
+                    self.put("sim.spice", b"dirty spice", stage=False)
+                    self.put("sim.cir", b"dirty cir", stage=False)
+                elif state == "missing":
+                    (self.root / "sim.spice").unlink()
+                    (self.root / "sim.cir").unlink()
+                elif state == "symlink":
+                    (self.root / "sim.spice").symlink_to("missing_target")
+                    (self.root / "sim.cir").symlink_to("missing_target")
+                result_check = self.run_fixer("--all", "--check")
+                self.assertEqual(result_check.returncode, 0, result_check.stderr)
+                self.assertEqual(result_check.stdout, b"")
+                self.assertEqual(result_check.stderr, b"")
+                self.assertEqual(self.git("show", ":sim.spice"), spice_data)
+                self.assertEqual(self.git("show", ":sim.cir"), cir_data)
+                self.assertEqual((self.root / ".git/index").read_bytes(), index)
 
-    def test_metadata_reject_crlf_replacement(self):
+    def test_metadata_ignored_legacy_ambiguous_and_encoded_uri_targets(self):
+        repo = os.fsencode(self.root.name)
         self.put("blocks/comp.sch", b"v {}\n")
-        uri_crlf = b"** sch_path: file://" + os.fsencode((self.root / "blocks/comp%0aevil.sch").as_posix()) + b"\n"
-        self.put("sim.spice", uri_crlf)
-        result = self.run_fixer()
-        self.assertEqual(result.returncode, 1)
-        self.assertIn(b"unsupported", result.stderr)
-
-        uri_cr = b"** sch_path: file://" + os.fsencode((self.root / "blocks/comp%0d%0aevil.sch").as_posix()) + b"\n"
-        self.put("sim2.spice", uri_cr)
-        result2 = self.run_fixer()
-        self.assertEqual(result2.returncode, 1)
-        self.assertIn(b"unsupported", result2.stderr)
-
-        self.put("blocks/bad\nname.sch", b"v {}\n")
-        bad_meta = b"** sch_path: " + os.fsencode(self.root / "blocks/bad\nname.sch") + b"\n"
-        self.put("sim3.spice", bad_meta)
-        result3 = self.run_fixer()
-        self.assertEqual(result3.returncode, 1)
-        self.assertIn(b"unsupported", result3.stderr)
+        self.put("blocks/comp.sym", b"v {}\n")
+        self.put("cell.sch", b"v {}\n")
+        self.put("cell.sym", b"v {}\n")
+        self.put(self.root.name + "/cell.sch", b"v {}\n")
+        self.put("blocks/comp\nevil.sch", b"v {}\n")
+        cases = [
+            b"** sch_path: " + os.fsencode(self.root / "blocks/comp.sch") + b"\n",
+            b"** sym_path: " + os.fsencode(self.root / "blocks/comp.sym") + b"\r\n",
+            b"** sch_path: /legacy/other_repo/blocks/comp.sch\n",
+            b"** sym_path: C:\\legacy\\windows\\comp.sym\r\n",
+            b"** sch_path: \\\\server\\share\\comp.sch\n",
+            b"** sch_path: /legacy/" + repo + b"/" + repo + b"/cell.sch\n",
+            b"** sym_path: /legacy/" + repo + b"/cell.sym\r\n",
+            b"** sch_path: file://" + os.fsencode((self.root / "blocks/comp%0aevil.sch").as_posix()) + b"\n",
+            b"** sch_path: file://" + os.fsencode((self.root / "blocks/comp%0d%0aevil.sch").as_posix()) + b"\r\n",
+            b"** sch_path: file:///foreign/%0a/path.sch\n",
+            b"** sch_path: " + os.fsencode(self.root / "blocks/bad\nname.sch") + b"\n",
+            b'** sch_path: "/legacy/quoted path/comp.sch"\r\n',
+            b"** sch_path: $PDK_ROOT/cell.sch\n",
+            b"** sch_path: [file join $DIR cell.sch]\r\n",
+            b"** sch_path: rel/path/cell.sch\n",
+            b"* \xff\xfe non utf8 comment line\r\n",
+            b"** sch_path: /legacy/eof_without_newline.sch",
+        ]
+        content = b"".join(cases)
+        for ext in ("sim.spice", "sim.cir"):
+            with self.subTest(ext=ext):
+                self.put(ext, content)
+                index = (self.root / ".git/index").read_bytes()
+                for mode_args in ([], ["--staged"], ["--check"], ["--all", "--check"]):
+                    with self.subTest(mode=mode_args):
+                        result = self.run_fixer(*mode_args)
+                        self.assertEqual((self.root / ".git/index").read_bytes(), index)
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        self.assertEqual(result.stdout, b"")
+                        self.assertEqual(result.stderr, b"")
+                        self.assertEqual((self.root / ext).read_bytes(), content)
+                        self.assertEqual(self.git("show", f":{ext}"), content)
 
     def test_atomic_write_index_lock_failure(self):
         original = self.prepare()
@@ -524,35 +587,6 @@ class FixPathsTests(unittest.TestCase):
         self.assertEqual(self.run_fixer().returncode, 0)
         self.assertFalse((self.root / "main.sch").is_symlink())
         self.assertTrue((self.root / "main.sch").is_file())
-
-    def test_metadata_matching_rules(self):
-        self.put("blocks/comp.sch", b"v {}\n")
-        repo = self.root.name
-        rel_line = f"** sch_path: rel/path/{repo}/blocks/comp.sch\n".encode()
-        self.put("rel.spice", rel_line)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":rel.spice"), rel_line)
-
-        var_line = f"** sch_path: $PDK_ROOT/{repo}/blocks/comp.sch\n".encode()
-        self.put("var.spice", var_line)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":var.spice"), var_line)
-
-        bracket_line = f"** sch_path: [file join $DIR {repo} blocks comp.sch]\n".encode()
-        self.put("bracket.spice", bracket_line)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":bracket.spice"), bracket_line)
-
-        exact_nonexistent = (self.root / f"missing/{repo}/blocks/comp.sch").as_posix().encode()
-        exact_line = b"** sch_path: " + exact_nonexistent + b"\n"
-        self.put("exact.spice", exact_line)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":exact.spice"), exact_line)
-
-        external_line = f"** sch_path: /opt/external/{repo}/blocks/comp.sch\n".encode()
-        self.put("external.spice", external_line)
-        self.assertEqual(self.run_fixer().returncode, 0)
-        self.assertEqual(self.git("show", ":external.spice"), b"** sch_path: $SCRIPT_DIR/blocks/comp.sch\n")
 
     def test_library_collision_and_shadow_check(self):
         self.put("symbols/part.sym", b"v {}\n")
