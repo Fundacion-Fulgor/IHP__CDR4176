@@ -660,6 +660,7 @@ def _scan_tcl(
     base_line: int,
     repo_root: Path | None = None,
     staged_paths: set[str] | None = None,
+    check_existence: bool = False,
 ) -> list[Violation]:
     violations: list[Violation] = []
     for words in _commands(text):
@@ -687,7 +688,7 @@ def _scan_tcl(
                 in_control=False,
                 is_runtime_output=False,
                 repo_root=repo_root,
-                check_existence=True,
+                check_existence=check_existence,
                 staged_paths=staged_paths,
             )
             if found:
@@ -702,6 +703,7 @@ def _scan_spice(
     tcl: bool,
     repo_root: Path | None = None,
     staged_paths: set[str] | None = None,
+    check_existence: bool = False,
 ) -> list[Violation]:
     violations: list[Violation] = []
     raw_lines = text.splitlines()
@@ -769,16 +771,16 @@ def _scan_spice(
         elif cmd in {".include", ".inc"}:
             operands = words[1:2]
             is_runtime = False
-            check_exist = True
+            check_exist = check_existence
         elif cmd == ".lib":
             if len(words) >= 2:
                 operands = words[1:2]
                 is_runtime = False
-                check_exist = True
+                check_exist = check_existence
         elif cmd in {"source", "load"}:
             operands = words[1:]
             is_runtime = False
-            check_exist = True
+            check_exist = check_existence
 
         for operand in operands:
             found = _path_issue(
@@ -846,6 +848,7 @@ def _scan_attrs(
     template: bool = False,
     repo_root: Path | None = None,
     staged_paths: set[str] | None = None,
+    check_existence: bool = False,
 ) -> list[Violation]:
     violations: list[Violation] = []
     attrs = _attributes(text)
@@ -858,11 +861,12 @@ def _scan_attrs(
         line = base_line + text.count("\n", 0, token.start)
         if key in FILE_ATTRS:
             check_exist = False
-            if key in {"schematic", "file", "spice_file"}:
-                check_exist = True
-            elif key == "model":
-                val = token.value.lower()
-                check_exist = bool("/" in val or any(val.endswith(ext) for ext in (".lib", ".spice", ".mod", ".cir")))
+            if check_existence:
+                if key in {"schematic", "file", "spice_file"}:
+                    check_exist = True
+                elif key == "model":
+                    val = token.value.lower()
+                    check_exist = bool("/" in val or any(val.endswith(ext) for ext in (".lib", ".spice", ".mod", ".cir")))
             found = _path_issue(
                 token.value, file_path, line, tcl=False, repo_root=repo_root,
                 check_existence=check_exist, staged_paths=staged_paths,
@@ -870,18 +874,18 @@ def _scan_attrs(
             if found:
                 violations.append(found)
         elif key == "tclcommand":
-            violations.extend(_scan_tcl(token.value, file_path, line, repo_root=repo_root, staged_paths=staged_paths))
+            violations.extend(_scan_tcl(token.value, file_path, line, repo_root=repo_root, staged_paths=staged_paths, check_existence=check_existence))
         elif key in {"value", "code"}:
-            violations.extend(_scan_spice(token.value, file_path, line, tcl=tcl, repo_root=repo_root, staged_paths=staged_paths))
+            violations.extend(_scan_spice(token.value, file_path, line, tcl=tcl, repo_root=repo_root, staged_paths=staged_paths, check_existence=check_existence))
         elif key == "format":
             val = token.value
             m_eval = re.search(r"\btcleval\s*\((.*)\)\s*$", val, re.DOTALL)
             if m_eval:
                 val = m_eval.group(1)
-            violations.extend(_scan_spice(val, file_path, line, tcl=tcl, repo_root=repo_root, staged_paths=staged_paths))
+            violations.extend(_scan_spice(val, file_path, line, tcl=tcl, repo_root=repo_root, staged_paths=staged_paths, check_existence=check_existence))
         elif key == "template" and not template:
             violations.extend(
-                _scan_attrs(token.value, file_path, line, parent_tcl=tcl, template=True, repo_root=repo_root, staged_paths=staged_paths)
+                _scan_attrs(token.value, file_path, line, parent_tcl=tcl, template=True, repo_root=repo_root, staged_paths=staged_paths, check_existence=check_existence)
             )
     return violations
 
@@ -891,12 +895,13 @@ def parse_content(
     file_rel_path: str,
     repo_root: Path | None = None,
     staged_paths: set[str] | None = None,
+    check_existence: bool = False,
 ) -> list[Violation]:
     violations: list[Violation] = []
     pos = 0
     try:
         if Path(file_rel_path).suffix.lower() in {".spice", ".cir"}:
-            return _scan_spice(content, file_rel_path, 1, tcl=False, repo_root=repo_root, staged_paths=staged_paths)
+            return _scan_spice(content, file_rel_path, 1, tcl=False, repo_root=repo_root, staged_paths=staged_paths, check_existence=check_existence)
         offsets = [0] + [match.end() for match in re.finditer("\n", content)]
         while pos < len(content):
             if content[pos].isspace():
@@ -919,21 +924,21 @@ def parse_content(
                     raise ValueError("malformed component record: expected symbol, four coordinates and attributes")
                 found = _path_issue(
                     words[0].value, file_rel_path, line, tcl=False,
-                    repo_root=repo_root, check_existence=True, staged_paths=staged_paths,
+                    repo_root=repo_root, check_existence=check_existence, staged_paths=staged_paths,
                 )
                 if found:
                     violations.append(found)
                 attrs = words[-1]
                 violations.extend(
-                    _scan_attrs(attrs.value, file_rel_path, bisect_right(offsets, attrs.start), repo_root=repo_root, staged_paths=staged_paths)
+                    _scan_attrs(attrs.value, file_rel_path, bisect_right(offsets, attrs.start), repo_root=repo_root, staged_paths=staged_paths, check_existence=check_existence)
                 )
             elif record == "K" and words:
                 violations.extend(
-                    _scan_attrs(words[0].value, file_rel_path, bisect_right(offsets, words[0].start), repo_root=repo_root, staged_paths=staged_paths)
+                    _scan_attrs(words[0].value, file_rel_path, bisect_right(offsets, words[0].start), repo_root=repo_root, staged_paths=staged_paths, check_existence=check_existence)
                 )
             elif record in {"S", "V", "E", "G"} and words:
                 violations.extend(
-                    _scan_spice(words[0].value, file_rel_path, bisect_right(offsets, words[0].start), tcl=False, repo_root=repo_root, staged_paths=staged_paths)
+                    _scan_spice(words[0].value, file_rel_path, bisect_right(offsets, words[0].start), tcl=False, repo_root=repo_root, staged_paths=staged_paths, check_existence=check_existence)
                 )
     except ValueError as error:
         violations.append(Violation(
@@ -950,7 +955,11 @@ def _git_run(args: list[str], repo_root: Path) -> subprocess.CompletedProcess[by
     )
 
 
-def run_checker(staged: bool, repo_root_arg: str | None) -> tuple[int, list[Violation], int]:
+def run_checker(
+    staged: bool,
+    repo_root_arg: str | None,
+    check_existence: bool = False,
+) -> tuple[int, list[Violation], int]:
     violations: list[Violation] = []
     checked = 0
     try:
@@ -1005,7 +1014,7 @@ def run_checker(staged: bool, repo_root_arg: str | None) -> tuple[int, list[Viol
                     if p.lower().endswith(TARGET_EXTENSIONS):
                         staged_modified_sources.add(p)
 
-            if has_deletions_or_renames:
+            if check_existence and has_deletions_or_renames:
                 sources_to_check = [p for p in sorted(stage_zero_paths) if p.lower().endswith(TARGET_EXTENSIONS)]
             else:
                 sources_to_check = [p for p in sorted(staged_modified_sources) if p in stage_zero_paths]
@@ -1014,7 +1023,7 @@ def run_checker(staged: bool, repo_root_arg: str | None) -> tuple[int, list[Viol
                 oid = stage_zero_blobs[path]
                 content = _git_run(["cat-file", "blob", oid], root).stdout.decode("utf-8", errors="replace")
                 checked += 1
-                violations.extend(parse_content(content, path, repo_root=root, staged_paths=stage_zero_paths))
+                violations.extend(parse_content(content, path, repo_root=root, staged_paths=stage_zero_paths, check_existence=check_existence))
 
         else:
             tracked_output = _git_run(["ls-files", "-z"], root).stdout
@@ -1037,7 +1046,7 @@ def run_checker(staged: bool, repo_root_arg: str | None) -> tuple[int, list[Viol
                     continue
                 content = full.read_text(encoding="utf-8", errors="replace")
                 checked += 1
-                violations.extend(parse_content(content, path, repo_root=root, staged_paths=None))
+                violations.extend(parse_content(content, path, repo_root=root, staged_paths=None, check_existence=check_existence))
 
     except (OSError, subprocess.CalledProcessError, UnicodeError, ValueError, IndexError) as error:
         violations.append(Violation("git", 1, "", f"path check failed: {error}", "fix the read/index error and retry"))
@@ -1047,15 +1056,41 @@ def run_checker(staged: bool, repo_root_arg: str | None) -> tuple[int, list[Viol
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Statically check tracked Xschem and SPICE path references")
     parser.add_argument("--staged", action="store_true", help="check changed index blobs, not working-tree files")
+    parser.add_argument(
+        "--check-existence",
+        action="store_true",
+        help="verify referenced local files and dependencies exist on disk or in the index (dependency audit)",
+    )
     parser.add_argument("--repo-root", help="repository to inspect (defaults to current repository)")
     args = parser.parse_args(argv)
-    code, violations, count = run_checker(args.staged, args.repo_root)
+    code, violations, count = run_checker(args.staged, args.repo_root, check_existence=args.check_existence)
     for violation in violations:
         print(violation.format(), file=sys.stderr)
     if violations:
-        print(f"Checked {count} file(s). Found {len(violations)} path portability violation(s).", file=sys.stderr)
+        if args.check_existence:
+            dep_count = sum(1 for v in violations if "does not exist" in v.message)
+            port_count = len(violations) - dep_count
+            if dep_count and port_count:
+                print(
+                    f"Checked {count} file(s). Found {len(violations)} violation(s) "
+                    f"({port_count} path portability, {dep_count} dependency audit).",
+                    file=sys.stderr,
+                )
+            elif dep_count:
+                print(
+                    f"Checked {count} file(s). Found {len(violations)} dependency audit violation(s).",
+                    file=sys.stderr,
+                )
+            else:
+                print(
+                    f"Checked {count} file(s). Found {len(violations)} path portability violation(s).",
+                    file=sys.stderr,
+                )
+        else:
+            print(f"Checked {count} file(s). Found {len(violations)} path portability violation(s).", file=sys.stderr)
     else:
-        print(f"Checked {count} file(s). 0 path portability violations found.")
+        label = "path portability and dependency audit" if args.check_existence else "path portability"
+        print(f"Checked {count} file(s). 0 {label} violations found.")
     return code
 
 

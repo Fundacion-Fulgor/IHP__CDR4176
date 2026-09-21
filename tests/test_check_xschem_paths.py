@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -89,14 +90,14 @@ class TestCheckXschemPaths(unittest.TestCase):
             "v {xschem version=3.4.8RC file_version=1.3}\n"
             "C {completely_missing_custom_block_xyz.sym} 0 0 0 0 {name=x1}\n"
         )
-        violations = parse_content(sch_content, "CDR4176-main/schematic/xschem/test/test.sch", repo_root=ROOT)
+        violations = parse_content(sch_content, "CDR4176-main/schematic/xschem/test/test.sch", repo_root=ROOT, check_existence=True)
         self.assertTrue(any("completely_missing_custom_block_xyz.sym" in v.offending_reference for v in violations))
 
     def test_detect_actual_missing_dependency(self):
         spice_content = (
             ".include \"missing_subcircuit_pex_extracted.cir\"\n"
         )
-        violations = parse_content(spice_content, "test.spice", repo_root=ROOT)
+        violations = parse_content(spice_content, "test.spice", repo_root=ROOT, check_existence=True)
         self.assertTrue(any("missing_subcircuit_pex_extracted.cir" in v.offending_reference for v in violations))
 
     def test_bare_corner_pdk_lib_allowed(self):
@@ -110,7 +111,7 @@ class TestCheckXschemPaths(unittest.TestCase):
         spice_content = (
             ".lib nonexistent_random_library.lib mos_tt\n"
         )
-        violations = parse_content(spice_content, "test.spice", repo_root=ROOT)
+        violations = parse_content(spice_content, "test.spice", repo_root=ROOT, check_existence=True)
         self.assertTrue(any("nonexistent_random_library.lib" in v.offending_reference for v in violations))
 
     def test_namespaced_project_io_symbol(self):
@@ -201,7 +202,7 @@ class TestCheckXschemPaths(unittest.TestCase):
         local_sym = repo_dir / "my_local_block.sym"
         local_sym.write_text("v {xschem version=3.4.8RC}\n")
 
-        code, violations, count = run_checker(staged=True, repo_root_arg=str(repo_dir))
+        code, violations, count = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
         self.assertEqual(code, 1)
         self.assertTrue(any("my_local_block.sym" in v.offending_reference for v in violations))
 
@@ -221,7 +222,7 @@ class TestCheckXschemPaths(unittest.TestCase):
         subprocess.run(["git", "add", "top.sch", "my_local_block.sym"], cwd=repo_dir, check=True)
         local_sym.unlink()
 
-        code, violations, count = run_checker(staged=True, repo_root_arg=str(repo_dir))
+        code, violations, count = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
         self.assertEqual(code, 0, f"Expected 0 violations but got: {violations}")
 
     def test_staged_scans_consumers_on_dependency_deletion(self):
@@ -242,7 +243,7 @@ class TestCheckXschemPaths(unittest.TestCase):
 
         subprocess.run(["git", "rm", "child.sym"], cwd=repo_dir, check=True, stdout=subprocess.PIPE)
 
-        code, violations, count = run_checker(staged=True, repo_root_arg=str(repo_dir))
+        code, violations, count = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
         self.assertEqual(code, 1)
         self.assertTrue(any("child.sym" in v.offending_reference for v in violations))
 
@@ -264,7 +265,7 @@ class TestCheckXschemPaths(unittest.TestCase):
 
         subprocess.run(["git", "mv", "old_child.sym", "new_child.sym"], cwd=repo_dir, check=True)
 
-        code, violations, count = run_checker(staged=True, repo_root_arg=str(repo_dir))
+        code, violations, count = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
         self.assertEqual(code, 1)
         self.assertTrue(any("old_child.sym" in v.offending_reference for v in violations))
 
@@ -284,11 +285,11 @@ class TestCheckXschemPaths(unittest.TestCase):
         valid_sub.write_text(".param x=1\n")
 
         valid_content = ".include \"$SCRIPT_DIR/valid_sub.cir\"\n"
-        v_ok = parse_content(valid_content, "sub/test.spice", repo_root=repo_dir)
+        v_ok = parse_content(valid_content, "sub/test.spice", repo_root=repo_dir, check_existence=True)
         self.assertEqual(v_ok, [])
 
         missing_content = ".include \"$SCRIPT_DIR/missing_sub.cir\"\n"
-        v_missing = parse_content(missing_content, "sub/test.spice", repo_root=repo_dir)
+        v_missing = parse_content(missing_content, "sub/test.spice", repo_root=repo_dir, check_existence=True)
         self.assertTrue(any("missing_sub.cir" in v.offending_reference for v in v_missing))
 
     def test_file_join_containment_and_resolution(self):
@@ -298,11 +299,11 @@ class TestCheckXschemPaths(unittest.TestCase):
         valid_file.write_text("* ok\n")
 
         valid_tcl = "K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR valid.spice]\"\n}\n"
-        v_ok = parse_content(valid_tcl, "sub/test.sch", repo_root=repo_dir)
+        v_ok = parse_content(valid_tcl, "sub/test.sch", repo_root=repo_dir, check_existence=True)
         self.assertEqual(v_ok, [])
 
         missing_tcl = "K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR missing.spice]\"\n}\n"
-        v_missing = parse_content(missing_tcl, "sub/test.sch", repo_root=repo_dir)
+        v_missing = parse_content(missing_tcl, "sub/test.sch", repo_root=repo_dir, check_existence=True)
         self.assertTrue(any("missing.spice" in v.offending_reference for v in v_missing))
 
         escaped_tcl = "K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR .. .. escaped.spice]\"\n}\n"
@@ -340,18 +341,18 @@ class TestCheckXschemPaths(unittest.TestCase):
         (repo_dir / "sub" / "child.cir").write_text(".param x=1\n")
 
         valid_join = "K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR/sub child.cir]\"\n}\n"
-        self.assertEqual(parse_content(valid_join, "top.sch", repo_root=repo_dir), [])
+        self.assertEqual(parse_content(valid_join, "top.sch", repo_root=repo_dir, check_existence=True), [])
 
         valid_join_rel = "K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR/sub/nested/.. child.cir]\"\n}\n"
-        self.assertEqual(parse_content(valid_join_rel, "top.sch", repo_root=repo_dir), [])
+        self.assertEqual(parse_content(valid_join_rel, "top.sch", repo_root=repo_dir, check_existence=True), [])
 
         missing_join = "K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR/sub missing.cir]\"\n}\n"
-        v_missing = parse_content(missing_join, "top.sch", repo_root=repo_dir)
+        v_missing = parse_content(missing_join, "top.sch", repo_root=repo_dir, check_existence=True)
         self.assertTrue(any("missing.cir" in v.offending_reference for v in v_missing))
 
     def test_script_dir_wrong_location_dependency_rejected(self):
         staged = {"sub/child.cir"}
-        v_staged_inc = parse_content(".include \"$SCRIPT_DIR/child.cir\"\n", "top.spice", repo_root=None, staged_paths=staged)
+        v_staged_inc = parse_content(".include \"$SCRIPT_DIR/child.cir\"\n", "top.spice", repo_root=None, staged_paths=staged, check_existence=True)
         self.assertTrue(any("child.cir" in v.offending_reference for v in v_staged_inc))
 
         v_staged_tcl_dir = parse_content(
@@ -359,6 +360,7 @@ class TestCheckXschemPaths(unittest.TestCase):
             "top.sch",
             repo_root=None,
             staged_paths=staged,
+            check_existence=True,
         )
         self.assertTrue(any("child.cir" in v.offending_reference for v in v_staged_tcl_dir))
 
@@ -367,10 +369,11 @@ class TestCheckXschemPaths(unittest.TestCase):
             "top.sch",
             repo_root=None,
             staged_paths=staged,
+            check_existence=True,
         )
         self.assertTrue(any("child.cir" in v.offending_reference for v in v_staged_join))
 
-        v_staged_ok_inc = parse_content(".include \"$SCRIPT_DIR/sub/child.cir\"\n", "top.spice", repo_root=None, staged_paths=staged)
+        v_staged_ok_inc = parse_content(".include \"$SCRIPT_DIR/sub/child.cir\"\n", "top.spice", repo_root=None, staged_paths=staged, check_existence=True)
         self.assertEqual(v_staged_ok_inc, [])
 
         v_staged_ok_join = parse_content(
@@ -378,6 +381,7 @@ class TestCheckXschemPaths(unittest.TestCase):
             "top.sch",
             repo_root=None,
             staged_paths=staged,
+            check_existence=True,
         )
         self.assertEqual(v_staged_ok_join, [])
 
@@ -386,6 +390,7 @@ class TestCheckXschemPaths(unittest.TestCase):
             "top.sch",
             repo_root=None,
             staged_paths=staged,
+            check_existence=True,
         )
         self.assertEqual(v_staged_ok_join_pfx, [])
 
@@ -394,13 +399,14 @@ class TestCheckXschemPaths(unittest.TestCase):
         (repo_dir / "sub").mkdir()
         (repo_dir / "sub" / "child.cir").write_text(".param x=1\n")
 
-        v_wt_inc = parse_content(".include \"$SCRIPT_DIR/child.cir\"\n", "sub/test.spice", repo_root=repo_dir)
+        v_wt_inc = parse_content(".include \"$SCRIPT_DIR/child.cir\"\n", "sub/test.spice", repo_root=repo_dir, check_existence=True)
         self.assertTrue(any("child.cir" in v.offending_reference for v in v_wt_inc))
 
         v_wt_tcl_dir = parse_content(
             "K {type=code\ntclcommand=\"source \\\"$SCRIPT_DIR/child.cir\\\"\"\n}\n",
             "sub/test.sch",
             repo_root=repo_dir,
+            check_existence=True,
         )
         self.assertTrue(any("child.cir" in v.offending_reference for v in v_wt_tcl_dir))
 
@@ -408,16 +414,18 @@ class TestCheckXschemPaths(unittest.TestCase):
             "K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR child.cir]\"\n}\n",
             "sub/test.sch",
             repo_root=repo_dir,
+            check_existence=True,
         )
         self.assertTrue(any("child.cir" in v.offending_reference for v in v_wt_join))
 
         (repo_dir / "child.cir").write_text(".param x=1\n")
-        self.assertEqual(parse_content(".include \"$SCRIPT_DIR/child.cir\"\n", "sub/test.spice", repo_root=repo_dir), [])
+        self.assertEqual(parse_content(".include \"$SCRIPT_DIR/child.cir\"\n", "sub/test.spice", repo_root=repo_dir, check_existence=True), [])
         self.assertEqual(
             parse_content(
                 "K {type=code\ntclcommand=\"source \\\"$SCRIPT_DIR/child.cir\\\"\"\n}\n",
                 "sub/test.sch",
                 repo_root=repo_dir,
+                check_existence=True,
             ),
             [],
         )
@@ -426,6 +434,7 @@ class TestCheckXschemPaths(unittest.TestCase):
                 "K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR child.cir]\"\n}\n",
                 "sub/test.sch",
                 repo_root=repo_dir,
+                check_existence=True,
             ),
             [],
         )
@@ -438,16 +447,17 @@ class TestCheckXschemPaths(unittest.TestCase):
         (folder / "my test.cir").write_text(".param x=1\n")
         (folder / "my script.tcl").write_text("# ok\n")
 
-        v_inc_ok = parse_content(".include \"$SCRIPT_DIR/my folder/my test.cir\"\n", "test.spice", repo_root=repo_dir)
+        v_inc_ok = parse_content(".include \"$SCRIPT_DIR/my folder/my test.cir\"\n", "test.spice", repo_root=repo_dir, check_existence=True)
         self.assertEqual(v_inc_ok, [])
 
-        v_inc_miss = parse_content(".include \"$SCRIPT_DIR/my folder/missing.cir\"\n", "test.spice", repo_root=repo_dir)
+        v_inc_miss = parse_content(".include \"$SCRIPT_DIR/my folder/missing.cir\"\n", "test.spice", repo_root=repo_dir, check_existence=True)
         self.assertTrue(any("missing.cir" in v.offending_reference for v in v_inc_miss))
 
         v_tcl_ok = parse_content(
             "K {type=code\ntclcommand=\"source \\\"$SCRIPT_DIR/my folder/my script.tcl\\\"\"\n}\n",
             "test.sch",
             repo_root=repo_dir,
+            check_existence=True,
         )
         self.assertEqual(v_tcl_ok, [])
 
@@ -455,6 +465,7 @@ class TestCheckXschemPaths(unittest.TestCase):
             "K {type=code\ntclcommand=\"source \\\"$SCRIPT_DIR/my folder/missing.tcl\\\"\"\n}\n",
             "test.sch",
             repo_root=repo_dir,
+            check_existence=True,
         )
         self.assertTrue(any("missing.tcl" in v.offending_reference for v in v_tcl_miss))
 
@@ -462,6 +473,7 @@ class TestCheckXschemPaths(unittest.TestCase):
             "K {type=code\ntclcommand=\"source [file join \\\"$SCRIPT_DIR/my folder\\\" \\\"my script.tcl\\\"]\"\n}\n",
             "test.sch",
             repo_root=repo_dir,
+            check_existence=True,
         )
         self.assertEqual(v_join_att, [])
 
@@ -469,6 +481,7 @@ class TestCheckXschemPaths(unittest.TestCase):
             "K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR \\\"my folder\\\" \\\"my script.tcl\\\"]\"\n}\n",
             "test.sch",
             repo_root=repo_dir,
+            check_existence=True,
         )
         self.assertEqual(v_join_sep, [])
 
@@ -493,26 +506,26 @@ class TestCheckXschemPaths(unittest.TestCase):
 
         subprocess.run(["git", "add", "sub/child.cir", "top.sch", "top.spice"], cwd=repo_dir, check=True)
 
-        code1, viols1, count1 = run_checker(staged=True, repo_root_arg=str(repo_dir))
+        code1, viols1, count1 = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
         self.assertEqual(code1, 1)
         self.assertTrue(any("[file join $SCRIPT_DIR child.cir]" in v.offending_reference for v in viols1))
         self.assertTrue(any("$SCRIPT_DIR/child.cir" in v.offending_reference for v in viols1))
 
         (repo_dir / "child.cir").write_text(".param x=1\n")
-        code2, viols2, count2 = run_checker(staged=True, repo_root_arg=str(repo_dir))
+        code2, viols2, count2 = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
         self.assertEqual(code2, 1)
         self.assertTrue(any("[file join $SCRIPT_DIR child.cir]" in v.offending_reference for v in viols2))
         self.assertTrue(any("$SCRIPT_DIR/child.cir" in v.offending_reference for v in viols2))
 
         subprocess.run(["git", "add", "child.cir"], cwd=repo_dir, check=True)
-        code3, viols3, count3 = run_checker(staged=True, repo_root_arg=str(repo_dir))
+        code3, viols3, count3 = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
         self.assertEqual(code3, 0, f"Expected 0 violations but got: {viols3}")
 
     def test_bare_symbol_preserves_library_and_submodule_search(self):
         sch = "C {my_sub_cell.sym} 0 0 0 0 {}\n"
         self.assertEqual(parse_content(sch, "test.sch", repo_root=None, staged_paths={"sub/my_sub_cell.sym"}), [])
 
-        v_miss_staged = parse_content(sch, "test.sch", repo_root=None, staged_paths={"sub/other.sym"})
+        v_miss_staged = parse_content(sch, "test.sch", repo_root=None, staged_paths={"sub/other.sym"}, check_existence=True)
         self.assertTrue(any("my_sub_cell.sym" in v.offending_reference for v in v_miss_staged))
 
         repo_dir = self.temp_dir / "repo_bare_search"
@@ -521,43 +534,213 @@ class TestCheckXschemPaths(unittest.TestCase):
         cell_dir.mkdir(parents=True)
         (cell_dir / "my_sub_cell.sym").write_text("v {xschem version=3.4.8RC}\n")
 
-        self.assertEqual(parse_content(sch, "test.sch", repo_root=repo_dir), [])
+        self.assertEqual(parse_content(sch, "test.sch", repo_root=repo_dir, check_existence=True), [])
 
         sch_missing = "C {missing_block.sym} 0 0 0 0 {}\n"
-        v_miss_wt = parse_content(sch_missing, "test.sch", repo_root=repo_dir)
+        v_miss_wt = parse_content(sch_missing, "test.sch", repo_root=repo_dir, check_existence=True)
         self.assertTrue(any("missing_block.sym" in v.offending_reference for v in v_miss_wt))
 
     def test_whitelist_symbols_without_submodules(self):
         sch_pdk_bare = "C {sg13_hv_pmos.sym} 0 0 0 0 {}\n"
-        self.assertEqual(parse_content(sch_pdk_bare, "test.sch", repo_root=self.temp_dir), [])
+        self.assertEqual(parse_content(sch_pdk_bare, "test.sch", repo_root=self.temp_dir, check_existence=True), [])
 
         sch_pdk_prefix = "C {sg13g2_pr/sg13_hv_pmos.sym} 0 0 0 0 {}\n"
-        self.assertEqual(parse_content(sch_pdk_prefix, "test.sch", repo_root=self.temp_dir), [])
+        self.assertEqual(parse_content(sch_pdk_prefix, "test.sch", repo_root=self.temp_dir, check_existence=True), [])
 
         sch_io_bare = "C {sg13g2_IOPadIn.sym} 0 0 0 0 {}\n"
-        self.assertEqual(parse_content(sch_io_bare, "test.sch", repo_root=self.temp_dir), [])
+        self.assertEqual(parse_content(sch_io_bare, "test.sch", repo_root=self.temp_dir, check_existence=True), [])
 
         sch_device_bare = "C {lab_pin.sym} 0 0 0 0 {}\n"
-        self.assertEqual(parse_content(sch_device_bare, "test.sch", repo_root=self.temp_dir), [])
+        self.assertEqual(parse_content(sch_device_bare, "test.sch", repo_root=self.temp_dir, check_existence=True), [])
 
         sch_device_prefix = "C {devices/lab_pin.sym} 0 0 0 0 {}\n"
-        self.assertEqual(parse_content(sch_device_prefix, "test.sch", repo_root=self.temp_dir), [])
+        self.assertEqual(parse_content(sch_device_prefix, "test.sch", repo_root=self.temp_dir, check_existence=True), [])
 
         sch_arbitrary_bare = "C {unknown_arbitrary_cell.sym} 0 0 0 0 {}\n"
-        v_arb = parse_content(sch_arbitrary_bare, "test.sch", repo_root=self.temp_dir)
+        v_arb = parse_content(sch_arbitrary_bare, "test.sch", repo_root=self.temp_dir, check_existence=True)
         self.assertTrue(any("unknown_arbitrary_cell.sym" in v.offending_reference for v in v_arb))
 
         sch_arbitrary_prefix = "C {sg13g2_pr/unknown_arbitrary_cell.sym} 0 0 0 0 {}\n"
-        v_arb_pdk = parse_content(sch_arbitrary_prefix, "test.sch", repo_root=self.temp_dir)
+        v_arb_pdk = parse_content(sch_arbitrary_prefix, "test.sch", repo_root=self.temp_dir, check_existence=True)
         self.assertTrue(any("unknown_arbitrary_cell.sym" in v.offending_reference for v in v_arb_pdk))
 
     def test_pdk_external_models_without_checkout(self):
         spice_known = ".lib $PDK_ROOT/$PDK/libs.tech/ngspice/models/cornerMOSlv.lib mos_tt\n"
-        self.assertEqual(parse_content(spice_known, "test.spice", repo_root=self.temp_dir), [])
+        self.assertEqual(parse_content(spice_known, "test.spice", repo_root=self.temp_dir, check_existence=True), [])
 
         spice_unknown = ".lib $PDK_ROOT/$PDK/libs.tech/ngspice/models/fake_unknown_model.lib mos_tt\n"
-        v_unk = parse_content(spice_unknown, "test.spice", repo_root=self.temp_dir)
+        v_unk = parse_content(spice_unknown, "test.spice", repo_root=self.temp_dir, check_existence=True)
         self.assertTrue(any("fake_unknown_model.lib" in v.offending_reference for v in v_unk))
+
+    def test_default_portability_accepts_missing_relative_references(self):
+        cases = [
+            ("C {blocks/inv.sym} 0 0 0 0 {}\n", "test.sch"),
+            ("C {inv/inv.sym} 0 0 0 0 {}\n", "test.sch"),
+            (".include \"../../../schematic/xschem/inv/inv.spice\"\n", "CDR4176-main/testbenches/tran/xschem/tb_inv.spice"),
+            ("C {part.sym} 0 0 0 0 {schematic=blocks/inv.sch file=inv.spice model=custom.lib}\n", "test.sch"),
+            ("K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR missing.tcl]\"\n}\n", "test.sch"),
+            ("K {type=code\ntclcommand=\"source $IO_LIBRARY_PATH/pad.tcl\"\n}\n", "test.sch"),
+            ("K {type=code\ntclcommand=\"source $SPICE_SCRIPTS/run.cir\"\n}\n", "test.sch"),
+            ("K {type=code\ntclcommand=\"source [file join $netlist_dir sim.spice]\"\n}\n", "test.sch"),
+        ]
+        for content, path in cases:
+            with self.subTest(path=path, content=content):
+                self.assertEqual(parse_content(content, path, repo_root=ROOT), [])
+
+    def test_default_staged_and_working_tree_accepts_missing_relative(self):
+        repo_dir = self.temp_dir / "repo_default_missing_rel"
+        repo_dir.mkdir()
+        self._init_git_repo(repo_dir)
+
+        sch_file = repo_dir / "top.sch"
+        sch_file.write_text(
+            "v {xschem version=3.4.8RC file_version=1.3}\n"
+            "C {blocks/inv.sym} 0 0 0 0 {}\n"
+            "C {inv/inv.sym} 0 0 0 0 {}\n"
+        )
+        spice_file = repo_dir / "sim.spice"
+        spice_file.write_text(
+            ".include \"missing_local_cell.spice\"\n"
+        )
+        subprocess.run(["git", "add", "top.sch", "sim.spice"], cwd=repo_dir, check=True)
+
+        code_staged, viols_staged, count_staged = run_checker(staged=True, repo_root_arg=str(repo_dir))
+        self.assertEqual(code_staged, 0)
+        self.assertEqual(viols_staged, [])
+
+        code_wt, viols_wt, count_wt = run_checker(staged=False, repo_root_arg=str(repo_dir))
+        self.assertEqual(code_wt, 0)
+        self.assertEqual(viols_wt, [])
+
+        code_optin, viols_optin, count_optin = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
+        self.assertEqual(code_optin, 1)
+        self.assertEqual(len(viols_optin), 3)
+
+    def test_staged_delete_and_rename_consumer_scan_only_on_check_existence(self):
+        repo_dir = self.temp_dir / "repo_staged_scan_existence_only"
+        repo_dir.mkdir()
+        self._init_git_repo(repo_dir)
+
+        top_sch = repo_dir / "top.sch"
+        top_sch.write_text(
+            "v {xschem version=3.4.8RC file_version=1.3}\n"
+            "C {child.sym} 0 0 0 0 {}\n"
+        )
+        child_sym = repo_dir / "child.sym"
+        child_sym.write_text("v {xschem version=3.4.8RC}\n")
+
+        subprocess.run(["git", "add", "top.sch", "child.sym"], cwd=repo_dir, check=True)
+        subprocess.run(["git", "commit", "-m", "init"], cwd=repo_dir, check=True, stdout=subprocess.PIPE)
+
+        subprocess.run(["git", "rm", "child.sym"], cwd=repo_dir, check=True, stdout=subprocess.PIPE)
+
+        code_def, viols_def, _ = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=False)
+        self.assertEqual(code_def, 0)
+        self.assertEqual(viols_def, [])
+
+        code_opt, viols_opt, _ = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
+        self.assertEqual(code_opt, 1)
+        self.assertTrue(any("child.sym" in v.offending_reference for v in viols_opt))
+
+        subprocess.run(["git", "reset", "--hard", "HEAD"], cwd=repo_dir, check=True, stdout=subprocess.PIPE)
+        subprocess.run(["git", "mv", "child.sym", "renamed_child.sym"], cwd=repo_dir, check=True)
+
+        code_ren_def, viols_ren_def, _ = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=False)
+        self.assertEqual(code_ren_def, 0)
+        self.assertEqual(viols_ren_def, [])
+
+        code_ren_opt, viols_ren_opt, _ = run_checker(staged=True, repo_root_arg=str(repo_dir), check_existence=True)
+        self.assertEqual(code_ren_opt, 1)
+        self.assertTrue(any("child.sym" in v.offending_reference for v in viols_ren_opt))
+
+    def test_both_modes_reject_nonportable_syntax(self):
+        cases = [
+            ("C {/opt/cad/inv.sym} 0 0 0 0 {}\n", "test.sch", "literal absolute POSIX path"),
+            ("C {C:/cad/inv.sym} 0 0 0 0 {}\n", "test.sch", "Windows drive path"),
+            ("C {\\\\server\\share\\inv.sym} 0 0 0 0 {}\n", "test.sch", "UNC or Windows rooted"),
+            ("C {~/inv.sym} 0 0 0 0 {}\n", "test.sch", "tilde expansion"),
+            ("C {../../outside.sym} 0 0 0 0 {}\n", "test.sch", "traverses outside repository root"),
+            ("K {type=code\ntclcommand=\"source [file join $SCRIPT_DIR .. .. secret.cir]\"\n}\n", "test.sch", "traverses outside repository root"),
+            (".include \"$SCRIPT_DIR/../../secret.cir\"\n", "test.spice", "traverses outside repository root"),
+            ("C {$UNDECLARED_DIR/inv.sym} 0 0 0 0 {}\n", "test.sch", "undeclared variable"),
+            ("C {$PDK/inv.sym} 0 0 0 0 {}\n", "test.sch", "PDK is a suffix component"),
+            (".control\nwrite {$unassigned}out.raw\n.endc\n", "test.spice", "unassigned ngspice variable"),
+            ("write out{$&var}.raw\n", "test.spice", "used outside .control"),
+        ]
+        for content, path, exp_msg in cases:
+            with self.subTest(content=content, path=path):
+                v_default = parse_content(content, path, repo_root=ROOT, check_existence=False)
+                self.assertTrue(len(v_default) > 0, f"Expected default mode violation for: {content}")
+                self.assertTrue(any(exp_msg in v.message for v in v_default))
+
+                v_optin = parse_content(content, path, repo_root=ROOT, check_existence=True)
+                self.assertTrue(len(v_optin) > 0, f"Expected opt-in mode violation for: {content}")
+                self.assertTrue(any(exp_msg in v.message for v in v_optin))
+
+    def test_opt_in_still_flags_missing_direct_tcl_attrs_includes(self):
+        items = [
+            ("K {type=code\ntclcommand=\"source missing_script.tcl\"\n}\n", "test.sch", "missing_script.tcl"),
+            ("C {devices/lab_pin.sym} 0 0 0 0 {schematic=missing_child.sch}\n", "test.sch", "missing_child.sch"),
+            ("C {devices/lab_pin.sym} 0 0 0 0 {file=missing_file.cir}\n", "test.sch", "missing_file.cir"),
+            ("C {devices/lab_pin.sym} 0 0 0 0 {spice_file=missing_spice.spice}\n", "test.sch", "missing_spice.spice"),
+            ("C {devices/lab_pin.sym} 0 0 0 0 {model=missing_model.lib}\n", "test.sch", "missing_model.lib"),
+            ("C {devices/lab_pin.sym} 0 0 0 0 {template=\"schematic=missing_in_tmpl.sch\"}\n", "test.sch", "missing_in_tmpl.sch"),
+            (".include \"missing_include.cir\"\n", "test.spice", "missing_include.cir"),
+            (".lib \"missing_pdk.lib\" typ\n", "test.spice", "missing_pdk.lib"),
+        ]
+        for content, path, token in items:
+            with self.subTest(token=token):
+                self.assertEqual(parse_content(content, path, repo_root=ROOT, check_existence=False), [])
+                v_opt = parse_content(content, path, repo_root=ROOT, check_existence=True)
+                self.assertTrue(len(v_opt) > 0)
+                self.assertTrue(any(token in v.offending_reference for v in v_opt))
+
+    def test_spice_comments_preserved_and_ignored_in_both_modes(self):
+        spice_content = (
+            "** sch_path: /opt/legacy/abs/path.sch\n"
+            "** sym_path: C:\\legacy\\abs\\part.sym\n"
+            "* /opt/legacy/comment\n"
+            ".subckt mycell in out\n"
+            "R1 in out 1k\n"
+            ".ends\n"
+        )
+        self.assertEqual(parse_content(spice_content, "test.spice", repo_root=ROOT, check_existence=False), [])
+        self.assertEqual(parse_content(spice_content, "test.spice", repo_root=ROOT, check_existence=True), [])
+
+        bad_directive = spice_content + ".include /opt/legacy/abs/path.sch\n"
+        v_def = parse_content(bad_directive, "test.spice", repo_root=ROOT, check_existence=False)
+        self.assertTrue(len(v_def) > 0)
+        v_opt = parse_content(bad_directive, "test.spice", repo_root=ROOT, check_existence=True)
+        self.assertTrue(len(v_opt) > 0)
+
+    def test_cli_diagnostics_existence_mode_labeling(self):
+        repo_dir = self.temp_dir / "repo_cli_diagnostics"
+        repo_dir.mkdir()
+        self._init_git_repo(repo_dir)
+        source = repo_dir / "top.sch"
+        cases = [
+            ("C {blocks/inv.sym} 0 0 0 0 {}\n", [], 0, "0 path portability violations found."),
+            ("C {blocks/inv.sym} 0 0 0 0 {}\n", ["--check-existence"], 1,
+             "Found 1 dependency audit violation(s)."),
+            ("C {blocks/inv.sym} 0 0 0 0 {}\nC {/opt/cad/inv.sym} 0 0 0 0 {}\n",
+             ["--check-existence"], 1, "Found 2 violation(s) (1 path portability, 1 dependency audit)."),
+            ("C {/opt/cad/inv.sym} 0 0 0 0 {}\n", ["--check-existence"], 1,
+             "Found 1 path portability violation(s)."),
+            ("v {}\n", ["--check-existence"], 0, "0 path portability and dependency audit violations found."),
+        ]
+        for content, flags, expected_code, expected_summary in cases:
+            with self.subTest(content=content, flags=flags):
+                source.write_text(content)
+                proc = subprocess.run(
+                    [sys.executable, str(ROOT / "scripts" / "check_xschem_paths.py"),
+                     "--repo-root", str(repo_dir), *flags],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(proc.returncode, expected_code, proc.stderr)
+                output = proc.stdout if expected_code == 0 else proc.stderr
+                self.assertIn(expected_summary, output)
 
 
 if __name__ == "__main__":

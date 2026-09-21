@@ -408,6 +408,32 @@ class TestEda(unittest.TestCase):
         self.assertEqual(res.returncode, 0, msg=res.stderr)
         self.assertIn("CDR4176", res.stdout)
 
+    def test_cmd_check_paths_forwarding(self):
+        repo = self.temp_dir / "check repo"
+        repo.mkdir()
+        scripts = repo / "scripts"
+        scripts.mkdir()
+        checker = scripts / "check_xschem_paths.py"
+        record_file = repo / "checker_args.txt"
+        checker.write_text(
+            "import sys, pathlib\n"
+            f"pathlib.Path(r'{record_file}').write_text(' '.join(sys.argv[1:]))\n"
+            "sys.exit(0)\n"
+        )
+        checker.chmod(0o755)
+
+        self.assertEqual(eda.cmd_check_paths(repo, staged=False, check_existence=False), 0)
+        self.assertEqual(record_file.read_text().strip(), "")
+
+        self.assertEqual(eda.cmd_check_paths(repo, staged=True, check_existence=False), 0)
+        self.assertEqual(record_file.read_text().strip(), "--staged")
+
+        self.assertEqual(eda.cmd_check_paths(repo, staged=False, check_existence=True), 0)
+        self.assertEqual(record_file.read_text().strip(), "--check-existence")
+
+        self.assertEqual(eda.cmd_check_paths(repo, staged=True, check_existence=True), 0)
+        self.assertEqual(record_file.read_text().strip(), "--staged --check-existence")
+
 
 if __name__ == "__main__":
     unittest.main()

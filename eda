@@ -410,7 +410,7 @@ def cmd_setup(repo_root: Path) -> int:
     return cmd_install_hooks(repo_root)
 
 
-def cmd_check_paths(repo_root: Path, staged: bool = False) -> int:
+def cmd_check_paths(repo_root: Path, staged: bool = False, check_existence: bool = False) -> int:
     checker = repo_root / "scripts" / "check_xschem_paths.py"
     if not checker.is_file():
         sys.stderr.write(f"Error: Script verificador no encontrado: {checker}\n")
@@ -418,6 +418,8 @@ def cmd_check_paths(repo_root: Path, staged: bool = False) -> int:
     cmd = [sys.executable, str(checker)]
     if staged:
         cmd.append("--staged")
+    if check_existence:
+        cmd.append("--check-existence")
     proc = subprocess.run(cmd, cwd=str(repo_root))
     return proc.returncode
 
@@ -876,6 +878,12 @@ def main(argv: list[str] | None = None) -> int:
         default=False,
         help="Verifica únicamente los archivos en el área de preparación (staged).",
     )
+    p_check_paths.add_argument(
+        "--check-existence",
+        action="store_true",
+        default=False,
+        help="Verifica la existencia de archivos locales y dependencias (auditoría de dependencias).",
+    )
     p_check_paths.add_argument("--native", action="store_true", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
 
     p_install_hooks = subparsers.add_parser(
@@ -902,7 +910,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "setup":
         return cmd_setup(repo_root)
     elif args.command == "check-paths":
-        return cmd_check_paths(repo_root, staged=args.staged)
+        return cmd_check_paths(repo_root, staged=args.staged, check_existence=args.check_existence)
     elif args.command == "install-hooks":
         return cmd_install_hooks(repo_root)
     elif args.command == "init-sim":

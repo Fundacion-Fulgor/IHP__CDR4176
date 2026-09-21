@@ -232,7 +232,7 @@ class TestHierarchicalPaths(unittest.TestCase):
                 "-r",
                 "scripts/hierarchical.py",
                 "-rd",
-                "netlist=CDR4176-main/schematic/xschem/inv/inv.spice",
+                "netlist=CDR4176-main/schematic/xschem/inv_CDR/inv_CDR.spice",
                 "-rd",
                 f"output={out_tmp}",
             ]
