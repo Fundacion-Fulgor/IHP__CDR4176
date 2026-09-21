@@ -24,5 +24,5 @@ C {iopin.sym} 250 -270 0 0 {name=p2 lab=VDD}
 C {opin.sym} 460 -160 0 0 {name=p3 lab=OUT}
 C {iopin.sym} 250 -40 0 0 {name=p4 lab=VSS}
 C {ipin.sym} 50 -140 0 0 {name=p5 lab=B}
-C {inv/inv.sym} 270 -20 0 0 {name=x1}
+C {inv_CDR/inv_CDR.sym} 270 -20 0 0 {name=x1}
 C {nand_custom/nand_custom.sym} 50 -40 0 0 {name=x2}

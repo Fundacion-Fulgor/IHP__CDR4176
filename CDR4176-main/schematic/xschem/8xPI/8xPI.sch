@@ -26,7 +26,7 @@ N 410 -180 410 -100 {lab=VST[7:0]}
 N 720 -290 780 -290 {lab=#net2}
 N 650 -420 830 -420 {lab=VDD}
 N 650 -160 830 -160 {lab=VSS}
-C {MUX_4_1/MUX_4_1.sym} 210 -140 0 0 {name=x1[7:0]}
+C {MUX_4_1_CDR/MUX_4_1_CDR.sym} 210 -140 0 0 {name=x1[7:0]}
 C {ipin.sym} 290 -350 0 0 {name=p3 lab=VINI}
 C {ipin.sym} 290 -270 0 0 {name=p4 lab=VINQ}
 C {ipin.sym} 290 -310 0 0 {name=p15 lab=VINIB}

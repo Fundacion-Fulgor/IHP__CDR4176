@@ -84,11 +84,11 @@ C {lab_wire.sym} 340 -240 0 1 {name=p36 sig_type=std_logic lab=CLK_B}
 C {lab_wire.sym} 1160 -230 0 1 {name=p37 sig_type=std_logic lab=CLK}
 C {opin.sym} 1680 -360 0 0 {name=p38 lab=Q}
 C {tg_custom/tg_custom.sym} 340 -380 2 1 {name=x3}
-C {inv/inv.sym} 120 -520 0 0 {name=x9}
-C {inv/inv.sym} 60 -240 0 0 {name=x4}
-C {inv/inv.sym} 60 40 0 0 {name=x8}
-C {inv/inv.sym} 880 -220 0 0 {name=x11}
-C {inv/inv.sym} 880 40 0 0 {name=x10}
+C {inv_CDR/inv_CDR.sym} 120 -520 0 0 {name=x9}
+C {inv_CDR/inv_CDR.sym} 60 -240 0 0 {name=x4}
+C {inv_CDR/inv_CDR.sym} 60 40 0 0 {name=x8}
+C {inv_CDR/inv_CDR.sym} 880 -220 0 0 {name=x11}
+C {inv_CDR/inv_CDR.sym} 880 40 0 0 {name=x10}
 C {tg_custom/tg_custom.sym} 340 -100 2 1 {name=x2}
 C {lab_wire.sym} 1100 -280 2 0 {name=p23 sig_type=std_logic lab=VDD}
 C {lab_wire.sym} 1100 -420 2 0 {name=p24 sig_type=std_logic lab=VSS}
@@ -100,7 +100,7 @@ C {lab_wire.sym} 1160 -20 0 1 {name=p33 sig_type=std_logic lab=CLK_B}
 C {tg_custom/tg_custom.sym} 1160 -100 2 1 {name=x7}
 C {lab_wire.sym} 630 -460 0 0 {name=p5 sig_type=std_logic lab=VDD}
 C {lab_wire.sym} 630 -280 0 0 {name=p6 sig_type=std_logic lab=VSS}
-C {inv/inv.sym} 540 -240 0 0 {name=x5}
+C {inv_CDR/inv_CDR.sym} 540 -240 0 0 {name=x5}
 C {lab_wire.sym} 1380 -440 0 0 {name=p8 sig_type=std_logic lab=VDD}
 C {lab_wire.sym} 1380 -260 0 0 {name=p10 sig_type=std_logic lab=VSS}
-C {inv/inv.sym} 1290 -220 0 0 {name=x1}
+C {inv_CDR/inv_CDR.sym} 1290 -220 0 0 {name=x1}

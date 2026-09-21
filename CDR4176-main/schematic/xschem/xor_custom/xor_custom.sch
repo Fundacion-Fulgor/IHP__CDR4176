@@ -22,7 +22,7 @@ N 120 -200 120 -180 {lab=B}
 N 120 -80 120 -60 {lab=Bb}
 N 360 -190 360 -170 {lab=VDD}
 N 360 -90 360 -70 {lab=VSS}
-C {inv/inv.sym} 50 -160 0 0 {name=x1}
+C {inv_CDR/inv_CDR.sym} 50 -160 0 0 {name=x1}
 C {tg_custom/tg_custom.sym} 420 -130 0 0 {name=x3}
 C {ipin.sym} 60 -130 0 0 {name=p1 lab=A}
 C {ipin.sym} 60 -300 0 0 {name=p2 lab=B}

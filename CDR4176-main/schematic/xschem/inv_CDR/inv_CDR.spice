@@ -1,5 +1,5 @@
 ** sch_path: CDR4176-main/schematic/xschem/inv/inv.sch
-.subckt inv VDD VOUT VIN VSS
+.subckt inv_CDR VDD VOUT VIN VSS
 *.PININFO VDD:B VSS:B VOUT:O VIN:I
 XM2 VOUT VIN VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
 XM1 VOUT VIN VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1

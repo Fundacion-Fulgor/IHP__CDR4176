@@ -1,6 +1,6 @@
 * NGSPICE file created from MUX_2_1.ext - technology: ihp-sg13g2
 
-.subckt MUX_2_1_pex VDD VINA VOUT VS VINB VSS
+.subckt MUX_2_1_CDR_pex VDD VINA VOUT VS VINB VSS
 X0 inv_PI_0.VOUT VINA.t0 VDD.t10 VDD.t0 sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
 X1 VOUT.t3 tg_custom_6.VSN.t1 tg_custom_2.VOUT VDD.t0 sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
 X2 a_4858_280# a_4858_280# VDD.t3 VDD.t1 sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u

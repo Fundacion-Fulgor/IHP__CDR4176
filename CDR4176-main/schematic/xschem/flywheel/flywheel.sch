@@ -19,10 +19,10 @@ N 130 -330 240 -330 {lab=#net1}
 N 240 -490 240 -330 {lab=#net1}
 N 540 -340 650 -340 {lab=PH1}
 N 540 -490 540 -340 {lab=PH1}
-C {inv_d2/inv_d2.sym} 400 -490 0 0 {name=x13
+C {inv_d2_CDR/inv_d2_CDR.sym} 400 -490 0 0 {name=x13
 }
 C {lab_pin.sym} 400 -390 3 0 {name=p35 sig_type=std_logic lab=VSS}
-C {inv_d2/inv_d2.sym} 400 -180 0 1 {name=x14
+C {inv_d2_CDR/inv_d2_CDR.sym} 400 -180 0 1 {name=x14
 }
 C {lab_pin.sym} 400 -280 3 1 {name=p36 sig_type=std_logic lab=VDD}
 C {iopin.sym} 400 -590 0 0 {name=p1 lab=VDD}

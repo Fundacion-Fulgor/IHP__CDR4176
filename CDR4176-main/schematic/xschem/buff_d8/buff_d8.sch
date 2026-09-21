@@ -28,10 +28,10 @@ N 400 -260 400 -220 {lab=VDD}
 N 320 -220 400 -220 {lab=VDD}
 N 400 -80 400 -40 {lab=VSS}
 N 320 -80 400 -80 {lab=VSS}
-C {inv/inv.sym} 70 -10 0 0 {name=x7}
-C {inv_d2/inv_d2.sym} 320 -150 0 0 {name=x8}
-C {inv_d4/inv_d4.sym} 480 -150 0 0 {name=x9}
-C {inv_d8/inv_d8.sym} 640 -150 0 0 {name=x10}
+C {inv_CDR/inv_CDR.sym} 70 -10 0 0 {name=x7}
+C {inv_d2_CDR/inv_d2_CDR.sym} 320 -150 0 0 {name=x8}
+C {inv_d4_CDR/inv_d4_CDR.sym} 480 -150 0 0 {name=x9}
+C {inv_d8_CDR/inv_d8_CDR.sym} 640 -150 0 0 {name=x10}
 C {ipin.sym} 70 -150 0 0 {name=p4 lab=VIN}
 C {opin.sym} 750 -150 0 0 {name=p3 lab=VOUT}
 C {iopin.sym} 400 -260 0 0 {name=p1 lab=VDD}

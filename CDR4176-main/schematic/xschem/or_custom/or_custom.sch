@@ -25,4 +25,4 @@ C {opin.sym} 430 -120 0 0 {name=p3 lab=OUT}
 C {ipin.sym} 40 -140 0 0 {name=p1 lab=A}
 C {ipin.sym} 40 -100 0 0 {name=p5 lab=B}
 C {nor_custom/nor_custom.sym} 40 -50 0 0 {name=x1}
-C {inv/inv.sym} 250 20 0 0 {name=x2}
+C {inv_CDR/inv_CDR.sym} 250 20 0 0 {name=x2}

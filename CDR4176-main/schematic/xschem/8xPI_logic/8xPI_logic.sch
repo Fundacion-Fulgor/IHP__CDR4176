@@ -59,8 +59,8 @@ N 560 -150 770 -150 {lab=VSS}
 N 170 -340 230 -340 {lab=S[3]}
 N 280 -440 280 -380 {lab=VDD}
 N 280 -300 280 -240 {lab=VSS}
-C {inv/inv.sym} 860 -400 0 0 {name=x1}
-C {inv/inv.sym} 1020 -400 0 0 {name=x2}
+C {inv_CDR/inv_CDR.sym} 860 -400 0 0 {name=x1}
+C {inv_CDR/inv_CDR.sym} 1020 -400 0 0 {name=x2}
 C {xor_custom/xor_custom.sym} 460 -160 0 0 {name=x3}
 C {ipin.sym} 740 -660 0 0 {name=p1 lab=S[4:3]}
 C {iopin.sym} 1020 -400 0 0 {name=p2 lab=VSS}
@@ -68,14 +68,14 @@ C {lab_pin.sym} 170 -340 0 0 {name=p3 sig_type=std_logic lab=S[3]}
 C {opin.sym} 1070 -250 0 0 {name=p4 lab=STQ[7:1]}
 C {lab_pin.sym} 1220 -540 2 0 {name=p5 sig_type=std_logic lab=SQ[1]}
 C {lab_pin.sym} 670 -250 2 0 {name=p6 sig_type=std_logic lab=SQ[0]}
-C {inv/inv.sym} 310 -400 0 0 {name=x4}
-C {inv/inv.sym} 470 -400 0 0 {name=x5}
+C {inv_CDR/inv_CDR.sym} 310 -400 0 0 {name=x4}
+C {inv_CDR/inv_CDR.sym} 470 -400 0 0 {name=x5}
 C {lab_pin.sym} 290 -540 0 0 {name=p7 sig_type=std_logic lab=S[3]}
 C {lab_pin.sym} 670 -540 2 0 {name=p8 sig_type=std_logic lab=SQ[2]}
 C {lab_pin.sym} 450 -260 0 0 {name=p9 sig_type=std_logic lab=S[4]}
 C {lab_pin.sym} 450 -240 0 0 {name=p10 sig_type=std_logic lab=S[3]}
-C {inv/inv.sym} 1410 -400 0 0 {name=x6[6:0]}
-C {inv/inv.sym} 1570 -400 0 0 {name=x7[6:0]}
+C {inv_CDR/inv_CDR.sym} 1410 -400 0 0 {name=x6[6:0]}
+C {inv_CDR/inv_CDR.sym} 1570 -400 0 0 {name=x7[6:0]}
 C {lab_pin.sym} 1590 -540 1 0 {name=p13 sig_type=std_logic lab=SCb[7:1]}
 C {lab_pin.sym} 1770 -540 2 0 {name=p14 sig_type=std_logic lab=SC[7:1]
 }

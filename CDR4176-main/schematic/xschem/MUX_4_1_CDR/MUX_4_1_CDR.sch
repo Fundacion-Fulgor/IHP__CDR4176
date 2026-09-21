@@ -25,11 +25,11 @@ N 240 -380 310 -380 {lab=#net1}
 N 310 -270 310 -180 {lab=#net2}
 N 240 -180 310 -180 {lab=#net2}
 N 490 -280 590 -280 {lab=VOUT}
-C {MUX_2_1/MUX_2_1.sym} 110 -100 0 0 {name=x3}
+C {MUX_2_1_CDR/MUX_2_1_CDR.sym} 110 -100 0 0 {name=x3}
 C {lab_wire.sym} 190 -270 2 0 {name=p12 sig_type=std_logic lab=VDD}
 C {lab_wire.sym} 150 -290 2 0 {name=p13 sig_type=std_logic lab=VSS}
 C {lab_wire.sym} 190 -290 2 0 {name=p17 sig_type=std_logic lab=VS[0]}
-C {MUX_2_1/MUX_2_1.sym} 360 -200 0 0 {name=x5}
+C {MUX_2_1_CDR/MUX_2_1_CDR.sym} 360 -200 0 0 {name=x5}
 C {lab_wire.sym} 150 -90 2 0 {name=p20 sig_type=std_logic lab=VSS}
 C {lab_wire.sym} 190 -470 2 0 {name=p21 sig_type=std_logic lab=VDD}
 C {lab_wire.sym} 440 -190 2 0 {name=p22 sig_type=std_logic lab=VST}
@@ -43,4 +43,4 @@ C {ipin.sym} 100 -190 0 0 {name=p6 lab=VINC}
 C {ipin.sym} 100 -170 0 0 {name=p7 lab=VIND}
 C {ipin.sym} 110 -270 0 0 {name=p16 lab=VS[1:0]}
 C {ipin.sym} 110 -240 0 0 {name=p19 lab=VST}
-C {MUX_2_1/MUX_2_1.sym} 110 -300 0 0 {name=x1}
+C {MUX_2_1_CDR/MUX_2_1_CDR.sym} 110 -300 0 0 {name=x1}
