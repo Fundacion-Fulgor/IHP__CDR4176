@@ -1,0 +1,536 @@
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/CDR4176/CDR4176.sch
+.subckt CDR4176 VDD VOUT VS[4] VS[3] VS[2] VS[1] VS[0] VCONT VSS
+*.PININFO VS[4:0]:I VCONT:I VOUT:O VDD:B VSS:B
+x1 VDD VS[4] VS[3] VS[2] VS[1] VS[0] voutpi VCONT VSS VDD VDD VDD 8xPI_top
+x2 VDD voutpi voutdiv VSS div_freq_x8
+x3 VDD VOUT voutdiv VSS buff_PI_d16
+.ends
+
+* expanding   symbol:  8xPI_top/8xPI_top.sym # of pins=8
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/8xPI_top/8xPI_top.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/8xPI_top/8xPI_top.sch
+.subckt 8xPI_top VDD8xPI VS[4] VS[3] VS[2] VS[1] VS[0] VOUT VCONT VSS VDDlogic VDDdeco VDDclock
+*.PININFO VCONT:I VDD8xPI:B VSS:B VOUT:O VS[4:0]:I VDDlogic:B VDDdeco:B VDDclock:B
+x1 VI VIB VQ VQB VSQ[1] VSQ[0] VSTQ[7] VSTQ[6] VSTQ[5] VSTQ[4] VSTQ[3] VSTQ[2] VSTQ[1] VSQ[2] VOUT VDD8xPI VSS 8xPI
+x2 VI VQ VDDclock VCONT VIB VSS VQB clock_gen
+x3 VST[7] VST[6] VST[5] VST[4] VST[3] VST[2] VST[1] VS[2] VS[1] VS[0] VDDdeco VSS 3to7_deco_v2
+x4 VDDlogic VSQ[2] VSQ[1] VSQ[0] VS[4] VS[3] VSS VSTQ[7] VSTQ[6] VSTQ[5] VSTQ[4] VSTQ[3] VSTQ[2] VSTQ[1] VST[7] VST[6] VST[5]
++ VST[4] VST[3] VST[2] VST[1] 8xPI_logic
+.ends
+
+
+* expanding   symbol:  div_freq_x8/div_freq_x8.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/div_freq_x8/div_freq_x8.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/div_freq_x8/div_freq_x8.sch
+.subckt div_freq_x8 VDD VINPI VOUT VSS
+*.PININFO VDD:B VSS:B VINPI:B VOUT:O
+x7 VDD VSS net1 VINPI div_freq_x2
+x8 VDD VSS net2 net1 div_freq_x2
+x9 VDD VSS VOUT net2 div_freq_x2
+.ends
+
+
+* expanding   symbol:  buff_PI_d16/buff_PI_d16.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/buff_PI_d16/buff_PI_d16.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/buff_PI_d16/buff_PI_d16.sch
+.subckt buff_PI_d16 VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x7 VDD net1 VIN VSS inv_PI_d2
+x8 VDD net2 net1 VSS inv_PI_d4
+x9 VDD net3 net2 VSS inv_PI_d8
+x10 VDD VOUT net3 VSS inv_PI_d16
+.ends
+
+
+* expanding   symbol:  8xPI/8xPI.sym # of pins=9
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/8xPI/8xPI.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/8xPI/8xPI.sch
+.subckt 8xPI VINI VINIB VINQ VINQB VS[1] VS[0] VST[7] VST[6] VST[5] VST[4] VST[3] VST[2] VST[1] VST[0] VOUT VDD VSS
+*.PININFO VINI:I VINQ:I VINIB:I VINQB:I VDD:B VSS:B VOUT:O VS[1:0]:I VST[7:0]:I
+x1[7] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[7] MUX_4_1_CDR
+x1[6] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[6] MUX_4_1_CDR
+x1[5] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[5] MUX_4_1_CDR
+x1[4] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[4] MUX_4_1_CDR
+x1[3] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[3] MUX_4_1_CDR
+x1[2] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[2] MUX_4_1_CDR
+x1[1] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[1] MUX_4_1_CDR
+x1[0] VINI VINIB VDD net1 VS[1] VS[0] VINQ VSS VINQB VST[0] MUX_4_1_CDR
+x2 VDD net2 net1 VSS inv_PI
+x1 VDD VOUT net2 VSS buff_PI_d16
+.ends
+
+
+* expanding   symbol:  clock_gen/clock_gen.sym # of pins=7
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/clock_gen/clock_gen.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/clock_gen/clock_gen.sch
+.subckt clock_gen PH0 PH90 VDD CTRL PH180 VSS PH270
+*.PININFO VDD:B VSS:B CTRL:I PH0:O PH90:O PH180:O PH270:O
+x1 CTRL v0 v3 v2 v5 v4 v1 VSS VDD 6ph_rosc
+x22 VDD PH0 v0 v1 VSS PH90 v2 v3 PH180 v4 PH270 v5 6to4
+.ends
+
+
+* expanding   symbol:  3to7_deco_v2/3to7_deco_v2.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/3to7_deco_v2/3to7_deco_v2.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/3to7_deco_v2/3to7_deco_v2.sch
+.subckt 3to7_deco_v2 ST[7] ST[6] ST[5] ST[4] ST[3] ST[2] ST[1] S[2] S[1] S[0] VDD VSS
+*.PININFO ST[7:1]:O S[2:0]:I VDD:B VSS:B
+x1 VDD net3 S[2] VSS inv_CDR
+x2 VDD net2 S[1] VSS inv_CDR
+x3 VDD net1 S[0] VSS inv_CDR
+x4 VDD net1 net2 net3 ST[1] VSS nor_x3_custom
+x5 VDD net2 ST[2] net3 VSS nor_custom
+x6 VDD net5 ST[3] net3 VSS nor_custom
+x7 VDD ST[4] net3 VSS inv_CDR
+x8 VDD ST[5] net4 net3 VSS nand_custom
+x9 VDD ST[6] net2 net3 VSS nand_custom
+x11 VDD net5 net2 net1 VSS and_custom
+x12 VDD net1 net4 net2 VSS or_custom
+x10 VDD ST[7] net1 net2 net3 VSS nand_x3_custom
+.ends
+
+
+* expanding   symbol:  8xPI_logic/8xPI_logic.sym # of pins=6
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/8xPI_logic/8xPI_logic.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/8xPI_logic/8xPI_logic.sch
+.subckt 8xPI_logic VDD SQ[2] SQ[1] SQ[0] S[4] S[3] VSS STQ[7] STQ[6] STQ[5] STQ[4] STQ[3] STQ[2] STQ[1] ST[7] ST[6] ST[5] ST[4]
++ ST[3] ST[2] ST[1]
+*.PININFO S[4:3]:I VSS:B STQ[7:1]:O ST[7:1]:I VDD:B SQ[2:0]:O
+x1 VDD net1 S[4] VSS inv_CDR
+x2 VDD SQ[1] net1 VSS inv_CDR
+x3 VDD S[3] VSS SQ[0] S[4] xor_custom
+x4 VDD net2 S[3] VSS inv_CDR
+x5 VDD SQ[2] net2 VSS inv_CDR
+x6[6] VDD SCb[7] Sbuff[3] VSS inv_CDR
+x6[5] VDD SCb[6] Sbuff[3] VSS inv_CDR
+x6[4] VDD SCb[5] Sbuff[3] VSS inv_CDR
+x6[3] VDD SCb[4] Sbuff[3] VSS inv_CDR
+x6[2] VDD SCb[3] Sbuff[3] VSS inv_CDR
+x6[1] VDD SCb[2] Sbuff[3] VSS inv_CDR
+x6[0] VDD SCb[1] Sbuff[3] VSS inv_CDR
+x7[6] VDD SC[7] SCb[7] VSS inv_CDR
+x7[5] VDD SC[6] SCb[6] VSS inv_CDR
+x7[4] VDD SC[5] SCb[5] VSS inv_CDR
+x7[3] VDD SC[4] SCb[4] VSS inv_CDR
+x7[2] VDD SC[3] SCb[3] VSS inv_CDR
+x7[1] VDD SC[2] SCb[2] VSS inv_CDR
+x7[0] VDD SC[1] SCb[1] VSS inv_CDR
+x1[6] VDD ST[7] VSS STQ[7] SC[7] xor_custom
+x1[5] VDD ST[6] VSS STQ[6] SC[6] xor_custom
+x1[4] VDD ST[5] VSS STQ[5] SC[5] xor_custom
+x1[3] VDD ST[4] VSS STQ[4] SC[4] xor_custom
+x1[2] VDD ST[3] VSS STQ[3] SC[3] xor_custom
+x1[1] VDD ST[2] VSS STQ[2] SC[2] xor_custom
+x1[0] VDD ST[1] VSS STQ[1] SC[1] xor_custom
+x6 VDD Sbuff[3] S[3] VSS buff_d8
+.ends
+
+
+* expanding   symbol:  div_freq_x2/div_freq_x2.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/div_freq_x2/div_freq_x2.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/div_freq_x2/div_freq_x2.sch
+.subckt div_freq_x2 VDD VSS CLKOUT CLKIN
+*.PININFO VDD:B VSS:B CLKIN:I CLKOUT:O
+x1 VDD CLKIN VSS CLKOUT net1 reg_v2
+x4 VDD net1 CLKOUT VSS inv_CDR
+.ends
+
+
+* expanding   symbol:  inv_PI_d2/inv_PI_d2.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d2/inv_PI_d2.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d2/inv_PI_d2.sch
+.subckt inv_PI_d2 VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x1[1] VDD VOUT VIN VSS inv_PI
+x1[0] VDD VOUT VIN VSS inv_PI
+.ends
+
+
+* expanding   symbol:  inv_PI_d4/inv_PI_d4.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d4/inv_PI_d4.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d4/inv_PI_d4.sch
+.subckt inv_PI_d4 VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x1[1] VDD VOUT VIN VSS inv_PI_d2
+x1[0] VDD VOUT VIN VSS inv_PI_d2
+.ends
+
+
+* expanding   symbol:  inv_PI_d8/inv_PI_d8.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d8/inv_PI_d8.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d8/inv_PI_d8.sch
+.subckt inv_PI_d8 VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x1[1] VDD VOUT VIN VSS inv_PI_d4
+x1[0] VDD VOUT VIN VSS inv_PI_d4
+.ends
+
+
+* expanding   symbol:  inv_PI_d16/inv_PI_d16.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d16/inv_PI_d16.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d16/inv_PI_d16.sch
+.subckt inv_PI_d16 VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x1[1] VDD VOUT VIN VSS inv_PI_d8
+x1[0] VDD VOUT VIN VSS inv_PI_d8
+.ends
+
+
+* expanding   symbol:  MUX_4_1_CDR/MUX_4_1_CDR.sym # of pins=9
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/MUX_4_1_CDR/MUX_4_1_CDR.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/MUX_4_1_CDR/MUX_4_1_CDR.sch
+.subckt MUX_4_1_CDR VINA VINB VDD VOUT VS[1] VS[0] VINC VSS VIND VST
+*.PININFO VOUT:O VDD:B VSS:B VINA:I VINB:I VINC:I VIND:I VS[1:0]:I VST:I
+x3 VDD VINC net2 VS[1] VIND VSS MUX_2_1_CDR
+x5 VDD net1 VOUT VST net2 VSS MUX_2_1_CDR
+x1 VDD VINA net1 VS[0] VINB VSS MUX_2_1_CDR
+.ends
+
+
+* expanding   symbol:  inv_PI/inv_PI.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI/inv_PI.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI/inv_PI.sch
+.subckt inv_PI VDD VOUT VIN VSS
+*.PININFO VDD:B VSS:B VOUT:O VIN:I
+M2 VOUT VIN VDD VDD sg13_lv_pmos w=0.45u l=0.13u ng=3 m=1
+M1 VOUT VIN VSS VSS sg13_lv_nmos w=0.3u l=0.13u ng=2 m=1
+.ends
+
+
+* expanding   symbol:  6ph_rosc/6ph_rosc.sym # of pins=9
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/6ph_rosc/6ph_rosc.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/6ph_rosc/6ph_rosc.sch
+.subckt 6ph_rosc CTRL PH0 PH3 PH2 PH5 PH4 PH1 VSS VDD
+*.PININFO VDD:B VSS:B CTRL:I PH0:O PH2:O PH5:O PH1:O PH4:O PH3:O
+x1 VDD Ph4_in Ph1_in CTRL Ph3_in Ph0_in VSS psdiff
+x2 VDD Ph2_in Ph5_in CTRL Ph1_in Ph4_in VSS psdiff
+x3 VDD Ph0_in Ph3_in CTRL Ph5_in Ph2_in VSS psdiff
+x4 CTRL Ph0 Ph3 VDD decap
+x5 CTRL Ph2 Ph5 VDD decap
+x6 CTRL Ph1 Ph4 VDD decap
+x7 VDD PH1 Ph1_in VSS buff_d8
+x8 VDD PH4 Ph4_in VSS buff_d8
+x9 VDD PH5 Ph5_in VSS buff_d8
+x10 VDD PH2 Ph2_in VSS buff_d8
+x11 VDD PH3 Ph3_in VSS buff_d8
+x12 VDD PH0 Ph0_in VSS buff_d8
+x19 VDD Ph2 Ph5 VSS flywheel
+x17 VDD Ph0 Ph3 VSS flywheel
+x13 VDD Ph4 Ph1 VSS flywheel
+.ends
+
+
+* expanding   symbol:  6to4/6to4.sym # of pins=12
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/6to4/6to4.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/6to4/6to4.sch
+.subckt 6to4 VDD PH0 V0 V1 VSS PH90 V2 V3 PH180 V4 PH270 V5
+*.PININFO PH0:O PH90:O PH180:O PH270:O V0:I V1:I V2:I V3:I V4:I V5:I VDD:B VSS:B
+x16 VDD V4 v270 V5 VSS PI_clk
+x2 VDD V1 v90 V2 VSS PI_clk
+x8 VDD net1 V0 VSS inv_PI_d2
+x9 VDD net2 V3 VSS inv_PI_d2
+x10 VDD v360 net1 VSS inv_PI_d2
+x11 VDD v180 net2 VSS inv_PI_d2
+x7 VDD v180 v360 VSS flywheel_clk
+x12 VDD v270 v90 VSS flywheel_clk
+x1 VDD PH0 v360 VSS buff_PI_d32
+x4 VDD PH90 v90 VSS buff_PI_d32
+x3 VDD PH180 v180 VSS buff_PI_d32
+x5 VDD PH270 v270 VSS buff_PI_d32
+.ends
+
+
+* expanding   symbol:  inv_CDR/inv_CDR.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_CDR/inv_CDR.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_CDR/inv_CDR.sch
+.subckt inv_CDR VDD VOUT VIN VSS
+*.PININFO VDD:B VSS:B VOUT:O VIN:I
+M2 VOUT VIN VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M1 VOUT VIN VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  nor_x3_custom/nor_x3_custom.sym # of pins=6
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/nor_x3_custom/nor_x3_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/nor_x3_custom/nor_x3_custom.sch
+.subckt nor_x3_custom VDD A B C OUT VSS
+*.PININFO VDD:B VSS:B B:I C:I OUT:O A:I
+M1 OUT A VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+M2 OUT C net1 VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M3 OUT B VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+M4 net1 B net2 VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M5 net2 A VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M6 OUT C VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  nor_custom/nor_custom.sym # of pins=5
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/nor_custom/nor_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/nor_custom/nor_custom.sch
+.subckt nor_custom VDD A OUT B VSS
+*.PININFO VDD:B VSS:B A:I B:I OUT:O
+M1 OUT A VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+M2 OUT B net1 VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M3 OUT B VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+M4 net1 A VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  nand_custom/nand_custom.sym # of pins=5
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/nand_custom/nand_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/nand_custom/nand_custom.sch
+.subckt nand_custom VDD OUT A B VSS
+*.PININFO VDD:B VSS:B A:I B:I OUT:O
+M1 OUT A net1 VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+M2 OUT A VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M3 net1 B VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+M4 OUT B VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  and_custom/and_custom.sym # of pins=5
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/and_custom/and_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/and_custom/and_custom.sch
+.subckt and_custom VDD OUT A B VSS
+*.PININFO A:I VDD:B OUT:O VSS:B B:I
+x1 VDD OUT net1 VSS inv_CDR
+x2 VDD net1 A B VSS nand_custom
+.ends
+
+
+* expanding   symbol:  or_custom/or_custom.sym # of pins=5
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/or_custom/or_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/or_custom/or_custom.sch
+.subckt or_custom VDD A OUT B VSS
+*.PININFO VDD:B VSS:B OUT:O A:I B:I
+x1 VDD A net1 B VSS nor_custom
+x2 VDD OUT net1 VSS inv_CDR
+.ends
+
+
+* expanding   symbol:  nand_x3_custom/nand_x3_custom.sym # of pins=6
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/nand_x3_custom/nand_x3_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/nand_x3_custom/nand_x3_custom.sch
+.subckt nand_x3_custom VDD OUT A B C VSS
+*.PININFO A:I B:I C:I VSS:B VDD:B OUT:O
+M2 OUT A VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M1 OUT B VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M3 OUT C VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M4 OUT A net1 VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+M5 net1 B net2 VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+M6 net2 C VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  xor_custom/xor_custom.sym # of pins=5
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/xor_custom/xor_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/xor_custom/xor_custom.sch
+.subckt xor_custom VDD B VSS VOUT A
+*.PININFO A:I B:I VOUT:O VDD:B VSS:B
+x1 VDD Bb B VSS inv_CDR
+x3 A Bb B VOUT VDD VSS tg_custom
+x2 B VDD A VSS Bb VOUT inv_xor
+.ends
+
+
+* expanding   symbol:  buff_d8/buff_d8.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/buff_d8/buff_d8.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/buff_d8/buff_d8.sch
+.subckt buff_d8 VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x7 VDD net1 VIN VSS inv_CDR
+x8 VDD net2 net1 VSS inv_d2_CDR
+x9 VDD net3 net2 VSS inv_d4_CDR
+x10 VDD VOUT net3 VSS inv_d8_CDR
+.ends
+
+
+* expanding   symbol:  reg_v2/reg_v2.sym # of pins=5
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/reg_v2/reg_v2.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/reg_v2/reg_v2.sch
+.subckt reg_v2 VDD CLK VSS Q D
+*.PININFO VDD:B VSS:B CLK:I D:I Q:O
+x3 net7 CLK CLK_B net2 VDD VSS tg_custom
+x9 VDD CLK_B CLK VSS inv_CDR
+x4 VDD net2 net1 VSS inv_CDR
+x8 VDD net4 D VSS inv_CDR
+x11 VDD net3 Q VSS inv_CDR
+x10 VDD net5 net1 VSS inv_CDR
+x2 net7 CLK_B CLK net4 VDD VSS tg_custom
+x6 net6 CLK_B CLK net3 VDD VSS tg_custom
+x7 net6 CLK CLK_B net5 VDD VSS tg_custom
+x5 VDD net1 net7 VSS inv_CDR
+x1 VDD Q net6 VSS inv_CDR
+.ends
+
+
+* expanding   symbol:  MUX_2_1_CDR/MUX_2_1_CDR.sym # of pins=6
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/MUX_2_1_CDR/MUX_2_1_CDR.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/MUX_2_1_CDR/MUX_2_1_CDR.sch
+.subckt MUX_2_1_CDR VDD VINA VOUT VS VINB VSS
+*.PININFO VOUT:O VINA:I VINB:I VS:I VDD:B VSS:B
+x12 VDD tieh VSS tieh_custom
+x7 VDD tiel VSS tiel_custom
+x14 net4 tiel tieh net2 VDD VSS tg_custom
+x15[1] net4 net1 VS net2 VDD VSS tg_custom
+x15[0] net4 net1 VS net2 VDD VSS tg_custom
+x16 net5 VS net1 net3 VDD VSS tg_custom
+x17[1] net5 tiel tieh net3 VDD VSS tg_custom
+x17[0] net5 tiel tieh net3 VDD VSS tg_custom
+x10 VDD net1 VS VSS inv_CDR
+x4 VDD net2 VINA VSS inv_PI
+x9 VDD net3 VINB VSS inv_PI
+x11 VOUT tieh tiel net4 VDD VSS tg_custom
+x13 VOUT tieh tiel net5 VDD VSS tg_custom
+.ends
+
+
+* expanding   symbol:  psdiff/psdiff.sym # of pins=7
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/psdiff/psdiff.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/psdiff/psdiff.sch
+.subckt psdiff VDD VOUTDN VOUTDP CTRL CLKN CLKP VSS
+*.PININFO VSS:B CLKP:I CLKN:I VDD:B CTRL:I VOUTDN:O VOUTDP:O
+M1 net1 CLKP VSS VSS sg13_lv_nmos w=1.5u l=0.13u ng=10 m=3
+M2 net2 CLKN VSS VSS sg13_lv_nmos w=1.5u l=0.13u ng=10 m=3
+M3 net3 CTRL net1 VSS sg13_lv_nmos w=0.3u l=0.13u ng=2 m=1
+M4 net4 CTRL net2 VSS sg13_lv_nmos w=0.3u l=0.13u ng=2 m=1
+M6 net2 net3 VDD VDD sg13_lv_pmos w=1.5u l=0.13u ng=10 m=1
+M5 net1 net4 VDD VDD sg13_lv_pmos w=1.5u l=0.13u ng=10 m=1
+M7 net1 VSS VDD VDD sg13_lv_pmos w=1.5u l=0.13u ng=10 m=2
+M8 net2 VSS VDD VDD sg13_lv_pmos w=1.5u l=0.13u ng=10 m=2
+x1 VDD VOUTDP net2 VSS buff_d8
+x2 VDD VOUTDN net1 VSS buff_d8
+.ends
+
+
+* expanding   symbol:  decap/decap.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/decap/decap.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/decap/decap.sch
+.subckt decap CTRL VOUTDN VOUTDP VDD
+*.PININFO CTRL:I VDD:I VOUTDN:I VOUTDP:I
+M10 CTRL VOUTDP CTRL VDD sg13_lv_pmos w=8u l=0.13u ng=8 m=4
+M9 CTRL VOUTDN CTRL VDD sg13_lv_pmos w=8u l=0.13u ng=8 m=4
+.ends
+
+
+* expanding   symbol:  flywheel/flywheel.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/flywheel/flywheel.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/flywheel/flywheel.sch
+.subckt flywheel VDD PH1 PH0 VSS
+*.PININFO VDD:B VSS:B PH1:B PH0:B
+x13 VDD PH1 PH0 VSS inv_d2_CDR
+x14 VDD PH0 PH1 VSS inv_d2_CDR
+.ends
+
+
+* expanding   symbol:  PI_clk/PI_clk.sym # of pins=5
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/PI_clk/PI_clk.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/PI_clk/PI_clk.sch
+.subckt PI_clk VDD PH0 PHOUT PH1 VSS
+*.PININFO VDD:B VSS:B PH0:I PH1:I PHOUT:O
+x5 VDD net1 PH0 VSS inv_PI_d2
+x6 VDD net1 PH1 VSS inv_PI_d2
+x7 VDD PHOUT net1 VSS inv_PI_d2
+.ends
+
+
+* expanding   symbol:  flywheel_clk/flywheel_clk.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/flywheel_clk/flywheel_clk.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/flywheel_clk/flywheel_clk.sch
+.subckt flywheel_clk VDD PH1 PH0 VSS
+*.PININFO VDD:B VSS:B PH1:B PH0:B
+x13 VDD PH1 PH0 VSS inv_d4_CDR
+x14 VDD PH0 PH1 VSS inv_d2_CDR
+.ends
+
+
+* expanding   symbol:  buff_PI_d32/buff_PI_d32.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/buff_PI_d32/buff_PI_d32.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/buff_PI_d32/buff_PI_d32.sch
+.subckt buff_PI_d32 VDD VOUT VIN VSS
+*.PININFO VOUT:O VSS:B VDD:B VIN:I
+x5 VDD net2 VIN VSS buff_PI_d16
+x15 VDD net1 net2 VSS inv_PI_d16
+x20 VDD VOUT net1 VSS inv_PI_d32
+.ends
+
+
+* expanding   symbol:  tg_custom/tg_custom.sym # of pins=6
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/tg_custom/tg_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/tg_custom/tg_custom.sch
+.subckt tg_custom VOUT VSN VSP VIN VBP VBN
+*.PININFO VIN:B VSN:B VOUT:B VSP:B VBN:B VBP:B
+M1 VOUT VSN VIN VBN sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+M2 VOUT VSP VIN VBP sg13_lv_pmos w=0.3u l=0.13u ng=2 m=1
+.ends
+
+
+* expanding   symbol:  inv_xor/inv_xor.sym # of pins=6
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_xor/inv_xor.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_xor/inv_xor.sch
+.subckt inv_xor VDD VBP VIN VBN VSS VOUT
+*.PININFO VDD:B VSS:B VOUT:O VIN:I VBP:B VBN:B
+M2 VOUT VIN VDD VBP sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M1 VOUT VIN VSS VBN sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  inv_d2_CDR/inv_d2_CDR.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_d2_CDR/inv_d2_CDR.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_d2_CDR/inv_d2_CDR.sch
+.subckt inv_d2_CDR VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x1[1] VDD VOUT VIN VSS inv_CDR
+x1[0] VDD VOUT VIN VSS inv_CDR
+.ends
+
+
+* expanding   symbol:  inv_d4_CDR/inv_d4_CDR.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_d4_CDR/inv_d4_CDR.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_d4_CDR/inv_d4_CDR.sch
+.subckt inv_d4_CDR VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x1[1] VDD VOUT VIN VSS inv_d2_CDR
+x1[0] VDD VOUT VIN VSS inv_d2_CDR
+.ends
+
+
+* expanding   symbol:  inv_d8_CDR/inv_d8_CDR.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_d8_CDR/inv_d8_CDR.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_d8_CDR/inv_d8_CDR.sch
+.subckt inv_d8_CDR VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x1[1] VDD VOUT VIN VSS inv_d4_CDR
+x1[0] VDD VOUT VIN VSS inv_d4_CDR
+.ends
+
+
+* expanding   symbol:  tieh_custom/tieh_custom.sym # of pins=3
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/tieh_custom/tieh_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/tieh_custom/tieh_custom.sch
+.subckt tieh_custom VDD VOUT VSS
+*.PININFO VDD:B VSS:B VOUT:O
+M2 VOUT net1 VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M1 net1 net1 VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  tiel_custom/tiel_custom.sym # of pins=3
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/tiel_custom/tiel_custom.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/tiel_custom/tiel_custom.sch
+.subckt tiel_custom VDD VOUT VSS
+*.PININFO VDD:B VSS:B VOUT:O
+M2 net1 net1 VDD VDD sg13_lv_pmos w=0.15u l=0.13u ng=1 m=1
+M1 VOUT net1 VSS VSS sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  inv_PI_d32/inv_PI_d32.sym # of pins=4
+** sym_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d32/inv_PI_d32.sym
+** sch_path: /foss/designs/IHP__CDR4176/CDR4176-main/schematic/xschem/inv_PI_d32/inv_PI_d32.sch
+.subckt inv_PI_d32 VDD VOUT VIN VSS
+*.PININFO VIN:I VOUT:O VDD:B VSS:B
+x1[1] VDD VOUT VIN VSS inv_PI_d16
+x1[0] VDD VOUT VIN VSS inv_PI_d16
+.ends
+
