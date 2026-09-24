@@ -1,7 +1,7 @@
-# IHP__CDR4176: 5-Bit Phase Interpolator (PI) IP in IHP SG13G2 Technology
+# IHP__CDR4176: 5-Bit 4-Quadrant Phase Interpolator (PI) IP in IHP SG13G2 Technology
 
 [![Technology](https://img.shields.io/badge/Process-IHP%20SG13G2-blue)](https://www.ihp-microelectronics.com)
-[![Tools](https://img.shields.io/badge/EDA-Xschem%20%7C%20Ngspice%20%7C%20KLayout%20%7C%20Magic-orange)](#eda-toolchain)
+![Tools](https://img.shields.io/badge/EDA-Xschem%20%7C%20Ngspice%20%7C%20KLayout%20%7C%20Magic-orange)
 
 This repository contains the full design, simulation setup, and layout files for an open-source **5-Bit 4-Quadrant Phase Interpolator (PI)** IP developed in the **IHP SG13G2** 130 nm BiCMOS technology node. 
 
@@ -57,11 +57,20 @@ The 5-bit control word enables selection among $32$ ($2^5$) discrete phase state
 
 Phase interpolation within each quadrant operates in the voltage/current domain by performing a weighted summation of two input clocks ($CLK_A$ and $CLK_B$) that share a $90^\circ$ phase difference.
 
-The summation is realized by means of 8 multiplexers (`MUX_2_1_CDR`) with their outputs tied to a common node, which feeds an inverter chain. Driven by a 3-bit thermometer code, each multiplexer is configured to route either $CLK_A$ or $CLK_B$, achieving a weighted current charge/discharge of the node. This architecture enables phase interpolation across 8 discrete steps per quadrant, ranging from $8CLK_A$ to $1CLK_A + 7CLK_B$.
+The summation is realized by means of 8 multiplexers (`MUX_2_1_CDR`) with their outputs tied to a common node, which feeds an inverter chain. Driven by a 3-bit thermometer code, each multiplexer is configured to route either $CLK_A$ or $CLK_B$, achieving a weighted current charge/discharge of the node. This architecture enables phase interpolation across 8 discrete steps per quadrant, ranging from $8CLK_A$ to $1CLK_A + 7CLK_B$. The symbol and schematic for the `MUX_2_1_CDR` cell are shown below:
+
+<p align="center">
+<img src="doc/fig/MUX_2_1_sym.png" width=38% height=38%>  &nbsp;&nbsp;&nbsp;<img src="doc/fig/MUX_2_1_sch.png" width=31% height=31%>
+</p>
+
 
 The input signals $CLK_A$ and $CLK_B$ are dynamically selected from one of the four quadrature clock pairs: $0^\circ\text{--}90^\circ$, $90^\circ\text{--}180^\circ$, $180^\circ\text{--}270^\circ$, or $270^\circ\text{--}0^\circ$. This quadrant selection is made with `MUX_2_1_CDR` multiplexers and controlled by the remaining two bits of the 5-bit control word, achieving full $360^\circ$ phase rotation across all four quadrants.
 
-This structural arrangement of `MUX_2_1_CDR` cells forms a higher-level 4-to-1 multiplexer block (`MUX_4_1_CDR`), which integrates three internal instances: two input-stage multiplexers route the appropriate quadrature clocks ($CLK_A$ and $CLK_B$) based on the quadrant selection bits, while the third instance performs the weighted current summation directly onto the common output node.
+This structural arrangement of `MUX_2_1_CDR` cells forms a higher-level 4-to-1 multiplexer block (`MUX_4_1_CDR`), which integrates three internal instances: two input-stage multiplexers route the appropriate quadrature clocks ($CLK_A$ and $CLK_B$) based on the quadrant selection bits, while the third instance performs the weighted current summation directly onto the common output node. The symbol and schematic for the `MUX_4_1_CDR` cell are shown below:
+
+<p align="center">
+<img src="doc/fig/MUX_4_1_sym.png" width=35% height=35%>  &nbsp;&nbsp;&nbsp;<img src="doc/fig/MUX_4_1_sch.png" width=45.2% height=45.2%>
+</p>
 
 The tailored sizing and optimization of the custom `MUX_2_1_CDR` cell play a critical role in overall performance, directly influencing phase interpolation linearity, inter-quadrant symmetry, and circuit bandwidth.
 
@@ -194,6 +203,12 @@ This project was developed entirely using open-source EDA tools tailored for the
 
 ## 7. Acknowledgments
 
-On behalf of the entire team, we would like to express our special gratitude to **Fundación Fulgor** and all the individuals who comprise it. It is through their continuous collaboration and support that this project has been made possible.
+On behalf of the entire team, we would like to express our special gratitude to **Fundación Fulgor** and all the individuals who comprise it. It is through their continuous collaboration and support that this project has been made possible. 
 
-Additionally, we extend our heartfelt thanks to **Luighi Viton-Zorrilla** for his tireless work on achieving a seamless Top Integration in record time.
+In particular, we would like to extend our sincere appreciation to:
+* Juana Pucheta - Universidad Nacional de Cordoba (Argentina) 
+* Genaro Trucchi - Universidad Nacional de Cordoba (Argentina)
+* Agustín Mendes Rosa - Universidad Nacional de Cordoba (Argentina)
+* Mateo Buteler - Universidad Nacional de Cordoba (Argentina)
+
+Additionally, we extend our heartfelt thanks to **Luighi Viton-Zorilla** (@LuighiV) for his tireless work on achieving a seamless top-level integration in record time.

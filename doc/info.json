@@ -4,14 +4,19 @@
   "technology": "IHP",
   "unique_id": "4176",
   "license": "Apache-2.0",
-  "trl": 0,
+  "trl": 5,
   "sealring_x": 1.0,
   "sealring_y": 1.0,
   "repository": "https://github.com/Fundacion-Fulgor/IHP__CDR4176",
-  "pdk_version": "",
+  "pdk_version": "22f43352dd8219f9007eb659e422e0d5fe28c5fb",
   "process": "SG13CMOS",
   "dependencies": {},
-  "tools": {},
+  "tools": {
+    "xschem": "v3.8.4RC",
+    "ngspice": "44.2",
+    "klayout": "0.30.2",
+    "magic": "8.3"
+  },
   "top_cell_name": "CDR4176",
   "release": {
     "version": "v.1.0.0",
