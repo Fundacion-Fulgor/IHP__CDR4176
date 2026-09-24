@@ -1,7 +1,7 @@
 # IHP__CDR4176: 5-Bit 4-Quadrant Phase Interpolator (PI) IP in IHP SG13G2 Technology
 
 [![Technology](https://img.shields.io/badge/Process-IHP%20SG13G2-blue)](https://www.ihp-microelectronics.com)
-![Tools](https://img.shields.io/badge/EDA-Xschem%20%7C%20Ngspice%20%7C%20KLayout%20%7C%20Magic-orange)
+[![Tools](https://img.shields.io/badge/EDA-Xschem%20%7C%20Ngspice%20%7C%20KLayout%20%7C%20Magic%20%7C%20Python-orange)](#5-eda-toolchain--flow)
 
 This repository contains the full design, simulation setup, and layout files for an open-source **5-Bit 4-Quadrant Phase Interpolator (PI)** IP developed in the **IHP SG13G2** 130 nm BiCMOS technology node. 
 
@@ -211,4 +211,4 @@ In particular, we would like to extend our sincere appreciation to:
 * Agustín Mendes Rosa - Universidad Nacional de Cordoba (Argentina)
 * Mateo Buteler - Universidad Nacional de Cordoba (Argentina)
 
-Additionally, we extend our heartfelt thanks to **Luighi Viton-Zorilla** (@LuighiV) for his tireless work on achieving a seamless top-level integration in record time.
+Additionally, we extend our heartfelt thanks to **Luighi Viton-Zorilla** [@LuighiV](https://github.com/LuighiV) for his tireless work on achieving a seamless top-level integration in record time.
