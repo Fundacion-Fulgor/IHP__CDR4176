@@ -1,0 +1,478 @@
+* NGSPICE file created from 8xPI_logic.ext - technology: ihp-sg13g2
+
+.subckt 8xPI_logic_pex VDD SQ[2] SQ[1] SQ[0] S[4] S[3] VSS STQ[7] STQ[6] STQ[5] STQ[4] STQ[3] STQ[2] STQ[1] ST[7] ST[6] ST[5] ST[4] ST[3] ST[2] ST[1]
+X0 STQ[2] inv$1_11.VOUT ST[2] VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X1 inv$1_17.VOUT S[4] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X2 inv$1_6.VOUT inv$1_6.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X3 SQ[1] inv$1_17.VOUT VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X4 xor_custom$1_6.inv_xor$1_0.VSS ST[6] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X5 buff_d8$1_0.inv_d8$1_0.VIN buff_d8$1_0.inv_d4$1_0.VIN VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X6 inv$1_15.VOUT S[3] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X7 inv$1_5.VIN buff_d8$1_0.inv_d8$1_0.VIN VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X8 inv$1_9.VOUT ST[3] STQ[3] VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X9 buff_d8$1_0.inv_d2$1_0.VIN S[3] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X10 inv$1_2.VOUT inv$1_2.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X11 xor_custom$1_4.inv_xor$1_0.VSS ST[4] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X12 xor_custom$1_0.inv_xor$1_0.VSS S[3] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X13 inv$1_5.VIN buff_d8$1_0.inv_d8$1_0.VIN VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X14 inv$1_4.VIN inv$1_5.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X15 inv$1_11.VOUT ST[2] STQ[2] VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X16 VDD buff_d8$1_0.inv_d4$1_0.VIN buff_d8$1_0.inv_d8$1_0.VIN VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X17 inv$1_9.VOUT inv$1_10.VOUT VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X18 xor_custom$1_7.inv_xor$1_0.VSS ST[7] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X19 VDD buff_d8$1_0.inv_d8$1_0.VIN inv$1_5.VIN VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X20 SQ[0] S[4] S[3] VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X21 inv$1_8.VOUT inv$1_5.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X22 xor_custom$1_5.inv_xor$1_0.VSS ST[5] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X23 VDD buff_d8$1_0.inv_d8$1_0.VIN inv$1_5.VIN VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X24 STQ[1] inv$1_12.VOUT ST[1] VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X25 inv$1_5.VIN buff_d8$1_0.inv_d8$1_0.VIN VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X26 inv$1_11.VOUT inv$1_11.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X27 buff_d8$1_0.inv_d4$1_0.VIN buff_d8$1_0.inv_d2$1_0.VIN VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X28 inv$1_6.VIN inv$1_5.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X29 STQ[6] inv$1_4.VOUT xor_custom$1_6.inv_xor$1_0.VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X30 STQ[6] ST[6] inv$1_4.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X31 VSS buff_d8$1_0.inv_d2$1_0.VIN buff_d8$1_0.inv_d4$1_0.VIN VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X32 buff_d8$1_0.inv_d8$1_0.VIN buff_d8$1_0.inv_d4$1_0.VIN VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X33 xor_custom$1_3.inv_xor$1_0.VSS ST[3] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X34 inv$1_2.VIN inv$1_5.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X35 inv$1_17.VOUT S[4] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X36 STQ[4] ST[4] inv$1_7.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X37 inv$1_12.VOUT ST[1] STQ[1] VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X38 STQ[4] inv$1_7.VOUT xor_custom$1_4.inv_xor$1_0.VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X39 xor_custom$1_2.inv_xor$1_0.VSS ST[2] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X40 STQ[7] ST[7] inv$1_6.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X41 STQ[2] inv$1_11.VOUT xor_custom$1_2.inv_xor$1_0.VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X42 inv$1_10.VOUT inv$1_5.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X43 inv$1_4.VOUT xor_custom$1_6.inv_xor$1_0.VSS STQ[6] VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X44 VDD buff_d8$1_0.inv_d4$1_0.VIN buff_d8$1_0.inv_d8$1_0.VIN VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X45 STQ[7] inv$1_6.VOUT xor_custom$1_7.inv_xor$1_0.VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X46 STQ[5] ST[5] inv$1_2.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X47 inv$1_12.VOUT inv$1_13.VOUT VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X48 SQ[2] inv$1_15.VOUT VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X49 STQ[5] inv$1_2.VOUT xor_custom$1_5.inv_xor$1_0.VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X50 buff_d8$1_0.inv_d8$1_0.VIN buff_d8$1_0.inv_d4$1_0.VIN VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X51 inv$1_11.VIN inv$1_5.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X52 inv$1_5.VIN buff_d8$1_0.inv_d8$1_0.VIN VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X53 inv$1_7.VOUT xor_custom$1_4.inv_xor$1_0.VSS STQ[4] VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X54 inv$1_4.VOUT inv$1_4.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X55 STQ[3] inv$1_9.VOUT xor_custom$1_3.inv_xor$1_0.VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X56 buff_d8$1_0.inv_d2$1_0.VIN S[3] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X57 STQ[3] ST[3] inv$1_9.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X58 inv$1_11.VOUT xor_custom$1_2.inv_xor$1_0.VSS STQ[2] VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X59 xor_custom$1_0.inv_xor$1_0.VSS S[3] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X60 inv$1_5.VIN buff_d8$1_0.inv_d8$1_0.VIN VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X61 VSS buff_d8$1_0.inv_d8$1_0.VIN inv$1_5.VIN VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X62 inv$1_6.VOUT xor_custom$1_7.inv_xor$1_0.VSS STQ[7] VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X63 inv$1_5.VIN buff_d8$1_0.inv_d8$1_0.VIN VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X64 S[4] xor_custom$1_0.inv_xor$1_0.VSS SQ[0] VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X65 xor_custom$1_1.inv_xor$1_0.VSS ST[1] VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X66 inv$1_7.VOUT inv$1_8.VOUT VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X67 inv$1_2.VOUT xor_custom$1_5.inv_xor$1_0.VSS STQ[5] VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X68 VSS buff_d8$1_0.inv_d8$1_0.VIN inv$1_5.VIN VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X69 STQ[1] inv$1_12.VOUT xor_custom$1_1.inv_xor$1_0.VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X70 STQ[2] ST[2] inv$1_11.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X71 xor_custom$1_6.inv_xor$1_0.VSS ST[6] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X72 inv$1_11.VOUT inv$1_11.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X73 inv$1_9.VOUT xor_custom$1_3.inv_xor$1_0.VSS STQ[3] VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X74 inv$1_6.VOUT inv$1_6.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X75 SQ[0] S[3] S[4] VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X76 inv$1_13.VOUT inv$1_5.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X77 inv$1_15.VOUT S[3] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X78 inv$1_2.VOUT inv$1_2.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X79 VDD buff_d8$1_0.inv_d2$1_0.VIN buff_d8$1_0.inv_d4$1_0.VIN VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X80 buff_d8$1_0.inv_d8$1_0.VIN buff_d8$1_0.inv_d4$1_0.VIN VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X81 xor_custom$1_4.inv_xor$1_0.VSS ST[4] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X82 inv$1_12.VOUT xor_custom$1_1.inv_xor$1_0.VSS STQ[1] VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X83 inv$1_4.VIN inv$1_5.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X84 inv$1_9.VOUT inv$1_10.VOUT VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X85 xor_custom$1_2.inv_xor$1_0.VSS ST[2] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X86 STQ[6] inv$1_4.VOUT ST[6] VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X87 xor_custom$1_7.inv_xor$1_0.VSS ST[7] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X88 VSS buff_d8$1_0.inv_d8$1_0.VIN inv$1_5.VIN VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X89 VSS buff_d8$1_0.inv_d4$1_0.VIN buff_d8$1_0.inv_d8$1_0.VIN VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X90 SQ[0] S[4] xor_custom$1_0.inv_xor$1_0.VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X91 STQ[4] inv$1_7.VOUT ST[4] VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X92 STQ[1] ST[1] inv$1_12.VOUT VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X93 inv$1_8.VOUT inv$1_5.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X94 inv$1_12.VOUT inv$1_13.VOUT VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X95 xor_custom$1_5.inv_xor$1_0.VSS ST[5] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X96 VSS buff_d8$1_0.inv_d8$1_0.VIN inv$1_5.VIN VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X97 SQ[1] inv$1_17.VOUT VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X98 inv$1_11.VIN inv$1_5.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X99 STQ[7] inv$1_6.VOUT ST[7] VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X100 xor_custom$1_3.inv_xor$1_0.VSS ST[3] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X101 inv$1_4.VOUT ST[6] STQ[6] VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X102 inv$1_5.VIN buff_d8$1_0.inv_d8$1_0.VIN VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X103 buff_d8$1_0.inv_d4$1_0.VIN buff_d8$1_0.inv_d2$1_0.VIN VSS VSS sg13_lv_nmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X104 SQ[2] inv$1_15.VOUT VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X105 inv$1_6.VIN inv$1_5.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X106 STQ[5] inv$1_2.VOUT ST[5] VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X107 inv$1_7.VOUT ST[4] STQ[4] VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X108 inv$1_2.VIN inv$1_5.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X109 xor_custom$1_1.inv_xor$1_0.VSS ST[1] VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X110 inv$1_10.VOUT inv$1_5.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X111 inv$1_4.VOUT inv$1_4.VIN VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X112 VDD buff_d8$1_0.inv_d8$1_0.VIN inv$1_5.VIN VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X113 STQ[3] inv$1_9.VOUT ST[3] VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X114 inv$1_6.VOUT ST[7] STQ[7] VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X115 inv$1_5.VIN buff_d8$1_0.inv_d8$1_0.VIN VDD VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X116 S[4] S[3] SQ[0] VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X117 inv$1_7.VOUT inv$1_8.VOUT VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X118 VDD buff_d8$1_0.inv_d8$1_0.VIN inv$1_5.VIN VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X119 VSS buff_d8$1_0.inv_d4$1_0.VIN buff_d8$1_0.inv_d8$1_0.VIN VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=55.5f ps=0.74u w=0.15u l=0.13u
+X120 inv$1_2.VOUT ST[5] STQ[5] VDD sg13_lv_pmos ad=55.5f pd=0.74u as=0.1005p ps=1.34u w=0.15u l=0.13u
+X121 inv$1_13.VOUT inv$1_5.VIN VSS VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.13u
+C0 xor_custom$1_1.inv_xor$1_0.VSS ST[1] 0.64165f
+C1 STQ[4] STQ[3] 0.02187f
+C2 ST[5] xor_custom$1_5.inv_xor$1_0.VSS 0.64165f
+C3 ST[6] inv$1_4.VIN 0.00293f
+C4 STQ[6] xor_custom$1_6.inv_xor$1_0.VSS 0.07227f
+C5 inv$1_7.VOUT VDD 0.22925f
+C6 S[4] VDD 0.26439f
+C7 ST[4] inv$1_5.VIN 0.00173f
+C8 STQ[6] xor_custom$1_5.inv_xor$1_0.VSS 0.00462f
+C9 buff_d8$1_0.inv_d4$1_0.VIN S[3] 0.00198f
+C10 STQ[7] inv$1_6.VOUT 0.34529f
+C11 STQ[7] inv$1_4.VOUT 0.01244f
+C12 xor_custom$1_0.inv_xor$1_0.VSS inv$1_6.VOUT 0.00319f
+C13 buff_d8$1_0.inv_d8$1_0.VIN buff_d8$1_0.inv_d2$1_0.VIN 0
+C14 STQ[4] ST[4] 0.10902f
+C15 STQ[7] S[3] 0.00297f
+C16 xor_custom$1_4.inv_xor$1_0.VSS xor_custom$1_5.inv_xor$1_0.VSS 0.02562f
+C17 xor_custom$1_4.inv_xor$1_0.VSS inv$1_8.VOUT 0.00308f
+C18 inv$1_10.VOUT inv$1_9.VOUT 0.13142f
+C19 buff_d8$1_0.inv_d8$1_0.VIN VDD 1.04406f
+C20 xor_custom$1_1.inv_xor$1_0.VSS inv$1_12.VOUT 0.23056f
+C21 STQ[5] inv$1_4.VOUT 0.00121f
+C22 xor_custom$1_0.inv_xor$1_0.VSS S[3] 0.64701f
+C23 inv$1_11.VOUT inv$1_5.VIN 0.00922f
+C24 xor_custom$1_1.inv_xor$1_0.VSS STQ[2] 0.00462f
+C25 S[4] inv$1_6.VIN 0
+C26 xor_custom$1_0.inv_xor$1_0.VSS SQ[1] 0.00167f
+C27 inv$1_4.VOUT inv$1_4.VIN 0.13056f
+C28 inv$1_10.VOUT VDD 0.17594f
+C29 SQ[0] S[3] 0.22821f
+C30 inv$1_15.VOUT inv$1_17.VOUT 0
+C31 xor_custom$1_2.inv_xor$1_0.VSS inv$1_5.VIN 0.00297f
+C32 STQ[7] xor_custom$1_6.inv_xor$1_0.VSS 0.00462f
+C33 inv$1_9.VOUT inv$1_5.VIN 0.00922f
+C34 ST[5] inv$1_2.VOUT 0.25559f
+C35 ST[1] inv$1_12.VOUT 0.25555f
+C36 S[3] inv$1_4.VIN 0
+C37 ST[1] STQ[2] 0
+C38 inv$1_2.VIN inv$1_4.VIN 0.01857f
+C39 STQ[4] inv$1_9.VOUT 0.01244f
+C40 STQ[6] inv$1_2.VOUT 0.01244f
+C41 ST[2] inv$1_5.VIN 0.00173f
+C42 inv$1_5.VIN VDD 1.64893f
+C43 STQ[5] xor_custom$1_5.inv_xor$1_0.VSS 0.07227f
+C44 ST[5] STQ[6] 0
+C45 xor_custom$1_4.inv_xor$1_0.VSS inv$1_2.VOUT 0.00152f
+C46 STQ[4] VDD 0.20967f
+C47 xor_custom$1_6.inv_xor$1_0.VSS inv$1_4.VIN 0.00308f
+C48 inv$1_13.VOUT inv$1_5.VIN 0.13347f
+C49 STQ[2] inv$1_12.VOUT 0.01244f
+C50 STQ[1] inv$1_11.VOUT 0.00121f
+C51 xor_custom$1_4.inv_xor$1_0.VSS ST[5] 0.16921f
+C52 inv$1_6.VIN inv$1_5.VIN 0.12514f
+C53 STQ[7] xor_custom$1_7.inv_xor$1_0.VSS 0.07227f
+C54 xor_custom$1_0.inv_xor$1_0.VSS xor_custom$1_7.inv_xor$1_0.VSS 0.00463f
+C55 inv$1_7.VOUT inv$1_5.VIN 0.00922f
+C56 ST[3] STQ[2] 0
+C57 ST[6] VDD 0.40727f
+C58 S[4] inv$1_5.VIN 0
+C59 inv$1_15.VOUT xor_custom$1_0.inv_xor$1_0.VSS 0
+C60 ST[7] VDD 0.40317f
+C61 STQ[4] inv$1_7.VOUT 0.34525f
+C62 xor_custom$1_4.inv_xor$1_0.VSS ST[3] 0
+C63 xor_custom$1_7.inv_xor$1_0.VSS SQ[0] 0
+C64 inv$1_6.VOUT SQ[2] 0
+C65 xor_custom$1_0.inv_xor$1_0.VSS inv$1_17.VOUT 0.00483f
+C66 inv$1_15.VOUT SQ[0] 0
+C67 buff_d8$1_0.inv_d8$1_0.VIN inv$1_5.VIN 0.99615f
+C68 STQ[5] inv$1_2.VOUT 0.34529f
+C69 ST[2] STQ[1] 0
+C70 STQ[1] VDD 0.20932f
+C71 S[3] SQ[2] 0.00579f
+C72 STQ[7] STQ[6] 0.02187f
+C73 xor_custom$1_5.inv_xor$1_0.VSS ST[4] 0
+C74 ST[4] inv$1_8.VOUT 0.00293f
+C75 inv$1_6.VIN ST[7] 0.00293f
+C76 STQ[5] ST[5] 0.10902f
+C77 inv$1_17.VOUT SQ[0] 0.01521f
+C78 inv$1_10.VOUT inv$1_5.VIN 0.12701f
+C79 inv$1_6.VOUT VDD 0.22537f
+C80 inv$1_4.VOUT VDD 0.22912f
+C81 STQ[5] STQ[6] 0.02187f
+C82 S[3] buff_d8$1_0.inv_d2$1_0.VIN 0.12923f
+C83 S[3] VDD 0.77789f
+C84 SQ[1] VDD 0.05047f
+C85 buff_d8$1_0.inv_d8$1_0.VIN ST[6] 0
+C86 xor_custom$1_4.inv_xor$1_0.VSS STQ[5] 0.00462f
+C87 xor_custom$1_4.inv_xor$1_0.VSS xor_custom$1_3.inv_xor$1_0.VSS 0.02562f
+C88 inv$1_2.VIN VDD 0.17594f
+C89 xor_custom$1_3.inv_xor$1_0.VSS ST[3] 0.64165f
+C90 inv$1_6.VIN inv$1_6.VOUT 0.13056f
+C91 xor_custom$1_1.inv_xor$1_0.VSS inv$1_11.VOUT 0.00152f
+C92 STQ[4] inv$1_5.VIN 0
+C93 inv$1_6.VIN S[3] 0.00179f
+C94 STQ[7] xor_custom$1_0.inv_xor$1_0.VSS 0.00309f
+C95 S[4] inv$1_6.VOUT 0
+C96 xor_custom$1_6.inv_xor$1_0.VSS VDD 0.2214f
+C97 STQ[3] STQ[2] 0.02187f
+C98 xor_custom$1_1.inv_xor$1_0.VSS xor_custom$1_2.inv_xor$1_0.VSS 0.02562f
+C99 xor_custom$1_5.inv_xor$1_0.VSS VDD 0.22228f
+C100 inv$1_8.VOUT VDD 0.17594f
+C101 ST[5] ST[4] 0.00952f
+C102 S[4] S[3] 0.23585f
+C103 S[4] SQ[1] 0.00285f
+C104 ST[3] STQ[3] 0.10902f
+C105 xor_custom$1_0.inv_xor$1_0.VSS SQ[0] 0.07155f
+C106 ST[6] inv$1_5.VIN 0.0018f
+C107 xor_custom$1_1.inv_xor$1_0.VSS ST[2] 0.16921f
+C108 xor_custom$1_1.inv_xor$1_0.VSS VDD 0.22158f
+C109 inv$1_15.VOUT SQ[2] 0.07308f
+C110 ST[7] inv$1_5.VIN 0.00173f
+C111 ST[1] xor_custom$1_2.inv_xor$1_0.VSS 0
+C112 buff_d8$1_0.inv_d8$1_0.VIN S[3] 0
+C113 xor_custom$1_4.inv_xor$1_0.VSS ST[4] 0.64165f
+C114 xor_custom$1_1.inv_xor$1_0.VSS inv$1_13.VOUT 0.00308f
+C115 ST[3] ST[4] 0.00952f
+C116 STQ[1] inv$1_5.VIN 0
+C117 inv$1_11.VOUT inv$1_12.VOUT 0.03854f
+C118 inv$1_7.VOUT inv$1_8.VOUT 0.13142f
+C119 inv$1_11.VOUT STQ[2] 0.34525f
+C120 xor_custom$1_7.inv_xor$1_0.VSS VDD 0.21236f
+C121 ST[1] ST[2] 0.00952f
+C122 ST[1] VDD 0.40706f
+C123 inv$1_15.VOUT VDD 0.16539f
+C124 inv$1_2.VOUT VDD 0.22943f
+C125 ST[3] inv$1_11.VOUT 0.00292f
+C126 inv$1_4.VOUT inv$1_5.VIN 0.00922f
+C127 inv$1_6.VOUT inv$1_5.VIN 0.00823f
+C128 xor_custom$1_5.inv_xor$1_0.VSS buff_d8$1_0.inv_d8$1_0.VIN 0
+C129 ST[1] inv$1_13.VOUT 0.00293f
+C130 xor_custom$1_2.inv_xor$1_0.VSS STQ[2] 0.07227f
+C131 ST[7] ST[6] 0.00952f
+C132 xor_custom$1_3.inv_xor$1_0.VSS STQ[3] 0.07227f
+C133 inv$1_9.VOUT STQ[2] 0.00121f
+C134 inv$1_17.VOUT VDD 0.16243f
+C135 ST[5] VDD 0.40749f
+C136 inv$1_6.VIN xor_custom$1_7.inv_xor$1_0.VSS 0.00308f
+C137 S[3] inv$1_5.VIN 0.04329f
+C138 inv$1_6.VIN inv$1_15.VOUT 0.01857f
+C139 ST[3] xor_custom$1_2.inv_xor$1_0.VSS 0.16921f
+C140 ST[2] inv$1_12.VOUT 0.00292f
+C141 inv$1_2.VIN inv$1_5.VIN 0.12701f
+C142 inv$1_12.VOUT VDD 0.22736f
+C143 inv$1_10.VOUT inv$1_8.VOUT 0.01857f
+C144 STQ[6] VDD 0.20966f
+C145 ST[3] inv$1_9.VOUT 0.25555f
+C146 ST[2] STQ[2] 0.10902f
+C147 STQ[2] VDD 0.20967f
+C148 STQ[5] ST[4] 0
+C149 xor_custom$1_3.inv_xor$1_0.VSS ST[4] 0.16921f
+C150 S[4] inv$1_15.VOUT 0.00246f
+C151 inv$1_13.VOUT inv$1_12.VOUT 0.13142f
+C152 xor_custom$1_4.inv_xor$1_0.VSS VDD 0.22158f
+C153 inv$1_7.VOUT inv$1_2.VOUT 0.03854f
+C154 inv$1_4.VOUT ST[6] 0.25559f
+C155 ST[3] ST[2] 0.00952f
+C156 ST[3] VDD 0.40749f
+C157 xor_custom$1_6.inv_xor$1_0.VSS inv$1_5.VIN 0.00297f
+C158 inv$1_4.VOUT ST[7] 0.00292f
+C159 inv$1_6.VOUT ST[7] 0.25559f
+C160 S[4] inv$1_17.VOUT 0.13195f
+C161 ST[5] inv$1_7.VOUT 0.00292f
+C162 xor_custom$1_5.inv_xor$1_0.VSS inv$1_5.VIN 0.00313f
+C163 inv$1_8.VOUT inv$1_5.VIN 0.12701f
+C164 buff_d8$1_0.inv_d4$1_0.VIN buff_d8$1_0.inv_d2$1_0.VIN 0.25118f
+C165 ST[7] S[3] 0
+C166 buff_d8$1_0.inv_d4$1_0.VIN VDD 0.48584f
+C167 a_2477_3934# inv$1_5.VIN 0
+C168 STQ[3] ST[4] 0
+C169 xor_custom$1_1.inv_xor$1_0.VSS inv$1_5.VIN 0.00297f
+C170 xor_custom$1_3.inv_xor$1_0.VSS xor_custom$1_2.inv_xor$1_0.VSS 0.02562f
+C171 STQ[7] VDD 0.20802f
+C172 xor_custom$1_3.inv_xor$1_0.VSS inv$1_9.VOUT 0.23056f
+C173 inv$1_11.VIN inv$1_11.VOUT 0.13142f
+C174 xor_custom$1_4.inv_xor$1_0.VSS inv$1_7.VOUT 0.23056f
+C175 xor_custom$1_0.inv_xor$1_0.VSS VDD 0.13537f
+C176 xor_custom$1_6.inv_xor$1_0.VSS ST[6] 0.64165f
+C177 inv$1_6.VOUT inv$1_4.VOUT 0.03852f
+C178 STQ[3] inv$1_11.VOUT 0.01244f
+C179 ST[7] xor_custom$1_6.inv_xor$1_0.VSS 0.16921f
+C180 xor_custom$1_5.inv_xor$1_0.VSS ST[6] 0.16921f
+C181 STQ[5] VDD 0.20966f
+C182 xor_custom$1_3.inv_xor$1_0.VSS ST[2] 0
+C183 xor_custom$1_3.inv_xor$1_0.VSS VDD 0.22158f
+C184 xor_custom$1_7.inv_xor$1_0.VSS inv$1_5.VIN 0
+C185 SQ[0] VDD 0.20614f
+C186 ST[1] inv$1_5.VIN 0.00141f
+C187 inv$1_11.VIN xor_custom$1_2.inv_xor$1_0.VSS 0.00308f
+C188 inv$1_4.VOUT S[3] 0
+C189 inv$1_6.VOUT S[3] 0.01122f
+C190 VDD inv$1_4.VIN 0.17594f
+C191 inv$1_2.VOUT inv$1_5.VIN 0.00922f
+C192 STQ[3] xor_custom$1_2.inv_xor$1_0.VSS 0.00462f
+C193 inv$1_9.VOUT STQ[3] 0.34525f
+C194 ST[2] inv$1_11.VIN 0.00293f
+C195 ST[5] inv$1_5.VIN 0.00173f
+C196 STQ[4] inv$1_2.VOUT 0.00121f
+C197 inv$1_11.VIN VDD 0.17594f
+C198 S[4] xor_custom$1_0.inv_xor$1_0.VSS 0.25815f
+C199 ST[3] inv$1_10.VOUT 0.00293f
+C200 buff_d8$1_0.inv_d8$1_0.VIN buff_d8$1_0.inv_d4$1_0.VIN 0.49436f
+C201 inv$1_4.VOUT xor_custom$1_6.inv_xor$1_0.VSS 0.23056f
+C202 inv$1_6.VOUT xor_custom$1_6.inv_xor$1_0.VSS 0.00152f
+C203 inv$1_12.VOUT inv$1_5.VIN 0.01971f
+C204 ST[5] STQ[4] 0
+C205 ST[2] STQ[3] 0
+C206 STQ[5] inv$1_7.VOUT 0.01244f
+C207 STQ[3] VDD 0.20967f
+C208 STQ[6] inv$1_5.VIN 0
+C209 inv$1_6.VIN inv$1_4.VIN 0.01857f
+C210 xor_custom$1_1.inv_xor$1_0.VSS STQ[1] 0.07227f
+C211 inv$1_7.VOUT xor_custom$1_3.inv_xor$1_0.VSS 0.00152f
+C212 STQ[2] inv$1_5.VIN 0
+C213 inv$1_11.VIN inv$1_13.VOUT 0.01857f
+C214 xor_custom$1_7.inv_xor$1_0.VSS ST[6] 0
+C215 xor_custom$1_5.inv_xor$1_0.VSS inv$1_4.VOUT 0.00152f
+C216 inv$1_9.VOUT ST[4] 0.00292f
+C217 S[4] SQ[0] 0.32572f
+C218 xor_custom$1_6.inv_xor$1_0.VSS S[3] 0
+C219 ST[7] xor_custom$1_7.inv_xor$1_0.VSS 0.64165f
+C220 ST[6] inv$1_2.VOUT 0.00292f
+C221 xor_custom$1_4.inv_xor$1_0.VSS inv$1_5.VIN 0.00297f
+C222 ST[3] inv$1_5.VIN 0.00173f
+C223 inv$1_2.VIN xor_custom$1_5.inv_xor$1_0.VSS 0.00308f
+C224 inv$1_2.VIN inv$1_8.VOUT 0.01857f
+C225 inv$1_11.VOUT xor_custom$1_2.inv_xor$1_0.VSS 0.23056f
+C226 ST[4] VDD 0.40749f
+C227 inv$1_9.VOUT inv$1_11.VOUT 0.03854f
+C228 xor_custom$1_4.inv_xor$1_0.VSS STQ[4] 0.07227f
+C229 ST[5] ST[6] 0.00952f
+C230 ST[1] STQ[1] 0.10902f
+C231 STQ[4] ST[3] 0
+C232 buff_d8$1_0.inv_d4$1_0.VIN inv$1_5.VIN 0
+C233 inv$1_7.VOUT STQ[3] 0.00121f
+C234 STQ[6] ST[6] 0.10902f
+C235 xor_custom$1_3.inv_xor$1_0.VSS inv$1_10.VOUT 0.00308f
+C236 xor_custom$1_5.inv_xor$1_0.VSS xor_custom$1_6.inv_xor$1_0.VSS 0.02562f
+C237 ST[2] inv$1_11.VOUT 0.25555f
+C238 STQ[6] ST[7] 0
+C239 inv$1_11.VOUT VDD 0.22925f
+C240 inv$1_9.VOUT xor_custom$1_2.inv_xor$1_0.VSS 0.00152f
+C241 inv$1_6.VOUT xor_custom$1_7.inv_xor$1_0.VSS 0.23056f
+C242 STQ[7] inv$1_5.VIN 0
+C243 SQ[2] VDD 0.05932f
+C244 xor_custom$1_7.inv_xor$1_0.VSS S[3] 0.01817f
+C245 inv$1_4.VOUT inv$1_2.VOUT 0.03852f
+C246 STQ[1] inv$1_12.VOUT 0.34525f
+C247 inv$1_7.VOUT ST[4] 0.25555f
+C248 STQ[1] STQ[2] 0.02187f
+C249 ST[2] xor_custom$1_2.inv_xor$1_0.VSS 0.64165f
+C250 xor_custom$1_2.inv_xor$1_0.VSS VDD 0.22158f
+C251 inv$1_15.VOUT S[3] 0.17357f
+C252 STQ[5] inv$1_5.VIN 0
+C253 inv$1_10.VOUT inv$1_11.VIN 0.01857f
+C254 inv$1_9.VOUT VDD 0.22925f
+C255 xor_custom$1_3.inv_xor$1_0.VSS inv$1_5.VIN 0.00297f
+C256 STQ[5] STQ[4] 0.02187f
+C257 buff_d8$1_0.inv_d2$1_0.VIN VDD 0.23992f
+C258 inv$1_2.VIN inv$1_2.VOUT 0.13056f
+C259 inv$1_17.VOUT S[3] 0
+C260 STQ[4] xor_custom$1_3.inv_xor$1_0.VSS 0.00462f
+C261 inv$1_5.VIN inv$1_4.VIN 0.12701f
+C262 STQ[6] inv$1_4.VOUT 0.34529f
+C263 STQ[6] inv$1_6.VOUT 0.00121f
+C264 inv$1_17.VOUT SQ[1] 0.07308f
+C265 ST[2] VDD 0.40749f
+C266 xor_custom$1_7.inv_xor$1_0.VSS xor_custom$1_6.inv_xor$1_0.VSS 0.02562f
+C267 STQ[7] ST[6] 0
+C268 ST[5] inv$1_2.VIN 0.00293f
+C269 STQ[6] S[3] 0
+C270 inv$1_11.VIN inv$1_5.VIN 0.12701f
+C271 STQ[7] ST[7] 0.10902f
+C272 S[4] SQ[2] 0
+C273 inv$1_13.VOUT VDD 0.18261f
+C274 STQ[5] ST[6] 0
+C275 inv$1_7.VOUT inv$1_9.VOUT 0.03854f
+C276 STQ[3] inv$1_5.VIN 0
+C277 xor_custom$1_5.inv_xor$1_0.VSS inv$1_2.VOUT 0.23056f
+C278 ST[5] xor_custom$1_6.inv_xor$1_0.VSS 0
+C279 inv$1_6.VIN VDD 0.17594f
+C280 SQ[1] VSS 0.12261f
+C281 inv$1_17.VOUT VSS 0.38558f
+C282 a_4854_1502# VSS 0.00838f $ **FLOATING
+C283 a_4442_1502# VSS 0.00838f $ **FLOATING
+C284 xor_custom$1_0.inv_xor$1_0.VSS VSS 0.74442f
+C285 SQ[0] VSS 0.17146f
+C286 S[4] VSS 0.90085f
+C287 SQ[2] VSS 0.1119f
+C288 inv$1_15.VOUT VSS 0.34899f
+C289 a_5450_2892# VSS 0.00838f $ **FLOATING
+C290 a_5038_2892# VSS 0.00838f $ **FLOATING
+C291 xor_custom$1_7.inv_xor$1_0.VSS VSS 0.67881f
+C292 STQ[7] VSS 0.19607f
+C293 inv$1_6.VOUT VSS 0.42752f
+C294 inv$1_6.VIN VSS 0.3224f
+C295 ST[7] VSS 0.46929f
+C296 a_5450_3587# VSS 0.00838f $ **FLOATING
+C297 a_5038_3587# VSS 0.00838f $ **FLOATING
+C298 xor_custom$1_6.inv_xor$1_0.VSS VSS 0.52122f
+C299 STQ[6] VSS 0.17626f
+C300 inv$1_4.VOUT VSS 0.3786f
+C301 a_3197_3934# VSS 0.00384f $ **FLOATING
+C302 a_2837_3934# VSS 0.00384f $ **FLOATING
+C303 a_2477_3934# VSS 0.00384f $ **FLOATING
+C304 a_2065_3934# VSS 0.00838f $ **FLOATING
+C305 a_1705_3934# VSS 0.00384f $ **FLOATING
+C306 a_1293_3934# VSS 0.00838f $ **FLOATING
+C307 a_881_3934# VSS 0.00838f $ **FLOATING
+C308 inv$1_4.VIN VSS 0.3224f
+C309 ST[6] VSS 0.45272f
+C310 a_5450_4282# VSS 0.00838f $ **FLOATING
+C311 a_5038_4282# VSS 0.00838f $ **FLOATING
+C312 xor_custom$1_5.inv_xor$1_0.VSS VSS 0.51992f
+C313 buff_d8$1_0.inv_d8$1_0.VIN VSS 1.91435f
+C314 buff_d8$1_0.inv_d4$1_0.VIN VSS 0.95734f
+C315 buff_d8$1_0.inv_d2$1_0.VIN VSS 0.56643f
+C316 S[3] VSS 3.36078f
+C317 STQ[5] VSS 0.17626f
+C318 inv$1_2.VOUT VSS 0.37851f
+C319 inv$1_2.VIN VSS 0.3224f
+C320 ST[5] VSS 0.45273f
+C321 a_5450_4977# VSS 0.00838f $ **FLOATING
+C322 a_5038_4977# VSS 0.00838f $ **FLOATING
+C323 xor_custom$1_4.inv_xor$1_0.VSS VSS 0.52101f
+C324 STQ[4] VSS 0.17626f
+C325 inv$1_7.VOUT VSS 0.37883f
+C326 inv$1_8.VOUT VSS 0.32239f
+C327 ST[4] VSS 0.45273f
+C328 a_5450_5672# VSS 0.00838f $ **FLOATING
+C329 a_5038_5672# VSS 0.00838f $ **FLOATING
+C330 xor_custom$1_3.inv_xor$1_0.VSS VSS 0.52101f
+C331 STQ[3] VSS 0.17626f
+C332 inv$1_9.VOUT VSS 0.37883f
+C333 inv$1_10.VOUT VSS 0.32239f
+C334 ST[3] VSS 0.45273f
+C335 a_5450_6367# VSS 0.00838f $ **FLOATING
+C336 a_5038_6367# VSS 0.00838f $ **FLOATING
+C337 xor_custom$1_2.inv_xor$1_0.VSS VSS 0.52101f
+C338 STQ[2] VSS 0.17626f
+C339 inv$1_11.VOUT VSS 0.37883f
+C340 inv$1_11.VIN VSS 0.32239f
+C341 ST[2] VSS 0.45273f
+C342 a_5450_7062# VSS 0.00838f $ **FLOATING
+C343 a_5038_7062# VSS 0.00838f $ **FLOATING
+C344 xor_custom$1_1.inv_xor$1_0.VSS VSS 0.55006f
+C345 STQ[1] VSS 0.21511f
+C346 inv$1_12.VOUT VSS 0.42591f
+C347 inv$1_13.VOUT VSS 0.33766f
+C348 inv$1_5.VIN VSS 4.45553f
+C349 ST[1] VSS 0.60258f
+C350 VDD VSS 19.4549f
+.ends
+
