@@ -99,7 +99,7 @@ The primary objective of this block is to synthesize the final output clock sign
 
 The specifications and trade-offs associated with these blocks are:
 
-* **Phase Linearity (INL & DNL):** Linearity is the primary design metric for the interpolator core. The output phase accuracy across all 32 code steps is characterized using Integral Nonlinearity (INL) and Differential Nonlinearity (DNL) metrics. Detailed measurements and performance plots are available in [`datasheet.md`](./datasheet.md).
+* **Phase Linearity (INL & DNL):** Linearity is the primary design metric for the interpolator core. The output phase accuracy across all 32 code steps is characterized using Integral Nonlinearity (INL) and Differential Nonlinearity (DNL) metrics. Detailed measurements and performance plots are available [here](CDR4176-main/README.md).
 * **Bandwidth & Signal Integrity:** Circuit bandwidth is another critical performance parameter that directly trades off with phase linearity. While bandwidth was not explicitly quantified in numerical sweeps, careful transistor sizing and layout optimization were performed to ensure signal integrity and prevent excessive waveform degradation at the Ring Oscillator's operating frequency.
 
 
@@ -120,7 +120,7 @@ To validate the Phase Interpolator in a real physical silicon environment withou
 2. **Divide-by-8 Frequency Divider:** Downscales the high-frequency interpolated output clock to approximately **90 MHz**.
 3. **Output Buffering:** Drives the off-chip load by boosting the signal's drive capability, ensuring sufficient current drive to interface with the output I/O pad capacitance without corrupting the signal waveform at 90 MHz.
 
-Brief simulation results validating the feasibility and performance of this verification platform are available in datasheet.md.
+Brief simulation results validating the feasibility and performance of this verification platform are available [here](CDR4176-main/README.md).
 
 > **Design Consideration on the Frequency Divider:**
 > The frequency divider was included **exclusively to bypass the severe bandwidth limitations of the output I/O pads**, which are incapable of passing the full 730 MHz fundamental signal off-chip. 
@@ -210,5 +210,7 @@ In particular, we would like to extend our sincere appreciation to:
 * Genaro Trucchi - Universidad Nacional de Cordoba (Argentina)
 * Agustín Mendes Rosa - Universidad Nacional de Cordoba (Argentina)
 * Mateo Buteler - Universidad Nacional de Cordoba (Argentina)
+* Camilo Estevez  - Universidad Nacional del Sur (Argentina)
+* Duván Gómez  - Universidad Nacional del Sur (Argentina)
 
 Additionally, we extend our heartfelt thanks to **Luighi Viton-Zorilla** [@LuighiV](https://github.com/LuighiV) for his tireless work on achieving a seamless top-level integration in record time.
